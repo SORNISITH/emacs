@@ -1,7 +1,7 @@
 ;;; init.el --- Init -*- lexical-binding: t; -*-
 ;; Do not modify this file; instead, modify pre-init.el or post-init.el.
 ;;; Code:
-(message "1.Loading...init.el")
+
 (if (fboundp 'minimal-emacs-load-user-init)
     (when minimal-emacs-load-pre-init
       (minimal-emacs-load-user-init "pre-init.el"))
@@ -546,7 +546,7 @@
 ;;; Load post init
 (when (and minimal-emacs-load-post-init
            (fboundp 'minimal-emacs-load-user-init))
-  (minimal-emacs-load-user-init "user-custom-configs-init.el"))
+  (minimal-emacs-load-user-init "package-init.el"))
 
 (setq minimal-emacs--success t)
 
