@@ -11,7 +11,6 @@
 
 ;;; Code:
 ;;; Internal variables
-(message "0.Loading...from early-init.el")
 ;; Backup of `gc-cons-threshold' and `gc-cons-percentage' before startup.
 (defvar minimal-emacs--backup-gc-cons-threshold gc-cons-threshold)
 (defvar minimal-emacs--backup-gc-cons-percentage gc-cons-percentage)
