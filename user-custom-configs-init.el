@@ -2,29 +2,16 @@
 ;; native machine code, resulting in faster execution and improved
 ;; Ensure adding the following compile-angel code at the very beginning
 ;; of your `~/.emacs.d/post-init.el` file, before all other packages.
-(require 'use-package)
-
-(global-unset-key (kbd "C-z"))
-(global-set-key (kbd "C-c p") 'compile)
-(global-set-key (kbd "C-z") 'undo-fu-only-undo)
-(global-set-key (kbd "C-S-z") 'undo-fu-only-redo)
-(global-set-key (kbd "C-c p") 'compile)
-(global-set-key (kbd "C-x k") 'kill-current-buffer)
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-(global-set-key (kbd "C-q") 'set-mark-command)
-(global-set-key (kbd "C-x g") 'magit-status)
-
+;; (require 'use-package)
 (use-package compile-angel
   :demand t
   :config
   ;; The following disables compilation of packages during installation;
   ;; compile-angel will handle it.
   (setq package-native-compile nil)
-
   ;; Set `compile-angel-verbose' to nil to disable compile-angel messages.
   ;; (When set to nil, compile-angel won't show which file is being compiled.)
   (setq compile-angel-verbose t)
-
   ;; The following directive prevents compile-angel from compiling your init
   ;; files. If you choose to remove this push to `compile-angel-excluded-files'
   ;; and compile your pre/post-init files, ensure you understand the
@@ -35,7 +22,7 @@
   (push "/init.el" compile-angel-excluded-files)
   (push "/early-init.el" compile-angel-excluded-files)
   (push "/pre-init.el" compile-angel-excluded-files)
-  (push "/post-init.el" compile-angel-excluded-files)
+  (push "/user-custom-configs-init.el" compile-angel-excluded-files)
   (push "/pre-early-init.el" compile-angel-excluded-files)
   (push "/post-early-init.el" compile-angel-excluded-files)
   ;; A local mode that compiles .el files whenever the user saves them.
@@ -45,7 +32,27 @@
   ;; the mode `compile-angel-on-load-mode' was activated.
   (compile-angel-on-load-mode 1))
 
-(message "2.Loading...from post-init.el")
+
+
+
+
+
+
+;; GLOBAL KEYS
+(global-unset-key (kbd "C-z"))
+(global-set-key (kbd "C-c p") 'compile)
+(global-set-key (kbd "C-z") 'undo-fu-only-undo)
+(global-set-key (kbd "C-S-z") 'undo-fu-only-redo)
+(global-set-key (kbd "C-c p") 'compile)
+(global-set-key (kbd "C-x k") 'kill-current-buffer)
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+(global-set-key (kbd "C-q") 'set-mark-command)
+(global-set-key (kbd "C-x g") 'magit-status)
+
+
+
+
+(message "2.Loading...from ./user-custom-configs-init.el")
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (setq backup-directory-alist
       `(("." . ,(expand-file-name "backups" user-emacs-directory))))
@@ -356,14 +363,6 @@
   (global-set-key (kbd "C-<down>") #'move-text-down))
 
 
-
-(require 'pulse)
-(setq pulse-delay 0.02)
-(setq pulse-iterations 0.5)
-
-(set-face-attribute 'pulse-highlight-face nil
-                    :background "white")
-
 (defun custom/wl-copy ()
   "Copy region to Wayland clipboard using wl-copy."
   (interactive)
@@ -372,9 +371,8 @@
         (with-temp-buffer
           (insert text)
           (call-process-region (point-min) (point-max) "wl-copy" nil nil nil "-n"))
-        (pulse-momentary-highlight-region (region-beginning) (region-end))
         (deactivate-mark)
-        (message "Copied ✔"))
+        (message "Copied ()"))
     (message "No region selected")))
 
 (global-set-key (kbd "C-c c") #'custom/wl-copy)

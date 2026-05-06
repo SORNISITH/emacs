@@ -543,10 +543,9 @@
   (put cmd 'disabled nil))
 
 ;;; Load post init
-
 (when (and minimal-emacs-load-post-init
            (fboundp 'minimal-emacs-load-user-init))
-  (minimal-emacs-load-user-init "post-init.el"))
+  (minimal-emacs-load-user-init "user-custom-configs-init.el"))
 
 (setq minimal-emacs--success t)
 
