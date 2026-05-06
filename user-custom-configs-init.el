@@ -1,4 +1,4 @@
-;;; user-custom-configs.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
+;;; user-custom-configs.init.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 (delete-selection-mode 1)
 ;; Display the current line and column numbers in the mode line
 (setq line-number-mode t)
@@ -20,15 +20,18 @@
 (setq kept-old-versions 10)
 (setq kept-new-versions 10)
 
-
-(defun reload-config ()
+(defun emacs-reload ()
   (interactive)
   (load-file user-init-file))
 
+(defun emacs-conf ()
+  (interactive)
+  (find-file "~/.emacs.d/user-custom-configs-init.el")
+  )
 ;;; sec_settting sec_user sec_key --------------------------------------------------------------------------
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
-
+(global-unset-key (kbd "C-x C-p"))
 (global-set-key (kbd "C-c p") 'compile)
 (global-set-key (kbd "C-z") 'undo-fu-only-undo)
 (global-set-key (kbd "C-S-z") 'undo-fu-only-redo)
@@ -52,7 +55,6 @@
   :bind (("C-x g" . magit-status)
          ("C-x M-g" . magit-dispatch)))
 
-
 (use-package markdown-mode
   :commands (gfm-mode
              gfm-view-mode
@@ -75,6 +77,13 @@
   :custom
   (markdown-toc-header-toc-title "**Table of Contents**"))
 
+
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 ;; The official collection of snippets for yasnippet.
 (use-package yasnippet-snippets
@@ -780,14 +789,6 @@
 
 
 
-(use-package avy
-  :commands (avy-goto-char
-             avy-gssoto-char-2
-             avy-next)
-  :init
-  (global-set-key (kbd "M-p") 'avy-goto-char-2))
-
-
 ;; Enables automatic indentation of code while typing
 (use-package aggressive-indent
   :commands aggressive-indent-mode
@@ -1093,14 +1094,3 @@
 ;; the terminal process.
 ;;   emacsclient -n filename.txt
 ;;
-(use-package server
-  :ensure nil
-  :if (not (daemonp))
-  :commands (server-running-p
-             server-start)
-  :hook (after-init . my-server-start)
-  :preface
-  (defun my-server-start ()
-    "Start the Emacs server if no server process is currently active."
-    (unless (server-running-p)
-      (server-start))))
