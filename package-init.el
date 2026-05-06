@@ -561,30 +561,6 @@
   (setq yas-verbosity 0))
 
 
-;; The stripspace Emacs package provides stripspace-local-mode, a minor mode
-;; that automatically removes trailing whitespace and blank lines at the end of
-;; the buffer when saving.
-(use-package stripspace
-  :commands stripspace-local-mode
-  ;; Enable for prog-mode-hook, text-mode-hook, conf-mode-hook
-  :hook ((prog-mode . stripspace-local-mode)
-         (text-mode . stripspace-local-mode)
-         (conf-mode . stripspace-local-mode))
-
-  :custom
-  ;; The `stripspace-only-if-initially-clean' option:
-  ;; - nil to always delete trailing whitespace.
-  ;; - Non-nil to only delete whitespace when the buffer is clean initially.
-  ;; (The initial cleanliness check is performed when `stripspace-local-mode'
-  ;; is enabled.)
-  (stripspace-only-if-initially-clean nil)
-
-  ;; Enabling `stripspace-restore-column' preserves the cursor's column position
-  ;; even after stripping spaces. This is useful in scenarios where you add
-  ;; extra spaces and then save the file. Although the spaces are removed in the
-  ;; saved file, the cursor remains in the same position, ensuring a consistent
-  ;; editing experience without affecting cursor placement.
-  (stripspace-restore-column t))
 
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
@@ -611,7 +587,6 @@
   :hook (org-mode . org-appear-mode))
 
 
-
 (use-package buffer-terminator
   :custom
   ;; Enable/Disable verbose mode to log buffer cleanup events
@@ -629,119 +604,11 @@
   (buffer-terminator-mode 1))
 
 
-
-
-
-
-;; A file and project explorer for Emacs that displays a structured tree
-;; layout, similar to file browsers in modern IDEs. It functions as a sidebar
-;; in the left window, providing a persistent view of files, projects, and
-;; other elements.
-(use-package treemacs
-  :commands (treemacs
-             treemacs-select-window
-             treemacs-delete-other-windows
-             treemacs-select-directory
-             treemacs-bookmark
-             treemacs-find-file
-             treemacs-find-tag)
-
-  :bind
-  (:map global-map
-        ("M-0"       . treemacs-select-window)
-        ("C-x t 1"   . treemacs-delete-other-windows)
-        ("C-x t t"   . treemacs)
-        ("C-x t d"   . treemacs-select-directory)
-        ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag))
-
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-
-  :config
-  (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
-        treemacs-deferred-git-apply-delay        0.5
-        treemacs-directory-name-transformer      #'identity
-        treemacs-display-in-side-window          t
-        treemacs-eldoc-display                   'simple
-        treemacs-file-event-delay                2000
-        treemacs-file-extension-regex            treemacs-last-period-regex-value
-        treemacs-file-follow-delay               0.2
-        treemacs-file-name-transformer           #'identity
-        treemacs-follow-after-init               t
-        treemacs-expand-after-init               t
-        treemacs-find-workspace-method           'find-for-file-or-pick-first
-        treemacs-git-command-pipe                ""
-        treemacs-goto-tag-strategy               'refetch-index
-        treemacs-header-scroll-indicators        '(nil . "^^^^^^")
-        treemacs-hide-dot-git-directory          t
-        treemacs-indentation                     2
-        treemacs-indentation-string              " "
-        treemacs-is-never-other-window           nil
-        treemacs-max-git-entries                 5000
-        treemacs-missing-project-action          'ask
-        treemacs-move-files-by-mouse-dragging    t
-        treemacs-move-forward-on-expand          nil
-        treemacs-no-png-images                   nil
-        treemacs-no-delete-other-windows         t
-        treemacs-project-follow-cleanup          nil
-        treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-        treemacs-position                        'left
-        treemacs-read-string-input               'from-child-frame
-        treemacs-recenter-distance               0.1
-        treemacs-recenter-after-file-follow      nil
-        treemacs-recenter-after-tag-follow       nil
-        treemacs-recenter-after-project-jump     'always
-        treemacs-recenter-after-project-expand   'on-distance
-        treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
-        treemacs-project-follow-into-home        nil
-        treemacs-show-cursor                     nil
-        treemacs-show-hidden-files               t
-        treemacs-silent-filewatch                nil
-        treemacs-silent-refresh                  nil
-        treemacs-sorting                         'alphabetic-asc
-        treemacs-select-when-already-in-treemacs 'move-back
-        treemacs-space-between-root-nodes        t
-        treemacs-tag-follow-cleanup              t
-        treemacs-tag-follow-delay                1.5
-        treemacs-text-scale                      nil
-        treemacs-user-mode-line-format           nil
-        treemacs-user-header-line-format         nil
-        treemacs-wide-toggle-width               70
-        treemacs-width                           35
-        treemacs-width-increment                 1
-        treemacs-width-is-initially-locked       t
-        treemacs-workspace-switch-cleanup        nil)
-
-  ;; The default width and height of the icons is 22 pixels. If you are
-  ;; using a Hi-DPI display, uncomment this to double the icon size.
-  ;; (treemacs-resize-icons 44)
-
-  (treemacs-follow-mode t)
-  (treemacs-filewatch-mode t)
-  (treemacs-fringe-indicator-mode 'always)
-
-  ;;(when treemacs-python-executable
-  ;;  (treemacs-git-commit-diff-mode t))
-
-  (pcase (cons (not (null (executable-find "git")))
-               (not (null treemacs-python-executable)))
-    (`(t . t)
-     (treemacs-git-mode 'deferred))
-    (`(t . _)
-     (treemacs-git-mode 'simple)))
-
-  (treemacs-hide-gitignored-files-mode nil))
-
-
-
 ;; Enables automatic indentation of code while typing
-(use-package aggressive-indent
-  :commands aggressive-indent-mode
-  :hook
-  (emacs-lisp-mode . aggressive-indent-mode))
+;; (use-package aggressive-indent
+;;   :commands aggressive-indent-mode
+;;   :hook
+;;   (emacs-lisp-mode . aggressive-indent-mode))
 
 ;; Highlights function and variable definitions in Emacs Lisp mode
 (use-package highlight-defined
@@ -750,31 +617,6 @@
   (emacs-lisp-mode . highlight-defined-mode))
 
 
-
-
-;; ;; Prevent parenthesis imbalance
-;; (use-package paredit
-;;   :commands paredit-mode
-;;   :hook
-;;   (emacs-lisp-mode . paredit-mode)
-;;   :config
-;;
-;;
-;;   (define-key paredit-mode-map (kbd "RET") nil))
-
-;; For paredit+Evil mode users: enhances paredit with Evil mode compatibility
-;; --------------------------------------------------------------------------
-;; (use-package enhanced-evil-paredit
-;;   :commands enhanced-evil-paredit-mode
-;;   :hook
-;;   (paredit-mode . enhanced-evil-paredit-mode))
-
-;; Displays visible indicators for page breaks
-(use-package page-break-lines
-  :commands (page-break-lines-mode
-             global-page-break-lines-mode)
-  :hook
-  (emacs-lisp-mode . page-break-lines-mode))
 
 ;; Provides functions to find references to functions, macros, variables,
 ;; special forms, and symbols in Emacs Lisp
