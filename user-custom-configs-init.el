@@ -33,6 +33,7 @@
 
 (message "2.Loading...from ./user-custom-configs-init.el")
 
+;;; sec_settting sec_user sec_key --------------------------------------------------------------------------
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-c p") 'compile)
@@ -42,25 +43,44 @@
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (global-set-key (kbd "C-q") 'set-mark-command)
-(global-set-key (kbd "C-x g") 'magit-status)
 
+(setq dired-movement-style 'bounded-files)
 
 (set-face-attribute 'mode-line nil
                     :height 200)
-(electric-pair-mode)
+
+;; if the selection is active.
+(delete-selection-mode 1)
+;; Display the current line and column numbers in the mode line
+(setq line-number-mode t)
+(setq column-number-mode t)
+(setq mode-line-position-column-line-format '("%l:%C"))
+
 (setq tab-width 4)
 (setq select-enable-clipboard t)
 (setq select-enable-primary t)
 (windmove-default-keybindings)
 (global-display-line-numbers-mode)
 
-
+(use-package elec-pair  ;;  pair () {} "" etc..  fk kf oof
+  :ensure nil
+  :commands (electric-pair-mode
+             electric-pair-local-mode
+             electric-pair-delete-pair)
+  :hook (after-init . electric-pair-mode))
 
 ;; (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (setq backup-directory-alist
       `(("." . ,(expand-file-name "backups" user-emacs-directory))))
 (setq custom-file (locate-user-emacs-file "custom.el"))
-(load custom-file 'noerror)
+
+(load custom-file 'noerror 'no-message)
+
+
+(use-package magit
+  :ensure t
+  :bind (("C-x g" . magit-status)
+         ("C-x M-g" . magit-dispatch)))
 
 ;; Auto-revert in Emacs is a feature that automatically updates the
 ;; contents of a buffer to reflect changes made to the underlying file
@@ -76,6 +96,51 @@
   (setq auto-revert-remote-files nil)
   (setq auto-revert-use-notify t)
   (setq auto-revert-avoid-polling nil))
+
+;; Hide files from dired
+(setq dired-omit-files (concat "\\`[.]\\'"
+                               "\\|\\(?:\\.js\\)?\\.meta\\'"
+                               "\\|\\.\\(?:elc|a\\|o\\|pyc\\|pyo\\|swp\\|class\\)\\'"
+                               "\\|^\\.DS_Store\\'"
+                               "\\|^\\.\\(?:svn\\|git\\)\\'"
+                               "\\|^\\.ccls-cache\\'"
+                               "\\|^__pycache__\\'"
+                               "\\|^\\.project\\(?:ile\\)?\\'"
+                               "\\|^flycheck_.*"
+                               "\\|^flymake_.*"))
+(add-hook 'dired-mode-hook #'dired-omit-mode)
+
+
+(use-package nerd-icons-dired
+
+
+  :hook
+  (dired-mode . nerd-icons-dired-mode)
+
+  )
+
+;; dired: Group directories first
+(with-eval-after-load 'dired
+  (let ((args "--group-directories-first -ahlv"))
+    (when (or (eq system-type 'darwin) (eq system-type 'berkeley-unix))
+      (if-let* ((gls (executable-find "gls")))
+          (setq insert-directory-program gls)
+        (setq args nil)))
+    (when args
+      (setq dired-listing-switches args))))
+
+;; Enables visual indication of minibuffer recursion depth after initialization.
+(add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
+
+;; Configure Emacs to ask for confirmation before exiting
+(setq confirm-kill-emacs 'y-or-n-p)
+
+;; Enabled backups save your changes to a file intermittently
+(setq make-backup-files t)
+(setq vc-make-backup-files t)
+(setq kept-old-versions 10)
+(setq kept-new-versions 10)
+
 
 
 ;; The markdown-mode package provides a major mode for Emacs for syntax
@@ -170,6 +235,8 @@
   :config
   (load-theme 'doom-tokyo-night t))
 
+
+;; sec_corfu--------------------------------------------------------------
 ;; Corfu enhances in-buffer completion by displaying a compact popup with
 ;; current candidates, positioned either below or above the point. Candidates
 ;; can be selected by navigating up or down.
@@ -281,6 +348,8 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+
+;; sec_embark--------------------------------------------------------------
 ;; Consult offers a suite of commands for efficient searching, previewing, and
 ;; interacting with buffers, file contents, and more, improving various tasks.
 (use-package consult
@@ -404,7 +473,7 @@
   (global-set-key (kbd "C-<up>") #'move-text-up)
   (global-set-key (kbd "C-<down>") #'move-text-down))
 
-
+;; sec_clipboard--------------------------------------------------------------
 (defun custom/wl-copy ()
   "Copy region to Wayland clipboard using wl-copy."
   (interactive)
@@ -420,7 +489,7 @@
 (global-set-key (kbd "C-c c") #'custom/wl-copy)
 
 
-
+;; sec_session--------------------------------------------------------------
 ;; The easysession Emacs package is a session manager for Emacs that can persist
 ;; and restore file editing buffers, indirect buffers/clones, Dired buffers,
 ;; windows/splits, the built-in tab-bar (including tabs, their buffers, and
@@ -522,6 +591,8 @@
 ;; (add-hook 'elixir-ts-mode-hook #'treesit-fold-mode)
 ;; (add-hook 'zig-ts-mode-hook #'treesit-fold-mode)
 
+
+;; sec_apheleia--------------------------------------------------------------
 ;; Apheleia is an Emacs package designed to run code formatters (e.g., Shfmt,
 ;; Black and Prettier) asynchronously without disrupting the cursor position.
 (use-package apheleia
@@ -558,7 +629,7 @@
     (setq dumb-jump-force-searcher 'rg)
     (setq dumb-jump-prefer-searcher 'rg)))
 
-
+;; sec_yas--------------------------------------------------------------
 ;; The official collection of snippets for yasnippet.
 (use-package yasnippet-snippets
   :after yasnippet)
@@ -636,36 +707,6 @@
 (use-package org-appear
   :commands org-appear-mode
   :hook (org-mode . org-appear-mode))
-
-;; Set up the Language Server Protocol (LSP) servers using Eglot.
-(use-package eglot
-  :ensure nil
-  :commands (eglot-ensure
-             eglot-rename
-             eglot-format-buffer))
-
-
-;; Configure Eglot to enable or disable certain options for the pylsp server
-;; in Python development. (Note that a third-party tool,
-;; https://github.com/python-lsp/python-lsp-server, must be installed),
-(add-hook 'python-mode-hook #'eglot-ensure)
-(add-hook 'python-ts-mode-hook #'eglot-ensure)
-(setq-default eglot-workspace-configuration
-              `(:pylsp (:plugins
-                        (;; Fix imports and syntax using `eglot-format-buffer`
-                         :isort (:enabled t)
-                         :autopep8 (:enabled t)
-
-                         ;; Syntax checkers (works with Flymake)
-                         :pylint (:enabled t)
-                         :pycodestyle (:enabled t)
-                         :flake8 (:enabled t)
-                         :pyflakes (:enabled t)
-                         :pydocstyle (:enabled t)
-                         :mccabe (:enabled t)
-
-                         :yapf (:enabled :json-false)
-                         :rope_autoimport (:enabled :json-false)))))
 
 
 
@@ -817,13 +858,15 @@
 
 
 
-;; Prevent parenthesis imbalance
-(use-package paredit
-  :commands paredit-mode
-  :hook
-  (emacs-lisp-mode . paredit-mode)
-  :config
-  (define-key paredit-mode-map (kbd "RET") nil))
+;; ;; Prevent parenthesis imbalance
+;; (use-package paredit
+;;   :commands paredit-mode
+;;   :hook
+;;   (emacs-lisp-mode . paredit-mode)
+;;   :config
+;;
+;;
+;;   (define-key paredit-mode-map (kbd "RET") nil))
 
 ;; For paredit+Evil mode users: enhances paredit with Evil mode compatibility
 ;; --------------------------------------------------------------------------
@@ -895,3 +938,233 @@
   (setq vterm-timer-delay 0.01)  ; Faster vterm
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-max-scrollback 5000))
+
+
+
+(use-package which-key
+  :ensure nil ; builtin
+  :commands which-key-mode
+  :hook (after-init . which-key-mode)
+  :custom
+  (which-key-idle-delay 1.5)
+  (which-key-idle-secondary-delay 0.25)
+  (which-key-add-column-padding 1)
+  (which-key-max-description-length 40))
+
+;; Track changes in the window configuration, allowing undoing actions such as
+;; closing windows.
+(setq winner-boring-buffers '("*Completions*"
+                              "*Minibuf-0*"
+                              "*Minibuf-1*"
+                              "*Minibuf-2*"
+                              "*Minibuf-3*"
+                              "*Minibuf-4*"
+                              "*Compile-Log*"
+                              "*inferior-lisp*"
+                              "*Fuzzy Completions*"
+                              "*Apropos*"
+                              "*Help*"
+                              "*cvs*"
+                              "*Buffer List*"
+                              "*Ibuffer*"
+                              "*esh command on file*"))
+(add-hook 'after-init-hook #'winner-mode)
+
+;; Support for Git files (.gitconfig, .gitignore, .gitattributes...)
+(use-package git-modes
+  :commands (gitattributes-mode
+             gitconfig-mode
+             gitignore-mode)
+  :mode (("/\\.gitignore\\'" . gitignore-mode)
+         ("/info/exclude\\'" . gitignore-mode)
+         ("/git/ignore\\'" . gitignore-mode)
+         ("/.gitignore_global\\'" . gitignore-mode)  ; jc-dotfiles
+
+         ("/\\.gitconfig\\'" . gitconfig-mode)
+         ("/\\.git/config\\'" . gitconfig-mode)
+         ("/modules/.*/config\\'" . gitconfig-mode)
+         ("/git/config\\'" . gitconfig-mode)
+         ("/\\.gitmodules\\'" . gitconfig-mode)
+         ("/etc/gitconfig\\'" . gitconfig-mode)
+
+         ("/\\.gitattributes\\'" . gitattributes-mode)
+         ("/info/attributes\\'" . gitattributes-mode)
+         ("/git/attributes\\'" . gitattributes-mode)))
+
+;; Configure built-in sgml-mode to automatically enable
+;; `sgml-electric-tag-pair-mode' in `html-mode' and `mhtml-mode', providing
+;; automatic insertion of matching closing tags.
+(use-package sgml-mode
+  :ensure nil
+  :commands (sgml-mode sgml-electric-tag-pair-mode)
+  :hook ((html-mode mhtml-mode) . sgml-electric-tag-pair-mode))
+
+;; Support for YAML files.
+;;
+;; NOTE: Prefer the tree-sitter-based yaml-ts-mode over yaml-mode when
+;; available, as it provides more accurate syntax parsing and enhanced editing
+;; features.
+(use-package yaml-mode
+  :commands yaml-mode
+  :mode (("\\.yaml\\'" . yaml-mode)
+         ("\\.yml\\'" . yaml-mode)))
+
+;; Support for Dockerfile files.
+;;
+;; NOTE: Prefer the tree-sitter-based dockerfile-ts-mode over dockerfile-mode
+;; when available, as it provides more accurate syntax parsing and enhanced
+;; editing features.
+(use-package dockerfile-mode
+  :commands dockerfile-mode
+  :mode ("Dockerfile\\'" . dockerfile-mode))
+
+;; Support for Gnuplot files
+(use-package gnuplot
+  :commands gnuplot-mode
+  :mode ("\\.gp\\'" . gnuplot-mode))
+
+;; Support for *.lua files.
+;;
+;; Prefer the tree-sitter-based lua-ts-mode over lua-mode when available, as it
+;; provides more accurate syntax parsing and enhanced editing features.
+(use-package lua-mode
+  :commands lua-mode
+  :mode ("\\.lua\\'" . lua-mode))
+
+;; Jinja2 template support for files commonly used in configuration management
+;; systems and web frameworks. This mode enables syntax highlighting and basic
+;; editing facilities for templates written using the Jinja2 templating
+;; language.
+(use-package jinja2-mode
+  :commands jinja2-mode
+  :mode ("\\.j2\\'" . jinja2-mode))
+
+;; CSV file support with automatic column alignment. This configuration enables
+;; csv-align-mode whenever a CSV file is opened, improving readability by
+;; keeping columns visually aligned according to a configurable maximum width
+;; and a set of recognized field separators.
+(use-package csv-mode
+  :commands (csv-mode
+             csv-align-mode
+             csv-guess-set-separator)
+  :mode ("\\.csv\\'" . csv-mode)
+  :hook ((csv-mode . csv-align-mode)
+         (csv-mode . csv-guess-set-separator))
+  :custom
+  (csv-align-max-width 100)
+  (csv-separators '("," ";" " " "|" "\t")))
+
+;; Support for Go
+;;
+;; NOTE: Prefer the tree-sitter-based go-ts-mode over go-mode
+;; when available, as it provides more accurate syntax parsing and enhanced
+;; editing features.
+(use-package go-mode
+  :commands go-mode
+  :mode ("\\.go\\'" . go-mode))
+
+;; Support for Rust
+(use-package rust-mode
+  :commands rust-mode
+  :mode ("\\.rs\\'" . rust-mode)
+  :custom
+  (rust-indent-offset 2))
+
+;; Major mode for editing crontab files
+(use-package crontab-mode
+  :commands crontab-mode
+  :mode ("/crontab\\(\\.X*[[:alnum:]]+\\)?\\'"  . crontab-mode))
+
+;; Major mode for editing Nginx configuration files
+(use-package nginx-mode
+  :commands nginx-mode
+  :mode (("nginx\\.conf\\'" . nginx-mode)
+         ("/nginx/.+\\.conf\\'" . nginx-mode)))
+
+;; Major mode for HashiCorp Configuration Language (HCL) files
+(use-package hcl-mode
+  :commands hcl-mode
+  :mode ("\\.hcl\\'" . hcl-mode))
+
+;; Major mode for Nix expression language files
+(use-package nix-mode
+  :commands nix-mode
+  :mode ("\\.nix\\'" . nix-mode))
+
+;; Major mode for editing Fish shell scripts
+(use-package fish-mode
+  :commands fish-mode
+  :mode ("\\.fish\\'" . fish-mode))
+
+;; Vim configuration file support. This mode provides syntax highlighting and
+;; editing support for various Vim configuration files, including vimrc, gvimrc,
+;; local overrides, and project-specific configuration files.
+(use-package vimrc-mode
+  :commands vimrc-mode
+  :mode ("\\.vim\\(rc\\)?\\'" . vimrc-mode))
+
+;; Support for Jenkinsfile files
+(use-package jenkinsfile-mode
+  :commands jenkinsfile-mode
+  :mode ("Jenkinsfile\\'" . jenkinsfile-mode))
+
+;; Support for Haskell
+;; (use-package haskell-mode
+;;   :commands haskell-mode
+;;   :mode ("\\.hs\\'" . haskell-mode))
+
+
+(use-package buffer-guardian
+  :custom
+  ;; When non-nil, include remote files in the auto-save process
+  (buffer-guardian-inhibit-saving-remote-files t)
+
+  ;; When non-nil, buffers visiting nonexistent files are not saved
+  (buffer-guardian-inhibit-saving-nonexistent-files nil)
+
+  ;; Save the buffer even if the window change results in the same buffer
+  (buffer-guardian-save-on-same-buffer-window-change t)
+
+  ;; Non-nil to enable verbose mode to log when a buffer is automatically saved
+  (buffer-guardian-verbose nil)
+
+  ;; Save all buffers after N seconds of user idle time. (Disabled by default)
+  ;; (buffer-guardian-save-all-buffers-idle 30)
+
+  ;; Save all buffers every N seconds. (Disabled by default)
+  ;; (setq buffer-guardian-save-all-buffers-interval (* 60 30))
+
+  :hook
+  (after-init . buffer-guardian-mode))
+
+
+;;; sec_lsp--------------------------------------------------------------------------
+;; Set up the Language Server Protocol (LSP) servers using Eglot.
+(use-package eglot
+  :ensure nil
+  :commands (eglot-ensure
+             eglot-rename
+             eglot-format-buffer))
+
+
+;; Configure Eglot to enable or disable certain options for the pylsp server
+;; in Python development. (Note that a third-party tool,
+;; https://github.com/python-lsp/python-lsp-server, must be installed),
+(add-hook 'python-mode-hook #'eglot-ensure)
+(add-hook 'python-ts-mode-hook #'eglot-ensure)
+(setq-default eglot-workspace-configuration
+              `(:pylsp (:plugins
+                        (;; Fix imports and syntax using `eglot-format-buffer`
+                         :isort (:enabled t)
+                         :autopep8 (:enabled t)
+
+                         ;; Syntax checkers (works with Flymake)
+                         :pylint (:enabled t)
+                         :pycodestyle (:enabled t)
+                         :flake8 (:enabled t)
+                         :pyflakes (:enabled t)
+                         :pydocstyle (:enabled t)
+                         :mccabe (:enabled t)
+
+                         :yapf (:enabled :json-false)
+                         :rope_autoimport (:enabled :json-false)))))
