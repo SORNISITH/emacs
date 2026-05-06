@@ -6,3 +6,7 @@ recentf
 history
 .cache
 .cache/*
+backup
+backup/*
+cus.el
+*.elc

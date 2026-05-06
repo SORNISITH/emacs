@@ -2,7 +2,6 @@
 ;; native machine code, resulting in faster execution and improved
 ;; Ensure adding the following compile-angel code at the very beginning
 ;; of your `~/.emacs.d/post-init.el` file, before all other packages.
-;; (require 'use-package)
 (use-package compile-angel
   :demand t
   :config
@@ -32,11 +31,7 @@
   ;; the mode `compile-angel-on-load-mode' was activated.
   (compile-angel-on-load-mode 1))
 
-
-
-
-
-
+(message "2.Loading...from ./user-custom-configs-init.el")
 
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
@@ -50,10 +45,18 @@
 (global-set-key (kbd "C-x g") 'magit-status)
 
 
+(set-face-attribute 'mode-line nil
+                    :height 200)
+(electric-pair-mode)
+(setq tab-width 4)
+(setq select-enable-clipboard t)
+(setq select-enable-primary t)
+(windmove-default-keybindings)
+(global-display-line-numbers-mode)
 
 
-(message "2.Loading...from ./user-custom-configs-init.el")
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+
+;; (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (setq backup-directory-alist
       `(("." . ,(expand-file-name "backups" user-emacs-directory))))
 (setq custom-file (locate-user-emacs-file "custom.el"))
@@ -73,6 +76,44 @@
   (setq auto-revert-remote-files nil)
   (setq auto-revert-use-notify t)
   (setq auto-revert-avoid-polling nil))
+
+
+;; The markdown-mode package provides a major mode for Emacs for syntax
+;; highlighting, editing commands, and preview support for Markdown documents.
+;; It supports core Markdown syntax as well as extensions like GitHub Flavored
+;; Markdown (GFM).
+(use-package markdown-mode
+  :commands (gfm-mode
+             gfm-view-mode
+             markdown-mode
+             markdown-view-mode)
+  :mode (("\\.markdown\\'" . markdown-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("README\\.md\\'" . gfm-mode)
+         )
+  :bind
+  (:map markdown-mode-map
+        ("C-c d" . markdown-do)))
+
+;; Automatically generate a table of contents when editing Markdown files
+(use-package markdown-toc
+  :commands (markdown-toc-generate-toc
+             markdown-toc-generate-or-refresh-toc
+             markdown-toc-delete-toc
+             markdown-toc--toc-already-present-p)
+  :custom
+  (markdown-toc-header-toc-title "**Table of Contents**"))
+
+
+;; Intelligent code folding by using the structural understanding of the
+;; built-in tree-sitter parser. Unlike traditional folding methods that rely on
+;; regular expressions or indentation, treesit-fold uses the actual syntax tree
+;; of the code to accurately identify foldable regions such as functions,
+;; classes, comments, and documentation strings. This allows for faster and more
+;; precise folding behavior that respects the grammar of the programming
+;; language, ensuring that fold boundaries are always syntactically correct even
+;; in complex or nested code structures.
+
 
 ;; Recentf is an Emacs package that maintains a list of recently
 ;; accessed files, making it easier to reopen files you have worked on
@@ -137,6 +178,7 @@
   :init
   (global-corfu-mode)
   :custom
+
   (corfu-auto 1)
   (tab-always-indent 'complete)
   :config
@@ -177,9 +219,9 @@
   :custom
   (vertico-count 14)  ;; limit to a fixed size
   :bind (:map vertico-map
-	      ;; Use page-up/down to scroll vertico buffer, like ivy does by default.
-	      ("<prior>" . 'vertico-scroll-down)
-	      ("<next>"  . 'vertico-scroll-up))
+	          ;; Use page-up/down to scroll vertico buffer, like ivy does by default.
+	          ("<prior>" . 'vertico-scroll-down)
+	          ("<next>"  . 'vertico-scroll-up))
   :init
   ;; Activate vertico
   (vertico-mode))
@@ -189,7 +231,7 @@
   :after vertico
   :ensure nil  ;; no need to install, it comes with vertico
   :bind (:map vertico-map
-	      ("DEL" . vertico-directory-delete-char)))
+	          ("DEL" . vertico-directory-delete-char)))
 ;; Vertico leverages Orderless' flexible matching capabilities, allowing users
 ;; to input multiple patterns separated by spaces, which Orderless then
 ;; matches in any order against the candidates.
@@ -372,21 +414,484 @@
           (insert text)
           (call-process-region (point-min) (point-max) "wl-copy" nil nil nil "-n"))
         (deactivate-mark)
-        (message "Copied ()"))
+        (message "Copied (selected)"))
     (message "No region selected")))
 
 (global-set-key (kbd "C-c c") #'custom/wl-copy)
 
-;;(require 'init-local nil t)
-;;(require 'init-corfu)
-;;(require 'init-clipboard)
-;;(require 'init-orgmode-modern)
-;;(require 'init-webmode)
-;; (require 'init-lsp)
-;; (require 'init-eglot)
-;;; init.el ends here
+
+
+;; The easysession Emacs package is a session manager for Emacs that can persist
+;; and restore file editing buffers, indirect buffers/clones, Dired buffers,
+;; windows/splits, the built-in tab-bar (including tabs, their buffers, and
+;; windows), and Emacs frames. It offers a convenient and effortless way to
+;; manage Emacs editing sessions and utilizes built-in Emacs functions to
+;; persist and restore frames.
+(use-package easysession
+  :commands (easysession-switch-to
+             easysession-save-as
+             easysession-save-mode
+             easysession-load-including-geometry)
+
+  :custom
+  (easysession-mode-line-misc-info t)  ; Display the session in the modeline
+  (easysession-save-interval (* 10 60))  ; Save every 10 minutes
+
+  :init
+  ;; Key mappings
+  (global-set-key (kbd "C-c ss") #'easysession-save)
+  (global-set-key (kbd "C-c sl") #'easysession-switch-to)
+  (global-set-key (kbd "C-c sL") #'easysession-switch-to-and-restore-geometry)
+  (global-set-key (kbd "C-c sr") #'easysession-rename)
+  (global-set-key (kbd "C-c sR") #'easysession-reset)
+  (global-set-key (kbd "C-c sd") #'easysession-delete)
+
+  (if (fboundp 'easysession-setup)
+      ;; The `easysession-setup' function adds hooks:
+      ;; - To enable automatic session loading during `emacs-startup-hook', or
+      ;;   `server-after-make-frame-hook' when running in daemon mode.
+      ;; - To automatically save the session at regular intervals, and when
+      ;;   Emacs exits.
+      (easysession-setup)
+    ;; Legacy
+    ;; The depth 102 and 103 have been added to to `add-hook' to ensure that the
+    ;; session is loaded after all other packages. (Using 103/102 is
+    ;; particularly useful for those using minimal-emacs.d, where some
+    ;; optimizations restore `file-name-handler-alist` at depth 101 during
+    ;; `emacs-startup-hook`.)
+    (add-hook 'emacs-startup-hook #'easysession-load-including-geometry 102)
+    (add-hook 'emacs-startup-hook #'easysession-save-mode 103)))
+
+
+;; Intelligent code folding by using the structural understanding of the
+;; built-in tree-sitter parser. Unlike traditional folding methods that rely on
+;; regular expressions or indentation, treesit-fold uses the actual syntax tree
+;; of the code to accurately identify foldable regions such as functions,
+;; classes, comments, and documentation strings. This allows for faster and more
+;; precise folding behavior that respects the grammar of the programming
+;; language, ensuring that fold boundaries are always syntactically correct even
+;; in complex or nested code structures.
+(use-package treesit-fold
+  :commands (treesit-fold-close
+             treesit-fold-close-all
+             treesit-fold-open
+             treesit-fold-toggle
+             treesit-fold-open-all
+             treesit-fold-mode
+             global-treesit-fold-mode
+             treesit-fold-open-recursively
+             treesit-fold-line-comment-mode)
+
+  :custom
+  (treesit-fold-line-count-show t)
+  (treesit-fold-line-count-format " ▼")
+
+  :config
+  (set-face-attribute 'treesit-fold-replacement-face nil
+                      :foreground "#808080"
+                      :box nil
+                      :weight 'bold))
+
+;; Systems and General Purpose
+(add-hook 'c-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'c++-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'java-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'rust-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'go-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'ruby-ts-mode-hook #'treesit-fold-mode)
+
+;; Web and Frontend
+(add-hook 'js-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'typescript-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'tsx-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'css-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'html-ts-mode-hook #'treesit-fold-mode)
+
+;; Scripting and Infrastructure
+(add-hook 'bash-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'cmake-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'dockerfile-ts-mode-hook #'treesit-fold-mode)
+
+;; Data and Configuration
+(add-hook 'json-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'toml-ts-mode-hook #'treesit-fold-mode)
+
+;; Third-party
+;; (add-hook 'kotlin-ts-mode-hook #'treesit-fold-mode)
+;; (add-hook 'swift-ts-mode-hook #'treesit-fold-mode)
+;; (add-hook 'elixir-ts-mode-hook #'treesit-fold-mode)
+;; (add-hook 'zig-ts-mode-hook #'treesit-fold-mode)
+
+;; Apheleia is an Emacs package designed to run code formatters (e.g., Shfmt,
+;; Black and Prettier) asynchronously without disrupting the cursor position.
+(use-package apheleia
+  :commands (apheleia-mode
+             apheleia-global-mode)
+  :hook ((prog-mode . apheleia-mode)))
+
+
+(use-package dumb-jump
+  :commands dumb-jump-xref-activate
+  :init
+  ;; Register `dumb-jump' as an xref backend so it integrates with
+  ;; `xref-find-definitions'. A priority of 90 ensures it is used only when no
+  ;; more specific backend is available.
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate 90)
+
+  (setq dumb-jump-aggressive nil)
+  ;; (setq dumb-jump-quiet t)
+
+  ;; Number of seconds a rg/grep/find command can take before being warned to
+  ;; use ag and config.
+  (setq dumb-jump-max-find-time 3)
+
+  ;; Use `completing-read' so that selection of jump targets integrates with the
+  ;; active completion framework (e.g., Vertico, Ivy, Helm, Icomplete),
+  ;; providing a consistent minibuffer-based interface whenever multiple
+  ;; definitions are found.
+  (setq dumb-jump-selector 'completing-read)
+
+  ;; If ripgrep is available, force `dumb-jump' to use it because it is
+  ;; significantly faster and more accurate than the default searchers (grep,
+  ;; ag, etc.).
+  (when (executable-find "rg")
+    (setq dumb-jump-force-searcher 'rg)
+    (setq dumb-jump-prefer-searcher 'rg)))
+
+
+;; The official collection of snippets for yasnippet.
+(use-package yasnippet-snippets
+  :after yasnippet)
+
+;; YASnippet is a template system designed that enhances text editing by
+;; enabling users to define and use snippets. When a user types a short
+;; abbreviation, YASnippet automatically expands it into a full template, which
+;; can include placeholders, fields, and dynamic content.
+(use-package yasnippet
+  :commands (yas-minor-mode
+             yas-global-mode)
+
+  :hook
+  (after-init . yas-global-mode)
+
+  :custom
+  (yas-also-auto-indent-first-line t)  ; Indent first line of snippet
+  (yas-also-indent-empty-lines t)
+  (yas-snippet-revival nil)  ; Setting this to t causes issues with undo
+  (yas-wrap-around-region nil) ; Do not wrap region when expanding snippets
+  ;; (yas-triggers-in-field nil)  ; Disable nested snippet expansion
+  ;; (yas-indent-line 'fixed) ; Do not auto-indent snippet content
+  ;; (yas-prompt-functions '(yas-no-prompt))  ; No prompt for snippet choices
+
+  :init
+  ;; Suppress verbose messages
+  (setq yas-verbosity 0))
+
+
+;; The stripspace Emacs package provides stripspace-local-mode, a minor mode
+;; that automatically removes trailing whitespace and blank lines at the end of
+;; the buffer when saving.
+(use-package stripspace
+  :commands stripspace-local-mode
+  ;; Enable for prog-mode-hook, text-mode-hook, conf-mode-hook
+  :hook ((prog-mode . stripspace-local-mode)
+         (text-mode . stripspace-local-mode)
+         (conf-mode . stripspace-local-mode))
+
+  :custom
+  ;; The `stripspace-only-if-initially-clean' option:
+  ;; - nil to always delete trailing whitespace.
+  ;; - Non-nil to only delete whitespace when the buffer is clean initially.
+  ;; (The initial cleanliness check is performed when `stripspace-local-mode'
+  ;; is enabled.)
+  (stripspace-only-if-initially-clean nil)
+
+  ;; Enabling `stripspace-restore-column' preserves the cursor's column position
+  ;; even after stripping spaces. This is useful in scenarios where you add
+  ;; extra spaces and then save the file. Although the spaces are removed in the
+  ;; saved file, the cursor remains in the same position, ensuring a consistent
+  ;; editing experience without affecting cursor placement.
+  (stripspace-restore-column t))
+
+;; Org mode is a major mode designed for organizing notes, planning, task
+;; management, and authoring documents using plain text with a simple and
+;; expressive markup syntax. It supports hierarchical outlines, TODO lists,
+;; scheduling, deadlines, time tracking, and exporting to multiple formats
+;; including HTML, LaTeX, PDF, and Markdown.
+(use-package org
+  :commands (org-mode org-version)
+  :mode
+  ("\\.org\\'" . org-mode)
+  :custom
+  (org-hide-leading-stars t)
+  (org-startup-indented t)
+  (org-adapt-indentation nil)
+  (org-edit-src-content-indentation 0)
+  ;; (org-fontify-done-headline t)
+  ;; (org-fontify-todo-headline t)
+  ;; (org-fontify-whole-heading-line t)
+  ;; (org-fontify-quote-and-verse-blocks t)
+  (org-startup-truncated t))
+
+(use-package org-appear
+  :commands org-appear-mode
+  :hook (org-mode . org-appear-mode))
+
+;; Set up the Language Server Protocol (LSP) servers using Eglot.
+(use-package eglot
+  :ensure nil
+  :commands (eglot-ensure
+             eglot-rename
+             eglot-format-buffer))
+
+
+;; Configure Eglot to enable or disable certain options for the pylsp server
+;; in Python development. (Note that a third-party tool,
+;; https://github.com/python-lsp/python-lsp-server, must be installed),
+(add-hook 'python-mode-hook #'eglot-ensure)
+(add-hook 'python-ts-mode-hook #'eglot-ensure)
+(setq-default eglot-workspace-configuration
+              `(:pylsp (:plugins
+                        (;; Fix imports and syntax using `eglot-format-buffer`
+                         :isort (:enabled t)
+                         :autopep8 (:enabled t)
+
+                         ;; Syntax checkers (works with Flymake)
+                         :pylint (:enabled t)
+                         :pycodestyle (:enabled t)
+                         :flake8 (:enabled t)
+                         :pyflakes (:enabled t)
+                         :pydocstyle (:enabled t)
+                         :mccabe (:enabled t)
+
+                         :yapf (:enabled :json-false)
+                         :rope_autoimport (:enabled :json-false)))))
+
+
+
+(use-package buffer-terminator
+  :custom
+  ;; Enable/Disable verbose mode to log buffer cleanup events
+  (buffer-terminator-verbose nil)
+
+  ;; Set the inactivity timeout (in seconds) after which buffers are considered
+  ;; inactive (default is 30 minutes):
+  (buffer-terminator-inactivity-timeout (* 30 60)) ; 30 minutes
+
+  ;; Define how frequently the cleanup process should run (default is every 10
+  ;; minutes):
+  (buffer-terminator-interval (* 10 60)) ; 10 minutes
+
+  :config
+  (buffer-terminator-mode 1))
 
 
 
 
 
+
+;; A file and project explorer for Emacs that displays a structured tree
+;; layout, similar to file browsers in modern IDEs. It functions as a sidebar
+;; in the left window, providing a persistent view of files, projects, and
+;; other elements.
+(use-package treemacs
+  :commands (treemacs
+             treemacs-select-window
+             treemacs-delete-other-windows
+             treemacs-select-directory
+             treemacs-bookmark
+             treemacs-find-file
+             treemacs-find-tag)
+
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t d"   . treemacs-select-directory)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag))
+
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+
+  :config
+  (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
+        treemacs-deferred-git-apply-delay        0.5
+        treemacs-directory-name-transformer      #'identity
+        treemacs-display-in-side-window          t
+        treemacs-eldoc-display                   'simple
+        treemacs-file-event-delay                2000
+        treemacs-file-extension-regex            treemacs-last-period-regex-value
+        treemacs-file-follow-delay               0.2
+        treemacs-file-name-transformer           #'identity
+        treemacs-follow-after-init               t
+        treemacs-expand-after-init               t
+        treemacs-find-workspace-method           'find-for-file-or-pick-first
+        treemacs-git-command-pipe                ""
+        treemacs-goto-tag-strategy               'refetch-index
+        treemacs-header-scroll-indicators        '(nil . "^^^^^^")
+        treemacs-hide-dot-git-directory          t
+        treemacs-indentation                     2
+        treemacs-indentation-string              " "
+        treemacs-is-never-other-window           nil
+        treemacs-max-git-entries                 5000
+        treemacs-missing-project-action          'ask
+        treemacs-move-files-by-mouse-dragging    t
+        treemacs-move-forward-on-expand          nil
+        treemacs-no-png-images                   nil
+        treemacs-no-delete-other-windows         t
+        treemacs-project-follow-cleanup          nil
+        treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+        treemacs-position                        'left
+        treemacs-read-string-input               'from-child-frame
+        treemacs-recenter-distance               0.1
+        treemacs-recenter-after-file-follow      nil
+        treemacs-recenter-after-tag-follow       nil
+        treemacs-recenter-after-project-jump     'always
+        treemacs-recenter-after-project-expand   'on-distance
+        treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
+        treemacs-project-follow-into-home        nil
+        treemacs-show-cursor                     nil
+        treemacs-show-hidden-files               t
+        treemacs-silent-filewatch                nil
+        treemacs-silent-refresh                  nil
+        treemacs-sorting                         'alphabetic-asc
+        treemacs-select-when-already-in-treemacs 'move-back
+        treemacs-space-between-root-nodes        t
+        treemacs-tag-follow-cleanup              t
+        treemacs-tag-follow-delay                1.5
+        treemacs-text-scale                      nil
+        treemacs-user-mode-line-format           nil
+        treemacs-user-header-line-format         nil
+        treemacs-wide-toggle-width               70
+        treemacs-width                           35
+        treemacs-width-increment                 1
+        treemacs-width-is-initially-locked       t
+        treemacs-workspace-switch-cleanup        nil)
+
+  ;; The default width and height of the icons is 22 pixels. If you are
+  ;; using a Hi-DPI display, uncomment this to double the icon size.
+  ;; (treemacs-resize-icons 44)
+
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-fringe-indicator-mode 'always)
+
+  ;;(when treemacs-python-executable
+  ;;  (treemacs-git-commit-diff-mode t))
+
+  (pcase (cons (not (null (executable-find "git")))
+               (not (null treemacs-python-executable)))
+    (`(t . t)
+     (treemacs-git-mode 'deferred))
+    (`(t . _)
+     (treemacs-git-mode 'simple)))
+
+  (treemacs-hide-gitignored-files-mode nil))
+
+
+
+(use-package avy
+  :commands (avy-goto-char
+             avy-gssoto-char-2
+             avy-next)
+  :init
+  (global-set-key (kbd "M-p") 'avy-goto-char-2))
+
+
+;; Enables automatic indentation of code while typing
+(use-package aggressive-indent
+  :commands aggressive-indent-mode
+  :hook
+  (emacs-lisp-mode . aggressive-indent-mode))
+
+;; Highlights function and variable definitions in Emacs Lisp mode
+(use-package highlight-defined
+  :commands highlight-defined-mode
+  :hook
+  (emacs-lisp-mode . highlight-defined-mode))
+
+
+
+
+;; Prevent parenthesis imbalance
+(use-package paredit
+  :commands paredit-mode
+  :hook
+  (emacs-lisp-mode . paredit-mode)
+  :config
+  (define-key paredit-mode-map (kbd "RET") nil))
+
+;; For paredit+Evil mode users: enhances paredit with Evil mode compatibility
+;; --------------------------------------------------------------------------
+;; (use-package enhanced-evil-paredit
+;;   :commands enhanced-evil-paredit-mode
+;;   :hook
+;;   (paredit-mode . enhanced-evil-paredit-mode))
+
+;; Displays visible indicators for page breaks
+(use-package page-break-lines
+  :commands (page-break-lines-mode
+             global-page-break-lines-mode)
+  :hook
+  (emacs-lisp-mode . page-break-lines-mode))
+
+;; Provides functions to find references to functions, macros, variables,
+;; special forms, and symbols in Emacs Lisp
+(use-package elisp-refs
+  :commands (elisp-refs-function
+             elisp-refs-macro
+             elisp-refs-variable
+             elisp-refs-special
+             elisp-refs-symbol))
+
+(use-package persist-text-scale
+  :commands (persist-text-scale-mode
+             persist-text-scale-restore)
+
+  :hook (after-init . persist-text-scale-mode)
+
+  :custom
+  (text-scale-mode-step 1.07))
+
+
+;; `vterm' is an Emacs terminal emulator that provides a fully interactive shell
+;; experience within Emacs, supporting features such as color, cursor movement,
+;; and advanced terminal capabilities. Unlike standard Emacs terminal modes,
+;; `vterm' utilizes the libvterm C library for high-performance emulation. This
+;; ensures accurate terminal behavior when running shell programs, text-based
+;; applications, and REPLs.
+(use-package vterm
+  :if (bound-and-true-p module-file-suffix)
+  :commands (vterm
+             vterm-send-string
+             vterm-send-return
+             vterm-send-key
+             vterm-module-compile)
+
+  :preface
+  (when noninteractive
+    ;; vterm unnecessarily triggers compilation of vterm-module.so upon loading.
+    ;; This prevents that during byte-compilation (`use-package' eagerly loads
+    ;; packages when compiling).
+    (advice-add #'vterm-module-compile :override #'ignore))
+
+  (defun my-vterm--setup ()
+    ;; Hide the mode-line
+    (setq mode-line-format nil)
+
+    ;; Inhibit early horizontal scrolling
+    (setq-local hscroll-margin 0)
+
+    ;; Suppress prompts for terminating active processes when closing vterm
+    (setq-local confirm-kill-processes nil))
+
+  :init
+  (add-hook 'vterm-mode-hook #'my-vterm--setup)
+
+  (setq vterm-timer-delay 0.01)  ; Faster vterm
+  (setq vterm-kill-buffer-on-exit t)
+  (setq vterm-max-scrollback 5000))
