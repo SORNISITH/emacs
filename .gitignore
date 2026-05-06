@@ -10,3 +10,5 @@ backup
 backup/*
 cus.el
 *.elc
+lsp-bridge
+
