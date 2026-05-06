@@ -542,6 +542,7 @@
                            dired-find-alternate-file set-goal-column))
   (put cmd 'disabled nil))
 
+
 ;;; Load post init
 (when (and minimal-emacs-load-post-init
            (fboundp 'minimal-emacs-load-user-init))

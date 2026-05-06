@@ -18,6 +18,7 @@
   ;; the `use-package' macro, you'll need to explicitly add:
   ;; (eval-when-compile (require 'use-package))
   ;; at the top of your init file.
+
   (push "/init.el" compile-angel-excluded-files)
   (push "/early-init.el" compile-angel-excluded-files)
   (push "/pre-init.el" compile-angel-excluded-files)
@@ -49,13 +50,15 @@
 (set-face-attribute 'mode-line nil
                     :height 200)
 
+
+
 ;; if the selection is active.
 (delete-selection-mode 1)
 ;; Display the current line and column numbers in the mode line
 (setq line-number-mode t)
 (setq column-number-mode t)
 (setq mode-line-position-column-line-format '("%l:%C"))
-
+(setq-default mode-line-buffer-identification nil)
 (setq tab-width 4)
 (setq select-enable-clipboard t)
 (setq select-enable-primary t)
@@ -113,7 +116,7 @@
 
 (use-package nerd-icons-dired
 
-
+  :diminish
   :hook
   (dired-mode . nerd-icons-dired-mode)
 
@@ -1150,8 +1153,10 @@
 ;; Configure Eglot to enable or disable certain options for the pylsp server
 ;; in Python development. (Note that a third-party tool,
 ;; https://github.com/python-lsp/python-lsp-server, must be installed),
-(add-hook 'python-mode-hook #'eglot-ensure)
-(add-hook 'python-ts-mode-hook #'eglot-ensure)
+
+;; (add-hook 'python-mode-hook #'eglot-ensure)
+;; (add-hook 'python-ts-mode-hook #'eglot-ensure)
+
 (setq-default eglot-workspace-configuration
               `(:pylsp (:plugins
                         (;; Fix imports and syntax using `eglot-format-buffer`
