@@ -1,4 +1,4 @@
-;;; local-config.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
+
 ;; Display the current line and column numbers in the mode line
 (setq line-number-mode t)
 (setq column-number-mode t)
@@ -18,8 +18,7 @@
   (interactive)
   (find-file "~/.emacs.d/package-init.el"))
 
-(setq lsp-bridge-python-command "~/.pyenv/versions/3.13.13/bin/python3")
-
+(lsp-bridge-breadcrumb-mode)
 (tab-bar-mode 1)
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
@@ -35,9 +34,9 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (global-set-key (kbd "C-q") 'set-mark-command)
 (global-set-key (kbd "C-<return>") 'vterm)
-                                        ;(global-set-key (kbd "C-<right>") 'next-buffer)
-                                        ;(global-set-key (kbd "C-<left>") 'previous-buffer)
-(set-fringe-mode 12)
+(global-set-key (kbd "M-p") 'next-buffer)
+(global-set-key (kbd "M-n") 'previous-buffer)
+
 (custom-set-faces
  ;; Default font for all text
  '(default ((t (:family "Iosevka Nerd Font" :height 250))))
