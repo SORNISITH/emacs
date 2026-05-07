@@ -119,24 +119,30 @@
   :hook ((prog-mode . corfu-mode)
          (shell-mode . corfu-mode)
          (eshell-mode . corfu-mode))
-
   :custom
-  ;; Hide commands in M-x which do not apply to the current mode.
-  (read-extended-command-predicate #'command-completion-default-include-p)
-  ;; Disable Ispell completion function. As an alternative try `cape-dict'.
+  (read-extended-command-predicate
+   #'command-completion-default-include-p)
   (text-mode-ispell-word-completion nil)
+  ;; TAB triggers completion
   (tab-always-indent 'complete)
+  ;; Optional
+  ;; (corfu-cycle t) ; allow cycling
+  ;; :bind
+  ;; (:map corfu-map
+  ;;       ("TAB" . corfu-next)
+  ;;       ([tab] . corfu-next)
+  ;;       ("S-TAB" . corfu-previous)
+  ;;       ([backtab] . corfu-previous)
+  ;;       ("RET" . corfu-insert))
 
-  ;; Enable Corfu
   :config
   (global-corfu-mode))
-
 ;; Cape, or Completion At Point Extensions, extends the capabilities of
 ;; in-buffer completion. It integrates with Corfu or the default completion UI,
 ;; by providing additional backends through completion-at-point-functions.
 (use-package cape
   :commands (cape-dabbrev cape-file cape-elisp-block)
-  :bind ("C-c p" . cape-prefix-map)
+  :bind ("C-c l" . cape-prefix-map)
   :init
   ;; Add to the global default value of `completion-at-point-functions' which is
   ;; used by `completion-at-point'.
@@ -149,7 +155,7 @@
 ;; navigate and select from completion candidates (e.g., when `M-x` is pressed).
 (use-package vertico
   :custom
-  (vertico-count 17)  ;; limit to a fixed size
+  (vertico-count 15)  ;; limit to a fixed size
   :bind (:map vertico-map
               ;; Use page-up/down to scroll vertico buffer, like ivy does by default.
               ("<prior>" . 'vertico-scroll-down)
@@ -207,7 +213,7 @@
              embark-prefix-help-command)
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("M-RET" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
 
   :init
@@ -521,7 +527,6 @@
 (use-package yasnippet
   :commands (yas-minor-mode
              yas-global-mode)
-
   :hook
   (after-init . yas-global-mode)
 
@@ -538,15 +543,15 @@
   ;; Suppress verbose messages
   (setq yas-verbosity 0))
 
-(use-package diff-hl
-  :commands (diff-hl-mode
-             global-diff-hl-mode)
-  :hook (prog-mode . diff-hl-mode)
-  :init
-  (setq diff-hl-flydiff-delay 0.4)  ; Faster
-  (setq diff-hl-show-staged-changes nil)  ; Realtime feedback
-  (setq diff-hl-update-async t)  ; Do not block Emacs
-  (setq diff-hl-global-modes '(not pdf-view-mode image-mode)))
+;; (use-package diff-hl
+;;   :commands (diff-hl-mode
+;;              global-diff-hl-mode)
+;;   :hook (prog-mode . diff-hl-mode)
+;;   :init
+;;   (setq diff-hl-flydiff-delay 0.4)  ; Faster
+;;   (setq diff-hl-show-staged-changes nil)  ; Realtime feedback
+;;   (setq diff-hl-update-async t)  ; Do not block Emacs
+;;   (setq diff-hl-global-modes '(not pdf-view-mode image-mode)))
 
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
@@ -573,8 +578,6 @@
   :hook (org-mode . org-appear-mode))
 
 
-
-
 (use-package buffer-terminator
   :custom
   ;; Enable/Disable verbose mode to log buffer cleanup events
@@ -590,8 +593,6 @@
 
   :config
   (buffer-terminator-mode 1))
-
-
 
 ;; Helpful is an alternative to the built-in Emacs help that provides much more
 ;; contextual information.
@@ -783,10 +784,8 @@
 
 ;; Display the time in the modeline
 (add-hook 'after-init-hook #'display-time-mode)
-
 ;; Paren match highlighting
 (add-hook 'after-init-hook #'show-paren-mode)
-
 ;; Track changes in the window configuration, allowing undoing actions such as
 ;; closing windows.
 (setq winner-boring-buffers '("*Completions*"
@@ -824,8 +823,6 @@
 
 ;; Dired buffers: Automatically hide file details (permissions, size,
 ;; modification date, etc.) and all the files in the `dired-omit-files' regular
-;; expression for a cleaner display.
-(add-hook 'dired-mode-hook #'dired-hide-details-mode)
 
 ;; Hide files from dired
 (setq dired-omit-files (concat "\\`[.]\\'"
@@ -867,7 +864,8 @@
   :ensure nil
   :commands (eglot-ensure
              eglot-rename
-             eglot-format-buffer))
+             eglot-format-buffer)
+  )
 ;; Configure Eglot to enable or disable certain options for the pylsp server
 ;; in Python development. (Note that a third-party tool,
 ;; https://github.com/python-lsp/python-lsp-server, must be installed),
@@ -885,11 +883,8 @@
                          :pyflakes (:enabled t)
                          :pydocstyle (:enabled t)
                          :mccabe (:enabled t)
-
                          :yapf (:enabled :json-false)
                          :rope_autoimport (:enabled :json-false)))))
-
-
 ;; In Emacs, customization variables modified via the UI (e.g., M-x customize)
 ;; are typically stored in a separate file, commonly named 'custom.el'. To
 ;; ensure these settings are loaded during Emacs initialization, it is necessary

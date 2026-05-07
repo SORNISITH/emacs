@@ -36,12 +36,12 @@
 
 (custom-set-faces
  ;; Default font for all text
- '(default ((t (:family "Iosevka" :height 230))))
- '(fixed-pitch ((t (:family "Iosevka" :height 170))))
+ '(default ((t (:family "Iosevka" :height 250))))
+ '(fixed-pitch ((t (:family "Iosevka" :height 220))))
  ;; Current line number
  '(line-number-current-line ((t (:foreground "yellow" :inherit line-number))))
  '(mode-line ((t (:family "Iosevka Term Slab" :height 190 ))))
  ;; Styles
- '(font-lock-function-name-face ((t (:family "Iosevka" ))))
+ '(font-lock-function-name-face ((t (:family "Iosevka"  ))))
  '(font-lock-variable-name-face ((t (:family "Iosevka" )))))
 
