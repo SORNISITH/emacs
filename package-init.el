@@ -73,46 +73,46 @@
 ;; Trigger an auto-save 30 seconds of idle time.
 (setq auto-save-timeout 30)
 
-; ;; Corfu enhances in-buffer completion by displaying a compact popup with
-; ;; current candidates, positioned either below or above the point. Candidates
-; ;; can be selected by navigating up or down.
-; (use-package corfu
-;   :commands (corfu-mode global-corfu-mode)
-;
-;   :hook ((prog-mode . corfu-mode)
-;          (shell-mode . corfu-mode)
-;          (eshell-mode . corfu-mode))
-;   :custom
-;   (read-extended-command-predicate
-;    #'command-completion-default-include-p)
-;   (text-mode-ispell-word-completion nil)
-;   ;; TAB triggers completion
-;   (tab-always-indent 'complete)
-;   ;; Optional
-;   ;; (corfu-cycle t) ; allow cycling
-;   ;; :bind
-;   ;; (:map corfu-map
-;   ;;       ("TAB" . corfu-next)
-;   ;;       ([tab] . corfu-next)
-;   ;;       ("S-TAB" . corfu-previous)
-;   ;;       ([backtab] . corfu-previous)
-;   ;;       ("RET" . corfu-insert))
-;
-;   :config
-;   (global-corfu-mode))
-; ;; Cape, or Completion At Point Extensions, extends the capabilities of
-; ;; in-buffer completion. It integrates with Corfu or the default completion UI,
-; ;; by providing additional backends through completion-at-point-functions.
-; (use-package cape
-;   :commands (cape-dabbrev cape-file cape-elisp-block)
-;   :bind ("C-c l" . cape-prefix-map)
-;   :init
-;   ;; Add to the global default value of `completion-at-point-functions' which is
-;   ;; used by `completion-at-point'.
-;   (add-hook 'completion-at-point-functions #'cape-dabbrev)
-;   (add-hook 'completion-at-point-functions #'cape-file)
-;   (add-hook 'completion-at-point-functions #'cape-elisp-block))
-;
+                                        ; ;; Corfu enhances in-buffer completion by displaying a compact popup with
+                                        ; ;; current candidates, positioned either below or above the point. Candidates
+                                        ; ;; can be selected by navigating up or down.
+                                        ; (use-package corfu
+                                        ;   :commands (corfu-mode global-corfu-mode)
+                                        ;
+                                        ;   :hook ((prog-mode . corfu-mode)
+                                        ;          (shell-mode . corfu-mode)
+                                        ;          (eshell-mode . corfu-mode))
+                                        ;   :custom
+                                        ;   (read-extended-command-predicate
+                                        ;    #'command-completion-default-include-p)
+                                        ;   (text-mode-ispell-word-completion nil)
+                                        ;   ;; TAB triggers completion
+                                        ;   (tab-always-indent 'complete)
+                                        ;   ;; Optional
+                                        ;   ;; (corfu-cycle t) ; allow cycling
+                                        ;   ;; :bind
+                                        ;   ;; (:map corfu-map
+                                        ;   ;;       ("TAB" . corfu-next)
+                                        ;   ;;       ([tab] . corfu-next)
+                                        ;   ;;       ("S-TAB" . corfu-previous)
+                                        ;   ;;       ([backtab] . corfu-previous)
+                                        ;   ;;       ("RET" . corfu-insert))
+                                        ;
+                                        ;   :config
+                                        ;   (global-corfu-mode))
+                                        ; ;; Cape, or Completion At Point Extensions, extends the capabilities of
+                                        ; ;; in-buffer completion. It integrates with Corfu or the default completion UI,
+                                        ; ;; by providing additional backends through completion-at-point-functions.
+                                        ; (use-package cape
+                                        ;   :commands (cape-dabbrev cape-file cape-elisp-block)
+                                        ;   :bind ("C-c l" . cape-prefix-map)
+                                        ;   :init
+                                        ;   ;; Add to the global default value of `completion-at-point-functions' which is
+                                        ;   ;; used by `completion-at-point'.
+                                        ;   (add-hook 'completion-at-point-functions #'cape-dabbrev)
+                                        ;   (add-hook 'completion-at-point-functions #'cape-file)
+                                        ;   (add-hook 'completion-at-point-functions #'cape-elisp-block))
+                                        ;
 
 ;; Vertico provides a vertical completion interface, making it easier to
 ;; navigate and select from completion candidates (e.g., when `M-x` is pressed).
@@ -822,36 +822,7 @@
 ;; When tooltip-mode is enabled, certain UI elements (e.g., help text,
 
 
-;; Set up the Language Server Protocol (LSP) servers using Eglot.
-(use-package eglot
-  :ensure nil
-  :commands (eglot-ensure
-             eglot-rename
-             eglot-format-buffer)
-  )
-;; Configure Eglot to enable or disable certain options for the pylsp server
-;; in Python development. (Note that a third-party tool,
-;; https://github.com/python-lsp/python-lsp-server, must be installed),
-(add-hook 'python-mode-hook #'eglot-ensure)
-(add-hook 'python-ts-mode-hook #'eglot-ensure)
-(setq-default eglot-workspace-configuration
-              `(:pylsp (:plugins
-                        (;; Fix imports and syntax using `eglot-format-buffer`
-                         :isort (:enabled t)
-                         :autopep8 (:enabled t)
-                         ;; Syntax checkers (works with Flymake)
-                         :pylint (:enabled t)
-                         :pycodestyle (:enabled t)
-                         :flake8 (:enabled t)
-                         :pyflakes (:enabled t)
-                         :pydocstyle (:enabled t)
-                         :mccabe (:enabled t)
-                         :yapf (:enabled :json-false)
-                         :rope_autoimport (:enabled :json-false)))))
-;; In Emacs, customization variables modified via the UI (e.g., M-x customize)
-;; are typically stored in a separate file, commonly named 'custom.el'. To
-;; ensure these settings are loaded during Emacs initialization, it is necessary
-;; to explicitly load this file if it exists.
+
 
 (use-package magit
   :ensure t
