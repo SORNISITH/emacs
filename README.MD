@@ -7,10 +7,12 @@
    
    - init.el             =  for configuration repo and perform internal work make sure everthing is okey!
     
-   -*NOTE -- you can safely EDIT file bellow.
+ *NOTE -- you can safely EDIT file bellow.
    
    - package-init.el     =  store all custom package files
    
    - local-config.el     =  store all user configs 
 
     
+
+

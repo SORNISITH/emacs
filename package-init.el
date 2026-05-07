@@ -29,10 +29,8 @@
   (push "/pre-early-init.el" compile-angel-excluded-files)
   (push "/post-early-init.el" compile-angel-excluded-files)
   (push "/local-config.el" compile-angel-excluded-files)
-
   ;; A local mode that compiles .el files whenever the user saves them.
   ;; (add-hook 'emacs-lisp-mode-hook #'compile-angel-on-save-local-mode)
-
   ;; A global mode that compiles .el files prior to loading them via `load' or
   ;; `require'. Additionally, it compiles all packages that were loaded before
   ;; the mode `compile-angel-on-load-mode' was activated.
@@ -150,9 +148,22 @@
 ;; Vertico provides a vertical completion interface, making it easier to
 ;; navigate and select from completion candidates (e.g., when `M-x` is pressed).
 (use-package vertico
-  ;; (Note: It is recommended to also enable the savehist package.)
-  :config
+  :custom
+  (vertico-count 17)  ;; limit to a fixed size
+  :bind (:map vertico-map
+              ;; Use page-up/down to scroll vertico buffer, like ivy does by default.
+              ("<prior>" . 'vertico-scroll-down)
+              ("<next>"  . 'vertico-scroll-up))
+  :init
+  ;; Activate vertico
   (vertico-mode))
+
+;; Convenient path selection
+(use-package vertico-directory
+  :after vertico
+  :ensure nil  ;; no need to install, it comes with vertico
+  :bind (:map vertico-map
+              ("DEL" . vertico-directory-delete-char)))
 
 ;; Vertico leverages Orderless' flexible matching capabilities, allowing users
 ;; to input multiple patterns separated by spaces, which Orderless then
@@ -166,9 +177,19 @@
 ;; Marginalia allows Embark to offer you preconfigured actions in more contexts.
 ;; In addition to that, Marginalia also enhances Vertico by adding rich
 ;; annotations to the completion candidates displayed in Vertico's interface.
+;; Enable rich annotations using the Marginalia package
 (use-package marginalia
-  :commands (marginalia-mode marginalia-cycle)
-  :hook (after-init . marginalia-mode))
+  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
+  ;; available in the *Completions* buffer, add it to the
+  ;; `completion-list-mode-map'.
+  :bind (:map minibuffer-local-map
+              ("M-A" . marginalia-cycle))
+  ;; The :init section is always executed.
+  :init
+  ;; Marginalia must be activated in the :init section of use-package such that
+  ;; the mode gets enabled right away. Note that this forces loading the
+  ;; package.
+  (marginalia-mode))
 
 ;; Embark integrates with Consult and Vertico to provide context-sensitive
 ;; actions and quick access to commands based on the current selection, further
@@ -841,9 +862,6 @@
 ;; When tooltip-mode is enabled, certain UI elements (e.g., help text,
 
 
-
-
-
 ;; Set up the Language Server Protocol (LSP) servers using Eglot.
 (use-package eglot
   :ensure nil
@@ -860,7 +878,6 @@
                         (;; Fix imports and syntax using `eglot-format-buffer`
                          :isort (:enabled t)
                          :autopep8 (:enabled t)
-
                          ;; Syntax checkers (works with Flymake)
                          :pylint (:enabled t)
                          :pycodestyle (:enabled t)
