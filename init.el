@@ -1,7 +1,6 @@
 ;;; init.el --- Init -*- lexical-binding: t; -*-
 ;; Do not modify this file; instead, modify pre-init.el or post-init.el.
 ;;; Code:
-
 (if (fboundp 'minimal-emacs-load-user-init)
     (when minimal-emacs-load-pre-init
       (minimal-emacs-load-user-init "pre-init.el"))
@@ -534,14 +533,13 @@
         ;; including versions with numeric extensions like <123>
         "\\(?:\\(?:[EG]?\\|GR\\)TAGS\\|e?tags\\|GPATH\\)\\(<[0-9]+>\\)?"))
 
-;;; Remove warnings from narrow-to-region, upcase-region...
+
 
 (dolist (cmd '(list-timers narrow-to-region narrow-to-page
                            upcase-region downcase-region
                            list-threads erase-buffer scroll-left
                            dired-find-alternate-file set-goal-column))
   (put cmd 'disabled nil))
-
 
 ;;; Load post init
 (when (and minimal-emacs-load-post-init

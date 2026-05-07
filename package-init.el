@@ -1,78 +1,4 @@
-(use-package magit
-  :ensure t
-  :bind (("C-x g" . magit-status)
-         ("C-x M-g" . magit-dispatch)))
-
-(use-package markdown-mode
-  :commands (gfm-mode
-             gfm-view-mode
-             markdown-mode
-             markdown-view-mode)
-  :mode (("\\.markdown\\'" . markdown-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("README\\.md\\'" . gfm-mode))
-  :bind
-  (:map markdown-mode-map
-        ("C-c C-e" . markdown-do)))
-
-
-;; Automatically generate a table of contents when editing Markdown files
-(use-package markdown-toc
-  :commands (markdown-toc-generate-toc
-             markdown-toc-generate-or-refresh-toc
-             markdown-toc-delete-toc
-             markdown-toc--toc-already-present-p)
-  :custom
-  (markdown-toc-header-toc-title "**Table of Contents**"))
-
-
-(use-package treesit-auto
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
-
-;; The official collection of snippets for yasnippet.
-(use-package yasnippet-snippets
-  :after yasnippet)
-
-;; YASnippet is a template system designed that enhances text editing by
-;; enabling users to define and use snippets. When a user types a short
-;; abbreviation, YASnippet automatically expands it into a full template, which
-;; can include placeholders, fields, and dynamic content.
-(use-package yasnippet
-  :commands (yas-minor-mode
-             yas-global-mode)
-
-  :hook
-  (after-init . yas-global-mode)
-
-  :custom
-  (yas-also-auto-indent-first-line t)  ; Indent first line of snippet
-  (yas-also-indent-empty-lines t)
-  (yas-snippet-revival nil)  ; Setting this to t causes issues with undo
-  (yas-wrap-around-region nil) ; Do not wrap region when expanding snippets
-  ;; (yas-triggers-in-field nil)  ; Disable nested snippet expansion
-  ;; (yas-indent-line 'fixed) ; Do not auto-indent snippet content
-  ;; (yas-prompt-functions '(yas-no-prompt))  ; No prompt for snippet choices
-
-  :init
-  ;; Suppress verbose messages
-  (setq yas-verbosity 0))
-
-(add-to-list 'load-path "~/.emacs.d/lsp-bridge/")
-(require 'lsp-bridge)
-(global-lsp-bridge-mode)
-
-
-(use-package elec-pair  ;;  pair () {} "" etc..  fk kf oof
-  :ensure nil
-  :commands (electric-pair-mode
-             electric-pair-local-mode
-             electric-pair-delete-pair)
-  :hook (after-init . electric-pair-mode))
-
+;;; package-init.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 ;; Auto-revert in Emacs is a feature that automatically updates the
 ;; contents of a buffer to reflect changes made to the underlying file
 ;; on disk.
@@ -87,54 +13,6 @@
   (setq auto-revert-remote-files nil)
   (setq auto-revert-use-notify t)
   (setq auto-revert-avoid-polling nil))
-
-;; Hide files from dired
-(setq dired-omit-files (concat "\\`[.]\\'"
-                               "\\|\\(?:\\.js\\)?\\.meta\\'"
-                               "\\|\\.\\(?:elc|a\\|o\\|pyc\\|pyo\\|swp\\|class\\)\\'"
-                               "\\|^\\.DS_Store\\'"
-                               "\\|^\\.\\(?:svn\\|git\\)\\'"
-                               "\\|^\\.ccls-cache\\'"
-                               "\\|^__pycache__\\'"
-                               "\\|^\\.project\\(?:ile\\)?\\'"
-                               "\\|^flycheck_.*"
-                               "\\|^flymake_.*"))
-(add-hook 'dired-mode-hook #'dired-omit-mode)
-
-
-(use-package nerd-icons-dired
-
-  :diminish
-  :hook
-  (dired-mode . nerd-icons-dired-mode)
-
-  )
-
-;; dired: Group directories first
-(with-eval-after-load 'dired
-  (let ((args "--group-directories-first -ahlv"))
-    (when (or (eq system-type 'darwin) (eq system-type 'berkeley-unix))
-      (if-let* ((gls (executable-find "gls")))
-          (setq insert-directory-program gls)
-        (setq args nil)))
-    (when args
-      (setq dired-listing-switches args))))
-
-;; Enables visual indication of minibuffer recursion depth after initialization.
-(add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
-
-;; Configure Emacs to ask for confirmation before exiting
-(setq confirm-kill-emacs 'y-or-n-p)
-
-;; Intelligent code folding by using the structural understanding of the
-;; built-in tree-sitter parser. Unlike traditional folding methods that rely on
-;; regular expressions or indentation, treesit-fold uses the actual syntax tree
-;; of the code to accurately identify foldable regions such as functions,
-;; classes, comments, and documentation strings. This allows for faster and more
-;; precise folding behavior that respects the grammar of the programming
-;; language, ensuring that fold boundaries are always syntactically correct even
-;; in complex or nested code structures.
-
 
 ;; Recentf is an Emacs package that maintains a list of recently
 ;; accessed files, making it easier to reopen files you have worked on
@@ -185,37 +63,77 @@
   (after-init . save-place-mode)
   :init
   (setq save-place-limit 400))
+;; Enable `auto-save-mode' to prevent data loss. Use `recover-file' or
+;; `recover-session' to restore unsaved changes.
+(setq auto-save-default t)
 
-;; install + load theme
-(use-package doom-themes
-  :config
-  (load-theme 'doom-tokyo-night t))
+;; Trigger an auto-save after 300 keystrokes
+(setq auto-save-interval 300)
 
+;; Trigger an auto-save 30 seconds of idle time.
+(setq auto-save-timeout 30)
 
-(use-package crux   ;;;  duplicate line
-  :ensure t
-  :bind (("M-i" . crux-duplicate-current-line-or-region)))
+; ;; Corfu enhances in-buffer completion by displaying a compact popup with
+; ;; current candidates, positioned either below or above the point. Candidates
+; ;; can be selected by navigating up or down.
+; (use-package corfu
+;   :commands (corfu-mode global-corfu-mode)
+;
+;   :hook ((prog-mode . corfu-mode)
+;          (shell-mode . corfu-mode)
+;          (eshell-mode . corfu-mode))
+;   :custom
+;   (read-extended-command-predicate
+;    #'command-completion-default-include-p)
+;   (text-mode-ispell-word-completion nil)
+;   ;; TAB triggers completion
+;   (tab-always-indent 'complete)
+;   ;; Optional
+;   ;; (corfu-cycle t) ; allow cycling
+;   ;; :bind
+;   ;; (:map corfu-map
+;   ;;       ("TAB" . corfu-next)
+;   ;;       ([tab] . corfu-next)
+;   ;;       ("S-TAB" . corfu-previous)
+;   ;;       ([backtab] . corfu-previous)
+;   ;;       ("RET" . corfu-insert))
+;
+;   :config
+;   (global-corfu-mode))
+; ;; Cape, or Completion At Point Extensions, extends the capabilities of
+; ;; in-buffer completion. It integrates with Corfu or the default completion UI,
+; ;; by providing additional backends through completion-at-point-functions.
+; (use-package cape
+;   :commands (cape-dabbrev cape-file cape-elisp-block)
+;   :bind ("C-c l" . cape-prefix-map)
+;   :init
+;   ;; Add to the global default value of `completion-at-point-functions' which is
+;   ;; used by `completion-at-point'.
+;   (add-hook 'completion-at-point-functions #'cape-dabbrev)
+;   (add-hook 'completion-at-point-functions #'cape-file)
+;   (add-hook 'completion-at-point-functions #'cape-elisp-block))
+;
 
 ;; Vertico provides a vertical completion interface, making it easier to
 ;; navigate and select from completion candidates (e.g., when `M-x` is pressed).
-
 (use-package vertico
   :custom
-  (vertico-count 14)  ;; limit to a fixed size
+  (vertico-count 15)  ;; limit to a fixed size
   :bind (:map vertico-map
-	          ;; Use page-up/down to scroll vertico buffer, like ivy does by default.
-	          ("<prior>" . 'vertico-scroll-down)
-	          ("<next>"  . 'vertico-scroll-up))
+              ;; Use page-up/down to scroll vertico buffer, like ivy does by default.
+              ("<prior>" . 'vertico-scroll-down)
+              ("<next>"  . 'vertico-scroll-up))
   :init
   ;; Activate vertico
   (vertico-mode))
 
-;; Convenient pa[Oth selection
+;; Convenient path selection
 (use-package vertico-directory
   :after vertico
   :ensure nil  ;; no need to install, it comes with vertico
   :bind (:map vertico-map
-	          ("DEL" . vertico-directory-delete-char)))
+              ("DEL" . vertico-directory-delete-char)))
+
 ;; Vertico leverages Orderless' flexible matching capabilities, allowing users
 ;; to input multiple patterns separated by spaces, which Orderless then
 ;; matches in any order against the candidates.
@@ -228,9 +146,19 @@
 ;; Marginalia allows Embark to offer you preconfigured actions in more contexts.
 ;; In addition to that, Marginalia also enhances Vertico by adding rich
 ;; annotations to the completion candidates displayed in Vertico's interface.
+;; Enable rich annotations using the Marginalia package
 (use-package marginalia
-  :commands (marginalia-mode marginalia-cycle)
-  :hook (after-init . marginalia-mode))
+  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
+  ;; available in the *Completions* buffer, add it to the
+  ;; `completion-list-mode-map'.
+  :bind (:map minibuffer-local-map
+              ("M-A" . marginalia-cycle))
+  ;; The :init section is always executed.
+  :init
+  ;; Marginalia must be activated in the :init section of use-package such that
+  ;; the mode gets enabled right away. Note that this forces loading the
+  ;; package.
+  (marginalia-mode))
 
 ;; Embark integrates with Consult and Vertico to provide context-sensitive
 ;; actions and quick access to commands based on the current selection, further
@@ -247,8 +175,8 @@
              embark-bindings
              embark-prefix-help-command)
   :bind
-  (("M-RET" . embark-act)         ;; pick some comfortable binding
-   ("M-]" . embark-dwim)        ;; good alternative: M-.
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("M-RET" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
 
   :init
@@ -265,8 +193,6 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-
-;; sec_embark--------------------------------------------------------------
 ;; Consult offers a suite of commands for efficient searching, previewing, and
 ;; interacting with buffers, file contents, and more, improving various tasks.
 (use-package consult
@@ -361,15 +287,17 @@
   (setq consult-narrow-key "<"))
 
 
-
 ;; The undo-fu package is a lightweight wrapper around Emacs' built-in undo
 ;; system, providing more convenient undo/redo functionality.
 (use-package undo-fu
   :commands (undo-fu-only-undo
              undo-fu-only-redo
              undo-fu-only-redo-all
-             undo-fu-disable-checkpoint))
-
+             undo-fu-disable-checkpoint)
+  :config
+  (global-unset-key (kbd "C-z"))
+  (global-set-key (kbd "C-z") 'undo-fu-only-undo)
+  (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
 
 ;; The undo-fu-session package complements undo-fu by enabling the saving
 ;; and restoration of undo history across Emacs sessions, even after restarting.
@@ -377,21 +305,20 @@
   :commands undo-fu-session-global-mode
   :hook (after-init . undo-fu-session-global-mode))
 
-(use-package multiple-cursors  ;; fk off multi cursor what i need
-  :bind
-  (("M-o" . 'mc/mark-next-like-this)
-   ("" . 'mc/mark-previous-like-this)))
+;; install + load theme
 
 
-(use-package move-text    ;; drag text move around like vim alt + j/k
-  :ensure t
-  :config
-  (move-text-default-bindings)
-  (global-set-key (kbd "C-<up>") #'move-text-up)
-  (global-set-key (kbd "C-<down>") #'move-text-down))
 
 
-;; sec_session--------------------------------------------------------------
+(use-package doom-themes)
+(let ((inhibit-redisplay t))
+  ;; Disable all active themes
+  (mapc #'disable-theme custom-enabled-themes)
+  ;; Load the built-in theme
+  (load-theme 'doom-tokyo-night t))
+
+
+
 ;; The easysession Emacs package is a session manager for Emacs that can persist
 ;; and restore file editing buffers, indirect buffers/clones, Dired buffers,
 ;; windows/splits, the built-in tab-bar (including tabs, their buffers, and
@@ -433,6 +360,36 @@
     (add-hook 'emacs-startup-hook #'easysession-load-including-geometry 102)
     (add-hook 'emacs-startup-hook #'easysession-save-mode 103)))
 
+;; The markdown-mode package provides a major mode for Emacs for syntax
+;; highlighting, editing commands, and preview support for Markdown documents.
+;; It supports core Markdown syntax as well as extensions like GitHub Flavored
+;; Markdown (GFM).
+(use-package markdown-mode
+  :commands (gfm-mode
+             gfm-view-mode
+             markdown-mode
+             markdown-view-mode)
+  :mode (("\\.markdown\\'" . markdown-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("README\\.md\\'" . gfm-mode))
+  :bind
+  (:map markdown-mode-map
+        ("C-c C-e" . markdown-do)))
+;; Automatically generate a table of contents when editing Markdown files
+(use-package markdown-toc
+  :commands (markdown-toc-generate-toc
+             markdown-toc-generate-or-refresh-toc
+             markdown-toc-delete-toc
+             markdown-toc--toc-already-present-p)
+  :custom
+  (markdown-toc-header-toc-title "**Table of Contents**"))
+
+;; Apheleia is an Emacs package designed to run code formatters (e.g., Shfmt,
+;; Black and Prettier) asynchronously without disrupting the cursor position.
+(use-package apheleia
+  :commands (apheleia-mode
+             apheleia-global-mode)
+  :hook ((prog-mode . apheleia-mode)))
 
 ;; Intelligent code folding by using the structural understanding of the
 ;; built-in tree-sitter parser. Unlike traditional folding methods that rely on
@@ -493,16 +450,6 @@
 ;; (add-hook 'elixir-ts-mode-hook #'treesit-fold-mode)
 ;; (add-hook 'zig-ts-mode-hook #'treesit-fold-mode)
 
-
-;; sec_apheleia--------------------------------------------------------------
-;; Apheleia is an Emacs package designed to run code formatters (e.g., Shfmt,
-;; Black and Prettier) asynchronously without disrupting the cursor position.
-(use-package apheleia
-  :commands (apheleia-mode
-             apheleia-global-mode)
-  :hook ((prog-mode . apheleia-mode)))
-
-
 (use-package dumb-jump
   :commands dumb-jump-xref-activate
   :init
@@ -531,7 +478,7 @@
     (setq dumb-jump-force-searcher 'rg)
     (setq dumb-jump-prefer-searcher 'rg)))
 
-;; sec_yas--------------------------------------------------------------
+
 ;; The official collection of snippets for yasnippet.
 (use-package yasnippet-snippets
   :after yasnippet)
@@ -543,7 +490,6 @@
 (use-package yasnippet
   :commands (yas-minor-mode
              yas-global-mode)
-
   :hook
   (after-init . yas-global-mode)
 
@@ -560,7 +506,15 @@
   ;; Suppress verbose messages
   (setq yas-verbosity 0))
 
-
+;; (use-package diff-hl
+;;   :commands (diff-hl-mode
+;;              global-diff-hl-mode)
+;;   :hook (prog-mode . diff-hl-mode)
+;;   :init
+;;   (setq diff-hl-flydiff-delay 0.4)  ; Faster
+;;   (setq diff-hl-show-staged-changes nil)  ; Realtime feedback
+;;   (setq diff-hl-update-async t)  ; Do not block Emacs
+;;   (setq diff-hl-global-modes '(not pdf-view-mode image-mode)))
 
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
@@ -603,12 +557,55 @@
   :config
   (buffer-terminator-mode 1))
 
+;; Helpful is an alternative to the built-in Emacs help that provides much more
+;; contextual information.
+(use-package helpful
+  :commands (helpful-callable
+             helpful-variable
+             helpful-key
+             helpful-command
+             helpful-at-point
+             helpful-function)
+  :bind
+  ([remap describe-command] . helpful-command)
+  ([remap describe-function] . helpful-callable)
+  ([remap describe-key] . helpful-key)
+  ([remap describe-symbol] . helpful-symbol)
+  ([remap describe-variable] . helpful-variable)
+  :custom
+  (helpful-max-buffers 7))
+
+
+(use-package avy
+  :commands (avy-goto-char
+             avy-goto-char-2
+             avy-next)
+  :init
+  (global-set-key (kbd "C-'") 'avy-goto-char-2))
+
+
+
+(use-package bufferfile
+  :commands (bufferfile-copy
+             bufferfile-rename
+             bufferfile-delete)
+  :custom
+  ;; If non-nil, display messages during file renaming operations
+  (bufferfile-verbose nil)
+
+  ;; If non-nil, enable using version control (VC) when available
+  (bufferfile-use-vc nil)
+
+  ;; Specifies the action taken after deleting a file and killing its buffer.
+  (bufferfile-delete-switch-to 'parent-directory))
+
+
 
 ;; Enables automatic indentation of code while typing
-;; (use-package aggressive-indent
-;;   :commands aggressive-indent-mode
-;;   :hook
-;;   (emacs-lisp-mode . aggressive-indent-mode))
+(use-package aggressive-indent
+  :commands aggressive-indent-mode
+  :hook
+  (emacs-lisp-mode . aggressive-indent-mode))
 
 ;; Highlights function and variable definitions in Emacs Lisp mode
 (use-package highlight-defined
@@ -616,16 +613,17 @@
   :hook
   (emacs-lisp-mode . highlight-defined-mode))
 
+;; This package is useful for users who want to disable the mouse to:
+;; - Prevent accidental clicks or cursor movements that may unexpectedly change
+;;   the cursor position.
+;; - Reinforce a keyboard-centric workflow by discouraging reliance on the mouse
+;;   for navigation.
+(use-package inhibit-mouse
+  :config
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
+    (inhibit-mouse-mode 1)))
 
-
-;; Provides functions to find references to functions, macros, variables,
-;; special forms, and symbols in Emacs Lisp
-(use-package elisp-refs
-  :commands (elisp-refs-function
-             elisp-refs-macro
-             elisp-refs-variable
-             elisp-refs-special
-             elisp-refs-symbol))
 
 (use-package persist-text-scale
   :commands (persist-text-scale-mode
@@ -671,11 +669,60 @@
   :init
   (add-hook 'vterm-mode-hook #'my-vterm--setup)
 
-  (setq vterm-timer-delay 0.01)  ; Faster vterm
+  (setq vterm-timer-delay 0.05)  ; Faster vterm
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-max-scrollback 5000))
 
+;; The Emacs server allows external programs such as `emacsclient' to connect to
+;; a single running instance of Emacs. This makes it possible to open files in
+;; the existing session rather than starting a new Emacs process each time.
+;;
+;; Once the server is running, the `emacsclient' command can be used in the
+;; terminal to open files in the active Emacs session. For example, running the
+;; following command opens the file in the existing Emacs frame without blocking
+;; the terminal process.
+;;   emacsclient -n filename.txt
+;;
+(use-package server
+  :ensure nil
+  :if (not (daemonp))
+  :commands (server-running-p
+             server-start)
+  :hook (after-init . my-server-start)
+  :preface
+  (defun my-server-start ()
+    "Start the Emacs server if no server process is currently active."
+    (unless (server-running-p)
+      (server-start))))
 
+;;; Enable automatic insertion and management of matching pairs of characters
+;;; (e.g., (), {}, "") globally using `electric-pair-mode'.
+(use-package elec-pair
+  :ensure nil
+  :commands (electric-pair-mode
+             electric-pair-local-mode
+             electric-pair-delete-pair)
+  :hook (after-init . electric-pair-mode))
+
+;; Allow Emacs to upgrade built-in packages, such as Org mode
+(setq package-install-upgrade-built-in t)
+
+;; When Delete Selection mode is enabled, typed text replaces the selection
+;; if the selection is active.
+(delete-selection-mode 1)
+
+;; Display the current line and column numbers in the mode line
+(setq line-number-mode t)
+(setq column-number-mode t)
+(setq mode-line-position-column-line-format '("%l:%C"))
+
+;; Display of line numbers in the buffer:
+
+(dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
+  (add-hook hook #'display-line-numbers-mode))
+
+;; Set the maximum level of syntax highlighting for Tree-sitter modes
+(setq treesit-font-lock-level 4)
 
 (use-package which-key
   :ensure nil ; builtin
@@ -687,6 +734,21 @@
   (which-key-add-column-padding 1)
   (which-key-max-description-length 40))
 
+(unless (and (eq window-system 'mac)
+             (bound-and-true-p mac-carbon-version-string))
+  ;; Enables `pixel-scroll-precision-mode' on all operating systems and Emacs
+  ;; versions, except for emacs-mac.
+  ;;
+  ;; Enabling `pixel-scroll-precision-mode' is unnecessary with emacs-mac, as
+  ;; this version of Emacs natively supports smooth scrolling.
+  ;; https://bitbucket.org/mituharu/emacs-mac/commits/65c6c96f27afa446df6f9d8eff63f9cc012cc738
+  (setq pixel-scroll-precision-use-momentum nil) ; Precise/smoother scrolling
+  (pixel-scroll-precision-mode 1))
+
+;; Display the time in the modeline
+(add-hook 'after-init-hook #'display-time-mode)
+;; Paren match highlighting
+(add-hook 'after-init-hook #'show-paren-mode)
 ;; Track changes in the window configuration, allowing undoing actions such as
 ;; closing windows.
 (setq winner-boring-buffers '("*Completions*"
@@ -706,182 +768,125 @@
                               "*esh command on file*"))
 (add-hook 'after-init-hook #'winner-mode)
 
-;; Support for Git files (.gitconfig, .gitignore, .gitattributes...)
-(use-package git-modes
-  :commands (gitattributes-mode
-             gitconfig-mode
-             gitignore-mode)
-  :mode (("/\\.gitignore\\'" . gitignore-mode)
-         ("/info/exclude\\'" . gitignore-mode)
-         ("/git/ignore\\'" . gitignore-mode)
-         ("/.gitignore_global\\'" . gitignore-mode)  ; jc-dotfiles
-
-         ("/\\.gitconfig\\'" . gitconfig-mode)
-         ("/\\.git/config\\'" . gitconfig-mode)
-         ("/modules/.*/config\\'" . gitconfig-mode)
-         ("/git/config\\'" . gitconfig-mode)
-         ("/\\.gitmodules\\'" . gitconfig-mode)
-         ("/etc/gitconfig\\'" . gitconfig-mode)
-
-         ("/\\.gitattributes\\'" . gitattributes-mode)
-         ("/info/attributes\\'" . gitattributes-mode)
-         ("/git/attributes\\'" . gitattributes-mode)))
-
-;; Configure built-in sgml-mode to automatically enable
-;; `sgml-electric-tag-pair-mode' in `html-mode' and `mhtml-mode', providing
-;; automatic insertion of matching closing tags.
-(use-package sgml-mode
+(use-package uniquify
   :ensure nil
-  :commands (sgml-mode sgml-electric-tag-pair-mode)
-  :hook ((html-mode mhtml-mode) . sgml-electric-tag-pair-mode))
-
-;; Support for YAML files.
-;;
-;; NOTE: Prefer the tree-sitter-based yaml-ts-mode over yaml-mode when
-;; available, as it provides more accurate syntax parsing and enhanced editing
-;; features.
-(use-package yaml-mode
-  :commands yaml-mode
-  :mode (("\\.yaml\\'" . yaml-mode)
-         ("\\.yml\\'" . yaml-mode)))
-
-;; Support for Dockerfile files.
-;;
-;; NOTE: Prefer the tree-sitter-based dockerfile-ts-mode over dockerfile-mode
-;; when available, as it provides more accurate syntax parsing and enhanced
-;; editing features.
-(use-package dockerfile-mode
-  :commands dockerfile-mode
-  :mode ("Dockerfile\\'" . dockerfile-mode))
-
-;; Support for Gnuplot files
-(use-package gnuplot
-  :commands gnuplot-mode
-  :mode ("\\.gp\\'" . gnuplot-mode))
-
-;; Support for *.lua files.
-;;
-;; Prefer the tree-sitter-based lua-ts-mode over lua-mode when available, as it
-;; provides more accurate syntax parsing and enhanced editing features.
-(use-package lua-mode
-  :commands lua-mode
-  :mode ("\\.lua\\'" . lua-mode))
-
-;; Jinja2 template support for files commonly used in configuration management
-;; systems and web frameworks. This mode enables syntax highlighting and basic
-;; editing facilities for templates written using the Jinja2 templating
-;; language.
-(use-package jinja2-mode
-  :commands jinja2-mode
-  :mode ("\\.j2\\'" . jinja2-mode))
-
-;; CSV file support with automatic column alignment. This configuration enables
-;; csv-align-mode whenever a CSV file is opened, improving readability by
-;; keeping columns visually aligned according to a configurable maximum width
-;; and a set of recognized field separators.
-(use-package csv-mode
-  :commands (csv-mode
-             csv-align-mode
-             csv-guess-set-separator)
-  :mode ("\\.csv\\'" . csv-mode)
-  :hook ((csv-mode . csv-align-mode)
-         (csv-mode . csv-guess-set-separator))
   :custom
-  (csv-align-max-width 100)
-  (csv-separators '("," ";" " " "|" "\t")))
+  (uniquify-buffer-name-style 'reverse)
+  (uniquify-separator "•")
+  (uniquify-after-kill-buffer-p t))
 
-;; Support for Go
-;;
-;; NOTE: Prefer the tree-sitter-based go-ts-mode over go-mode
-;; when available, as it provides more accurate syntax parsing and enhanced
-;; editing features.
-(use-package go-mode
-  :commands go-mode
-  :mode ("\\.go\\'" . go-mode))
+;; Window dividers separate windows visually. Window dividers are bars that can
+;; be dragged with the mouse, thus allowing you to easily resize adjacent
+;; windows.
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Dividers.html
+(add-hook 'after-init-hook #'window-divider-mode)
 
-;; Support for Rust
-(use-package rust-mode
-  :commands rust-mode
-  :mode ("\\.rs\\'" . rust-mode)
+;; Constrain vertical cursor movement to lines within the buffer
+(setq dired-movement-style 'bounded-files)
+
+;; Dired buffers: Automatically hide file details (permissions, size,
+;; modification date, etc.) and all the files in the `dired-omit-files' regular
+
+;; Hide files from dired
+(setq dired-omit-files (concat "\\`[.]\\'"
+                               "\\|\\(?:\\.js\\)?\\.meta\\'"
+                               "\\|\\.\\(?:elc|a\\|o\\|pyc\\|pyo\\|swp\\|class\\)\\'"
+                               "\\|^\\.DS_Store\\'"
+                               "\\|^\\.\\(?:svn\\|git\\)\\'"
+                               "\\|^\\.ccls-cache\\'"
+                               "\\|^__pycache__\\'"
+                               "\\|^\\.project\\(?:ile\\)?\\'"
+                               "\\|^flycheck_.*"
+                               "\\|^flymake_.*"))
+(add-hook 'dired-mode-hook #'dired-omit-mode)
+
+;; dired: Group directories first
+(with-eval-after-load 'dired
+  (let ((args "--group-directories-first -ahlv"))
+    (when (or (eq system-type 'darwin) (eq system-type 'berkeley-unix))
+      (if-let* ((gls (executable-find "gls")))
+          (setq insert-directory-program gls)
+        (setq args nil)))
+    (when args
+      (setq dired-listing-switches args))))
+
+;; Enables visual indication of minibuffer recursion depth after initialization.
+(add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
+;; Configure Emacs to ask for confirmation before exiting
+(setq confirm-kill-emacs 'y-or-n-p)
+;; Enabled backups save your changes to a file intermittently
+(setq make-backup-files t)
+(setq vc-make-backup-files t)
+(setq kept-old-versions 10)
+(setq kept-new-versions 10)
+;; When tooltip-mode is enabled, certain UI elements (e.g., help text,
+
+
+;; Set up the Language Server Protocol (LSP) servers using Eglot.
+(use-package eglot
+  :ensure nil
+  :commands (eglot-ensure
+             eglot-rename
+             eglot-format-buffer)
+  )
+;; Configure Eglot to enable or disable certain options for the pylsp server
+;; in Python development. (Note that a third-party tool,
+;; https://github.com/python-lsp/python-lsp-server, must be installed),
+(add-hook 'python-mode-hook #'eglot-ensure)
+(add-hook 'python-ts-mode-hook #'eglot-ensure)
+(setq-default eglot-workspace-configuration
+              `(:pylsp (:plugins
+                        (;; Fix imports and syntax using `eglot-format-buffer`
+                         :isort (:enabled t)
+                         :autopep8 (:enabled t)
+                         ;; Syntax checkers (works with Flymake)
+                         :pylint (:enabled t)
+                         :pycodestyle (:enabled t)
+                         :flake8 (:enabled t)
+                         :pyflakes (:enabled t)
+                         :pydocstyle (:enabled t)
+                         :mccabe (:enabled t)
+                         :yapf (:enabled :json-false)
+                         :rope_autoimport (:enabled :json-false)))))
+;; In Emacs, customization variables modified via the UI (e.g., M-x customize)
+;; are typically stored in a separate file, commonly named 'custom.el'. To
+;; ensure these settings are loaded during Emacs initialization, it is necessary
+;; to explicitly load this file if it exists.
+
+(use-package magit
+  :ensure t
+  :bind (("C-x g" . magit-status)
+         ("C-x M-g" . magit-dispatch)))
+
+(use-package treesit-auto
   :custom
-  (rust-indent-offset 2))
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
-;; Major mode for editing crontab files
-(use-package crontab-mode
-  :commands crontab-mode
-  :mode ("/crontab\\(\\.X*[[:alnum:]]+\\)?\\'"  . crontab-mode))
+(use-package crux   ;;;  duplicate line
+  :ensure t
+  :bind (("M-i" . crux-duplicate-current-line-or-region)))
 
-;; Major mode for editing Nginx configuration files
-(use-package nginx-mode
-  :commands nginx-mode
-  :mode (("nginx\\.conf\\'" . nginx-mode)
-         ("/nginx/.+\\.conf\\'" . nginx-mode)))
-
-;; Major mode for HashiCorp Configuration Language (HCL) files
-(use-package hcl-mode
-  :commands hcl-mode
-  :mode ("\\.hcl\\'" . hcl-mode))
-
-;; Major mode for Nix expression language files
-(use-package nix-mode
-  :commands nix-mode
-  :mode ("\\.nix\\'" . nix-mode))
-
-;; Major mode for editing Fish shell scripts
-(use-package fish-mode
-  :commands fish-mode
-  :mode ("\\.fish\\'" . fish-mode))
-
-;; Vim configuration file support. This mode provides syntax highlighting and
-;; editing support for various Vim configuration files, including vimrc, gvimrc,
-;; local overrides, and project-specific configuration files.
-(use-package vimrc-mode
-  :commands vimrc-mode
-  :mode ("\\.vim\\(rc\\)?\\'" . vimrc-mode))
-
-;; Support for Jenkinsfile files
-(use-package jenkinsfile-mode
-  :commands jenkinsfile-mode
-  :mode ("Jenkinsfile\\'" . jenkinsfile-mode))
-
-;; Support for Haskell
-;; (use-package haskell-mode
-;;   :commands haskell-mode
-;;   :mode ("\\.hs\\'" . haskell-mode))
+(use-package multiple-cursors  ;; fk off multi cursor what i need
+  :bind
+  (("M-o" . 'mc/mark-next-like-this)
+   ("" . 'mc/mark-previous-like-this)))
 
 
-(use-package buffer-guardian
-  :custom
-  ;; When non-nil, include remote files in the auto-save process
-  (buffer-guardian-inhibit-saving-remote-files t)
-
-  ;; When non-nil, buffers visiting nonexistent files are not saved
-  (buffer-guardian-inhibit-saving-nonexistent-files nil)
-
-  ;; Save the buffer even if the window change results in the same buffer
-  (buffer-guardian-save-on-same-buffer-window-change t)
-
-  ;; Non-nil to enable verbose mode to log when a buffer is automatically saved
-  (buffer-guardian-verbose nil)
-
-  ;; Save all buffers after N seconds of user idle time. (Disabled by default)
-  ;; (buffer-guardian-save-all-buffers-idle 30)
-
-  ;; Save all buffers every N seconds. (Disabled by default)
-  ;; (setq buffer-guardian-save-all-buffers-interval (* 60 30))
-
-  :hook
-  (after-init . buffer-guardian-mode))
+(use-package move-text    ;; drag text move around like vim alt + j/k
+  :ensure t
+  :config
+  (move-text-default-bindings)
+  (global-set-key (kbd "C-<up>") #'move-text-up)
+  (global-set-key (kbd "C-<down>") #'move-text-down))
 
 
-;; The Emacs server allows external programs such as `emacsclient' to connect to
-;; a single running instance of Emacs. This makes it possible to open files in
-;; the existing session rather than starting a new Emacs process each time.
-;;
-;; Once the server is running, the `emacsclient' command can be used in the
-;; terminal to open files in the active Emacs session. For example, running the
-;; following command opens the file in the existing Emacs frame without blocking
-;; the terminal process.
-;;   emacsclient -n filename.txt
-;;
-(minimal-emacs-load-user-init "local.el")
+
+(add-to-list 'load-path "~/.emacs.d/lsp-bridge/")
+(require 'lsp-bridge)
+(global-lsp-bridge-mode)
+
+(load custom-file 'noerror 'no-message)
+(minimal-emacs-load-user-init "local-config.el")
