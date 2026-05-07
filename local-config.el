@@ -42,6 +42,6 @@
  '(line-number-current-line ((t (:foreground "yellow" :inherit line-number))))
  '(mode-line ((t (:family "Iosevka Term Slab" :height 190 ))))
  ;; Styles
- '(font-lock-function-name-face ((t (:family "Iosevka"  ))))
+ '(font-lock-function-name-face ((t (:family "Iosevka" :slant normal ))))
  '(font-lock-variable-name-face ((t (:family "Iosevka" )))))
 

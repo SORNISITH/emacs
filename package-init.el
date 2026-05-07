@@ -853,6 +853,12 @@
   (global-set-key (kbd "C-<up>") #'move-text-up)
   (global-set-key (kbd "C-<down>") #'move-text-down))
 
+(use-package wdired  ;;; fk this good plugin edit dir 
+  :ensure nil
+  :custom
+  (wdired-allow-to-change-permissions t)
+  (wdired-create-parent-directories t))
+(setq dired-vc-rename-file t)
 
 
 (add-to-list 'load-path "~/.emacs.d/lsp-bridge/")
