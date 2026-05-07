@@ -7,11 +7,11 @@
  '(package-selected-packages
    '(aggressive-indent apheleia avy buffer-terminator bufferfile cape compile-angel
                        corfu corfu-terminal crux diff-hl doom-themes dumb-jump
-                       easysession embark-consult helpful highlight-defined
-                       inhibit-mouse magit marginalia markdown-toc move-text
-                       multiple-cursors orderless org-appear persist-text-scale
-                       treesit-auto treesit-fold undo-fu undo-fu-session vertico
-                       vterm yasnippet-snippets)))
+                       easysession embark-consult flycheck helpful
+                       highlight-defined inhibit-mouse magit marginalia
+                       markdown-toc move-text multiple-cursors orderless
+                       org-appear persist-text-scale treesit-auto treesit-fold
+                       undo-fu undo-fu-session vertico vterm yasnippet-snippets)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -18,11 +18,13 @@
   (interactive)
   (find-file "~/.emacs.d/package-init.el"))
 
+(setq lsp-bridge-python-command "~/.pyenv/versions/3.13.13/bin/python3")
+
 (tab-bar-mode 1)
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.4 )
-
+(setq dired-dwim-target t)
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "C-x C-p"))
@@ -33,15 +35,19 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (global-set-key (kbd "C-q") 'set-mark-command)
 (global-set-key (kbd "C-<return>") 'vterm)
-
+                                        ;(global-set-key (kbd "C-<right>") 'next-buffer)
+                                        ;(global-set-key (kbd "C-<left>") 'previous-buffer)
+(set-fringe-mode 12)
 (custom-set-faces
  ;; Default font for all text
- '(default ((t (:family "Iosevka" :height 250))))
- '(fixed-pitch ((t (:family "Iosevka" :height 220))))
+ '(default ((t (:family "Iosevka Nerd Font" :height 250))))
+ '(fixed-pitch ((t (:family "Iosevka Nerd Font" :height 220))))
  ;; Current line number
  '(line-number-current-line ((t (:foreground "yellow" :inherit line-number))))
  '(mode-line ((t (:family "Iosevka Term Slab" :height 190 ))))
+ '(flycheck-info ((t (:underline nil))))
+ '(flycheck-warning ((t (:underline nil))))
  ;; Styles
- '(font-lock-function-name-face ((t (:family "Iosevka" :slant normal ))))
- '(font-lock-variable-name-face ((t (:family "Iosevka" )))))
+ '(font-lock-function-name-face ((t (:family "Iosevka Nerd Font" :slant normal ))))
+ )
 
