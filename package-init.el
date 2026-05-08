@@ -932,6 +932,15 @@
   :ensure t
   :init (doom-modeline-mode 1))
 
+
+(setq doom-modeline-buffer-name nil)
+(setq doom-modeline-battery nil)
+(setq doom-modeline-lsp-icon nil)
+(setq doom-modeline-time nil)
+(setq display-time-default-load-average nil)
+(setq doom-modeline-time nil)
+
+
 (use-package dirvish
   :init
   (add-to-list 'load-path
@@ -939,10 +948,10 @@
 
   :custom
   (dirvish-attributes
-   '(vc-state
+   '(
      file-modes
-     file-size))
-  
+     file-size
+     ))
   :config
 
   (dirvish-override-dired-mode))

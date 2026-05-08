@@ -22,6 +22,10 @@
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
+(setq doom-modeline-time nil)
+(setq doom-modeline-enable-file-name nil)
+(setq doom-modeline-buffer-file-name-style nil)
+
 
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
@@ -35,15 +39,23 @@
 (global-set-key (kbd "C-<return>") 'shell)
 (global-set-key (kbd "M-p") 'next-buffer)
 (global-set-key (kbd "M-n") 'previous-buffer)
+(global-set-key (kbd "C-x j") 'dirvish-fd)
+
 
 (custom-set-faces
- ;; Default font for all text
+ ;; Default font
  '(default ((t (:family "Iosevka" :height 250))))
- '(fixed-pitch ((t (:family "Cantarell" :height 250))))
- ;; Current line number
- '(line-number-current-line ((t (:foreground "yellow" :inherit line-number))))
- '(mode-line ((t (:family "Iosevka" :height 270 )))) 
- ;; Styles
- '(font-lock-function-name-face ((t (:family "Iosevka"  ))))
- '(font-lock-variable-name-face ((t (:family "Iosevka" )))))
 
+ ;; Fixed width font (important for org/vterm alignment)
+ '(fixed-pitch ((t (:family "Iosevka" :height 250))))
+
+ ;; Line number highlight
+ '(line-number-current-line ((t (:foreground "yellow" :weight bold))))
+
+ ;; Mode line
+ '(mode-line ((t (:family "Iosevka" :height 270 :weight bold))))
+
+ ;; Syntax highlighting (clean version)
+ '(font-lock-function-name-face ((t (:weight bold))))
+ '(font-lock-variable-name-face ((t (:weight normal))))
+ )
