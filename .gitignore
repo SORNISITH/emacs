@@ -13,3 +13,4 @@ cus.el
 lsp-bridge
 var_lsp_bridge
 tags
+.gdb_history

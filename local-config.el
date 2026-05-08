@@ -18,10 +18,10 @@
   (interactive)
   (find-file "~/.emacs.d/package-init.el"))
 
-(tab-bar-mode 1)
+
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
-(setq blink-cursor-interval 0.4 )
+(setq blink-cursor-interval 0.3 )
 
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
@@ -32,17 +32,18 @@
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (global-set-key (kbd "C-q") 'set-mark-command)
-(global-set-key (kbd "C-<return>") 'vterm)
+(global-set-key (kbd "C-<return>") 'shell)
 (global-set-key (kbd "M-p") 'next-buffer)
 (global-set-key (kbd "M-n") 'previous-buffer)
 
 (custom-set-faces
  ;; Default font for all text
  '(default ((t (:family "Iosevka" :height 250))))
- '(fixed-pitch ((t (:family "Iosevka" :height 220))))
+ '(fixed-pitch ((t (:family "Cantarell" :height 250))))
  ;; Current line number
  '(line-number-current-line ((t (:foreground "yellow" :inherit line-number))))
- '(mode-line ((t (:family "Iosevka Term Slab" :height 190 ))))
+ '(mode-line ((t (:family "Iosevka" :height 270 )))) 
  ;; Styles
  '(font-lock-function-name-face ((t (:family "Iosevka"  ))))
  '(font-lock-variable-name-face ((t (:family "Iosevka" )))))
+

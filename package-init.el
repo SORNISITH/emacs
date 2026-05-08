@@ -1,7 +1,7 @@
 ;; Native compilation enhances Emacs performance by converting Elisp code into
 ;; native machine code, resulting in faster execution and improved
 ;; responsiveness.
-;;
+
 ;; Ensure adding the following compile-angel code at the very beginning
 ;; of your `~/.emacs.d/post-init.el` file, before all other packages.
 (use-package compile-angel
@@ -126,7 +126,7 @@
   ;; TAB triggers completion
   (tab-always-indent 'complete)
   ;; Optional
-  ;; (corfu-cycle t) ; allow cycling
+  (corfu-cycle t) ; allow cycling
   ;; :bind
   ;; (:map corfu-map
   ;;       ("TAB" . corfu-next)
@@ -150,12 +150,11 @@
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
-
 ;; Vertico provides a vertical completion interface, making it easier to
 ;; navigate and select from completion candidates (e.g., when `M-x` is pressed).
 (use-package vertico
   :custom
-  (vertico-count 15)  ;; limit to a fixed size
+  (vertico-count 7)  ;; limit to a fixed size
   :bind (:map vertico-map
               ;; Use page-up/down to scroll vertico buffer, like ivy does by default.
               ("<prior>" . 'vertico-scroll-down)
@@ -237,12 +236,14 @@
          ("C-c M-x" . consult-mode-command)
          ("C-c h" . consult-history)
          ("C-c k" . consult-kmacro)
+         ("C-c f" . consult-imenu)
          ("C-c m" . consult-man)
          ("C-c i" . consult-info)
          ([remap Info-search] . consult-info)
          ;; C-x bindings in `ctl-x-map'
          ("C-x M-:" . consult-complex-command)
          ("C-x b" . consult-buffer)
+         ("C-x C-b" . consult-buffer)
          ("C-x 4 b" . consult-buffer-other-window)
          ("C-x 5 b" . consult-buffer-other-frame)
          ("C-x t b" . consult-buffer-other-tab)
@@ -919,6 +920,48 @@
   (global-set-key (kbd "C-<up>") #'move-text-up)
   (global-set-key (kbd "C-<down>") #'move-text-down))
 
+(use-package nerd-icons
+  ;; :custom
+  ;; The Nerd Font you want to use in GUI
+  ;; "Symbols Nerd Font Mono" is the default and is recommended
+  ;; but you can use any other Nerd Font if you want
+  ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
+  )
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
 
+
+(use-package dirvish
+  :init
+  (add-to-list 'load-path
+               (expand-file-name "extensions" (file-name-directory (locate-library "dirvish"))))
+
+  :custom
+  (dirvish-attributes
+   '(vc-state
+     file-modes
+     file-size))
+  
+  :config
+
+  (dirvish-override-dired-mode))
+
+
+
+
+(use-package centaur-tabs
+  :demand
+  :config
+  (centaur-tabs-mode t)
+  (setq centaur-tabs-style "bar")
+  (setq centaur-tabs-set-icons t)
+  (setq centaur-tabs-height 24))
+
+(tab-bar-mode -1)
+(set-cursor-color "gold")
+(blink-cursor-mode 1)
+(setq blink-cursor-interval 0.3 )
+(setq eglot-ignored-server-capabilities '(:inlayHintProvider))
 (load custom-file 'noerror 'no-message)
 (minimal-emacs-load-user-init "local-config.el")
