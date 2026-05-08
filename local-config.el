@@ -26,6 +26,8 @@
 (setq dired-dwim-target t)
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
+(global-unset-key (kbd "C-/"))
+(global-unset-key (kbd "M-/"))
 (global-unset-key (kbd "C-x C-p"))
 (global-set-key (kbd "C-m") 'compile)
 (global-set-key (kbd "C-z") 'undo-fu-only-undo)
@@ -39,7 +41,9 @@
 (global-set-key (kbd "C-;") 'flycheck-next-error)
 (global-set-key (kbd "C-l") 'consult-line)
 (global-set-key (kbd "C-j") 'consult-buffer)
-(global-set-key (kbd "C-,") 'consult-ripgrep)
+(global-set-key (kbd "C-/") 'other-window)
+(global-set-key (kbd "M-/") 'consult-ripgrep)
+
 
 
 

@@ -575,12 +575,12 @@
   (helpful-max-buffers 7))
 
 
-(use-package avy
-  :commands (avy-goto-char
-             avy-goto-char-2
-             avy-next)
-  :init
-  (global-set-key (kbd "C-'") 'avy-goto-char-2))
+;; (use-package avy
+;;   :commands (avy-goto-char
+;;              avy-goto-char-2
+;;              avy-next)
+;;   :init
+;;   (global-set-key (kbd "C-'") 'avy-goto-char-2))
 
 
 
