@@ -75,49 +75,49 @@
 ;; Corfu enhances in-buffer completion by displaying a compact popup with
 ;; current candidates, positioned either below or above the point. Candidates
 ;; can be selected by navigating up or down.
-(use-package corfu
-  :commands (corfu-mode global-corfu-mode)
-  
-  :hook ((prog-mode . corfu-mode)
-         (shell-mode . corfu-mode)
-         (eshell-mode . corfu-mode))
-  :custom
-  (read-extended-command-predicate
-   #'command-completion-default-include-p)
-  (text-mode-ispell-word-completion nil)
-  ;; TAB triggers completion
-  (tab-always-indent 'complete)
-  ;; Optional
-  ;; (corfu-cycle t) ; allow cycling
-  ;; :bind
-  ;; (:map corfu-map
-  ;;       ("TAB" . corfu-next)
-  ;;       ([tab] . corfu-next)
-  ;;       ("S-TAB" . corfu-previous)
-  ;;       ([backtab] . corfu-previous)
-  ;;       ("RET" . corfu-insert))
-  
-  :config
-  (global-corfu-mode))
-;; Cape, or Completion At Point Extensions, extends the capabilities of
-;; in-buffer completion. It integrates with Corfu or the default completion UI,
-;; by providing additional backends through completion-at-point-functions.
-(use-package cape
-  :commands (cape-dabbrev cape-file cape-elisp-block)
-  :bind ("C-c l" . cape-prefix-map)
-  :init
-  ;; Add to the global default value of `completion-at-point-functions' which is
-  ;; used by `completion-at-point'.
-  (add-hook 'completion-at-point-functions #'cape-dabbrev)
-  (add-hook 'completion-at-point-functions #'cape-file)
-  (add-hook 'completion-at-point-functions #'cape-elisp-block))
+;; (use-package corfu
+;;   :commands (corfu-mode global-corfu-mode)
+;;   
+;;   :hook ((prog-mode . corfu-mode)
+;;          (shell-mode . corfu-mode)
+;;          (eshell-mode . corfu-mode))
+;;   :custom
+;;   (read-extended-command-predicate
+;;    #'command-completion-default-include-p)
+;;   (text-mode-ispell-word-completion nil)
+;;   ;; TAB triggers completion
+;;   (tab-always-indent 'complete)
+;;   ;; Optional
+;;   ;; (corfu-cycle t) ; allow cycling
+;;   ;; :bind
+;;   ;; (:map corfu-map
+;;   ;;       ("TAB" . corfu-next)
+;;   ;;       ([tab] . corfu-next)
+;;   ;;       ("S-TAB" . corfu-previous)
+;;   ;;       ([backtab] . corfu-previous)
+;;   ;;       ("RET" . corfu-insert))
+;;   
+;;   :config
+;;   (global-corfu-mode))
+;; ;; Cape, or Completion At Point Extensions, extends the capabilities of
+;; ;; in-buffer completion. It integrates with Corfu or the default completion UI,
+;; ;; by providing additional backends through completion-at-point-functions.
+;; (use-package cape
+;;   :commands (cape-dabbrev cape-file cape-elisp-block)
+;;   :bind ("C-c l" . cape-prefix-map)
+;;   :init
+;;   ;; Add to the global default value of `completion-at-point-functions' which is
+;;   ;; used by `completion-at-point'.
+;;   (add-hook 'completion-at-point-functions #'cape-dabbrev)
+;;   (add-hook 'completion-at-point-functions #'cape-file)
+;;   (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
 
 ;; Vertico provides a vertical completion interface, making it easier to
 ;; navigate and select from completion candidates (e.g., when `M-x` is pressed).
 (use-package vertico
   :custom
-  (vertico-count 8)  ;; limit to a fixed size
+  (vertico-count 12)  ;; limit to a fixed size
   :bind (:map vertico-map
               ;; Use page-up/down to scroll vertico buffer, like ivy does by default.
               ("<prior>" . 'vertico-scroll-down)

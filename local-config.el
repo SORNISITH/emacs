@@ -46,23 +46,25 @@
 (global-set-key (kbd "C-i") 'other-window)
 
 
-
 (custom-set-faces
  ;; Default font
- '(default ((t (:family "Iosevka" :height 230))))
+ '(default ((t (:family "Iosevka" :height 210))))
 
  ;; Fixed width font (important for org/vterm alignment)
- '(fixed-pitch ((t (:family "Iosevka" :height 230))))
+ '(fixed-pitch ((t (:family "Iosevka" :height 210))))
 
  ;; Line number highlight
  '(line-number-current-line ((t (:foreground "yellow" :weight bold))))
+ '(font-lock-function-call-face ((t (:slant normal ))))
+
 
  ;; Mode line
- '(mode-line ((t (:family "Iosevka" :height 250 :weight bold))))
+ '(mode-line ((t (:family "Iosevka" :height 200 :slant italic))))
 
  ;; Syntax highlighting (clean version)
  '(font-lock-function-name-face ((t (:weight bold))))
  '(font-lock-variable-name-face ((t (:weight normal))))
+ '(font-lock-builtin-face ((t ( :slant italic :foreground "#ff4d4d"))))
  )
 
 (set-face-attribute 'isearch nil
