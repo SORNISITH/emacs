@@ -38,27 +38,27 @@
 (global-set-key (kbd "C-<return>") 'eshell)
 (global-set-key (kbd "M-p") 'next-buffer)
 (global-set-key (kbd "M-n") 'previous-buffer)
-(global-set-key (kbd "C-;") 'flycheck-next-error)
+(global-set-key (kbd "C-,") 'flycheck-next-error)
 (global-set-key (kbd "C-l") 'consult-line)
 (global-set-key (kbd "C-j") 'consult-buffer)
-(global-set-key (kbd "C-/") 'other-window)
+(global-set-key (kbd "C-/") 'consult-imenu)
 (global-set-key (kbd "M-/") 'consult-ripgrep)
-
+(global-set-key (kbd "C-i") 'other-window)
 
 
 
 (custom-set-faces
  ;; Default font
- '(default ((t (:family "Iosevka" :height 250))))
+ '(default ((t (:family "Iosevka" :height 230))))
 
  ;; Fixed width font (important for org/vterm alignment)
- '(fixed-pitch ((t (:family "Iosevka" :height 250))))
+ '(fixed-pitch ((t (:family "Iosevka" :height 230))))
 
  ;; Line number highlight
  '(line-number-current-line ((t (:foreground "yellow" :weight bold))))
 
  ;; Mode line
- '(mode-line ((t (:family "Iosevka" :height 270 :weight bold))))
+ '(mode-line ((t (:family "Iosevka" :height 250 :weight bold))))
 
  ;; Syntax highlighting (clean version)
  '(font-lock-function-name-face ((t (:weight bold))))
