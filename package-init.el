@@ -947,9 +947,6 @@
 
   (dirvish-override-dired-mode))
 
-
-
-
 (use-package centaur-tabs
   :demand
   :config
@@ -963,5 +960,6 @@
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
 (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+
 (load custom-file 'noerror 'no-message)
 (minimal-emacs-load-user-init "local-config.el")

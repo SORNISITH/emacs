@@ -4,7 +4,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(aggressive-indent apheleia avy buffer-terminator bufferfile cape centaur-tabs
+                       citre compile-angel corfu-terminal crux diff-hl dirvish
+                       doom-modeline doom-themes dumb-jump easysession
+                       embark-consult flycheck helpful highlight-defined
+                       inhibit-mouse magit marginalia markdown-toc move-text
+                       multiple-cursors orderless org-appear persist-text-scale
+                       treesit-auto treesit-fold undo-fu undo-fu-session vertico
+                       vterm yasnippet-snippets)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
