@@ -33,6 +33,8 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (global-set-key (kbd "C-q") 'set-mark-command)
 (global-set-key (kbd "C-<return>") 'vterm)
+(global-set-key (kbd "M-p") 'next-buffer)
+(global-set-key (kbd "M-n") 'previous-buffer)
 
 (custom-set-faces
  ;; Default font for all text
