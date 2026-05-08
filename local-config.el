@@ -23,6 +23,7 @@
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
 (setq doom-modeline-time nil)
+(setq doom-modeline-icon nil)
 (setq doom-modeline-enable-file-name nil)
 (setq doom-modeline-buffer-file-name-style nil)
 
@@ -58,8 +59,8 @@
  ;; Syntax highlighting (clean version)
  '(font-lock-function-name-face ((t (:weight bold))))
  '(font-lock-variable-name-face ((t (:weight normal))))
-
  )
+
 (set-face-attribute 'isearch nil
                     :foreground "#ff4d4d"   ;; soft red
                     :background "#2a0000"   ;; dark red base
