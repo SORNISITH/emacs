@@ -117,7 +117,7 @@
 ;; navigate and select from completion candidates (e.g., when `M-x` is pressed).
 (use-package vertico
   :custom
-  (vertico-count 15)  ;; limit to a fixed size
+  (vertico-count 8)  ;; limit to a fixed size
   :bind (:map vertico-map
               ;; Use page-up/down to scroll vertico buffer, like ivy does by default.
               ("<prior>" . 'vertico-scroll-down)
@@ -821,8 +821,6 @@
 ;; When tooltip-mode is enabled, certain UI elements (e.g., help text,
 
 
-
-
 (use-package magit
   :ensure t
   :bind (("C-x g" . magit-status)
@@ -859,7 +857,6 @@
   (wdired-create-parent-directories t))
 (setq dired-vc-rename-file t)
 
-
 (use-package citre
   :defer t
   :init
@@ -873,14 +870,7 @@
   (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
   :config
   (setq
-   ;; Set these if readtags/ctags is not in your PATH.
-   citre-readtags-program "/usr/bin/readtags"
-   citre-ctags-program "/usr/bin/ctags"
-   ;; Set these if gtags/global is not in your PATH (and you want to use the
-   ;; global backend)
-   citre-gtags-program "/path/to/gtags"
-   citre-global-program "/path/to/global"
-   ;; Set this if you use project management plugin like projectile.  It's
+
    ;; used for things like displaying paths relatively, see its docstring.
    citre-project-root-function #'projectile-project-root
    ;; Set this if you want to always use one location to create a tags file.
@@ -890,9 +880,62 @@
    citre-edit-ctags-options-manually nil
    ;; If you only want the auto enabling citre-mode behavior to work for
    ;; certain modes (like `prog-mode'), set it like this.
+
    citre-auto-enable-citre-mode-modes '(prog-mode))
   ;; If Citre makes opening remote files slow, set this to nil.
   citre-auto-enable-citre-mode-backends-for-remote nil)
+
+
+(use-package nerd-icons
+  ;; :custom
+  ;; The Nerd Font you want to use in GUI
+  ;; "Symbols Nerd Font Mono" is the default and is recommended
+  ;; but you can use any other Nerd Font if you want
+  ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
+  )
+
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
+
+
+(setq doom-modeline-buffer-name nil)
+(setq doom-modeline-battery nil)
+(setq doom-modeline--flymake nil)
+(setq doom-modeline--flycheck nil)
+(setq doom-modeline-time nil)
+(setq doom-modeline-icon nil)
+(setq display-time-default-load-average nil)
+(setq doom-modeline-time nil)
+
+
+(use-package dirvish
+  :init
+  (add-to-list 'load-path
+               (expand-file-name "extensions" (file-name-directory (locate-library "dirvish"))))
+
+  :custom
+  (dirvish-attributes
+   '(vc-state
+     file-modes
+     file-size))
+  
+  :config
+
+  (dirvish-override-dired-mode))
+
+
+
+
+(use-package centaur-tabs
+  :demand
+  :config
+  (centaur-tabs-mode t)
+  (setq centaur-tabs-style "bar")
+  (setq centaur-tabs-set-icons t)
+  (setq centaur-tabs-height 24))
+
+
 
 (use-package flycheck
   :ensure t
@@ -906,7 +949,11 @@
 (lsp-bridge-breadcrumb-mode)
 (setq acm-candidate-match-function 'orderless-initialism)
 (setq acm-enable-doc nil)
+(setq acm-backend-search-file-words-max-number 5)
+(setq lsp-bridge-enable-search-words nil)
+(setq acm-enable-tabnine nil)
 
 
+(etags-regen-mode)
 (load custom-file 'noerror 'no-message)
 (minimal-emacs-load-user-init "local-config.el")

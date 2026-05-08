@@ -19,10 +19,10 @@
   (find-file "~/.emacs.d/package-init.el"))
 
 (lsp-bridge-breadcrumb-mode)
-(tab-bar-mode 1)
+(tab-bar-mode -1)
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
-(setq blink-cursor-interval 0.4 )
+(setq blink-cursor-interval 0.3 )
 (setq dired-dwim-target t)
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
@@ -33,20 +33,37 @@
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (global-set-key (kbd "C-q") 'set-mark-command)
-(global-set-key (kbd "C-<return>") 'vterm)
+(global-set-key (kbd "C-<return>") 'shell)
 (global-set-key (kbd "M-p") 'next-buffer)
 (global-set-key (kbd "M-n") 'previous-buffer)
+(global-set-key (kbd "C-x C-j") 'dirvish-fd)
+
 
 (custom-set-faces
- ;; Default font for all text
- '(default ((t (:family "Iosevka Nerd Font" :height 250))))
- '(fixed-pitch ((t (:family "Iosevka Nerd Font" :height 220))))
- ;; Current line number
- '(line-number-current-line ((t (:foreground "yellow" :inherit line-number))))
- '(mode-line ((t (:family "Iosevka Term Slab" :height 190 ))))
- '(flycheck-info ((t (:underline nil))))
- '(flycheck-warning ((t (:underline nil))))
- ;; Styles
- '(font-lock-function-name-face ((t (:family "Iosevka Nerd Font" :slant normal ))))
+ ;; Default font
+ '(default ((t (:family "Iosevka" :height 250))))
+
+ ;; Fixed width font (important for org/vterm alignment)
+ '(fixed-pitch ((t (:family "Iosevka" :height 250))))
+
+ ;; Line number highlight
+ '(line-number-current-line ((t (:foreground "yellow" :weight bold))))
+
+ ;; Mode line
+ '(mode-line ((t (:family "Iosevka" :height 270 :weight bold))))
+
+ ;; Syntax highlighting (clean version)
+ '(font-lock-function-name-face ((t (:weight bold))))
+ '(font-lock-variable-name-face ((t (:weight normal))))
  )
+
+(set-face-attribute 'isearch nil
+                    :foreground "#ff4d4d"   ;; soft red
+                    :background "#2a0000"   ;; dark red base
+                    :weight 'bold)
+
+;; Other matches (lazy highlight)
+(set-face-attribute 'lazy-highlight nil
+                    :foreground "#000000"   ;; keep text readable
+                    :background "#f4e285")  ;; soft warm yellow
 
