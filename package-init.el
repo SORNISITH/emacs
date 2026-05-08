@@ -927,10 +927,10 @@
   ;; but you can use any other Nerd Font if you want
   ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
   )
+
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1))
-
 
 (use-package dirvish
   :init
