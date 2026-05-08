@@ -44,4 +44,3 @@
  ;; Styles
  '(font-lock-function-name-face ((t (:family "Iosevka"  ))))
  '(font-lock-variable-name-face ((t (:family "Iosevka" )))))
-
