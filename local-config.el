@@ -65,6 +65,7 @@
  '(font-lock-function-name-face ((t (:weight bold))))
  '(font-lock-variable-name-face ((t (:weight normal))))
  '(font-lock-builtin-face ((t ( :slant italic :foreground "#ff4d4d"))))
+ '(font-lock-function-name-face ((t ( :weight normal ))))
  )
 
 (set-face-attribute 'isearch nil
