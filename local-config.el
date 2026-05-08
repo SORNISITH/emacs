@@ -27,16 +27,20 @@
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "C-x C-p"))
-(global-set-key (kbd "C-c p") 'compile)
+(global-set-key (kbd "C-m") 'compile)
 (global-set-key (kbd "C-z") 'undo-fu-only-undo)
 (global-set-key (kbd "C-S-z") 'undo-fu-only-redo)
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (global-set-key (kbd "C-q") 'set-mark-command)
-(global-set-key (kbd "C-<return>") 'shell)
+(global-set-key (kbd "C-<return>") 'eshell)
 (global-set-key (kbd "M-p") 'next-buffer)
 (global-set-key (kbd "M-n") 'previous-buffer)
-(global-set-key (kbd "C-x C-j") 'dirvish-fd)
+(global-set-key (kbd "C-;") 'flycheck-next-error)
+(global-set-key (kbd "C-l") 'consult-line)
+(global-set-key (kbd "C-j") 'consult-buffer)
+(global-set-key (kbd "C-,") 'consult-ripgrep)
+
 
 
 (custom-set-faces
