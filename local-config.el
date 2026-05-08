@@ -58,4 +58,16 @@
  ;; Syntax highlighting (clean version)
  '(font-lock-function-name-face ((t (:weight bold))))
  '(font-lock-variable-name-face ((t (:weight normal))))
+
  )
+(set-face-attribute 'isearch nil
+                    :foreground "#ff4d4d"   ;; soft red
+                    :background "#2a0000"   ;; dark red base
+                    :weight 'bold)
+
+;; Other matches (lazy highlight)
+(set-face-attribute 'lazy-highlight nil
+                    :foreground "#000000"   ;; keep text readable
+                    :background "#f4e285")  ;; soft warm yellow
+
+
