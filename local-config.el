@@ -25,7 +25,6 @@
 
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
-
 (global-unset-key (kbd "M-/"))
 (global-unset-key (kbd "C-x C-p"))
 (global-set-key (kbd "C-c p") 'compile)
@@ -41,7 +40,7 @@
 (global-set-key (kbd "C-l") 'consult-line)
 (global-set-key (kbd "C-j") 'consult-buffer)
 (global-set-key (kbd "M-/") 'consult-ripgrep)
-(global-set-key (kbd "C-i") 'other-window)
+
 
 
 (custom-set-faces
