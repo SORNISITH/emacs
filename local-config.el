@@ -26,7 +26,7 @@
 (setq dired-dwim-target t)
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
-(global-unset-key (kbd "C-/"))
+
 (global-unset-key (kbd "M-/"))
 (global-unset-key (kbd "C-x C-p"))
 (global-set-key (kbd "C-m") 'compile)
@@ -36,12 +36,11 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (global-set-key (kbd "C-q") 'set-mark-command)
 (global-set-key (kbd "C-<return>") 'eshell)
-(global-set-key (kbd "M-p") 'next-buffer)
-(global-set-key (kbd "M-n") 'previous-buffer)
+(global-set-key (kbd "M-p") 'centaur-tabs-forward)
+(global-set-key (kbd "M-n") 'centaur-tabs-backward)
 (global-set-key (kbd "C-,") 'flycheck-next-error)
 (global-set-key (kbd "C-l") 'consult-line)
 (global-set-key (kbd "C-j") 'consult-buffer)
-(global-set-key (kbd "C-/") 'consult-imenu)
 (global-set-key (kbd "M-/") 'consult-ripgrep)
 (global-set-key (kbd "C-i") 'other-window)
 
@@ -77,4 +76,32 @@
 (set-face-attribute 'lazy-highlight nil
                     :foreground "#000000"   ;; keep text readable
                     :background "#f4e285")  ;; soft warm yellow
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
