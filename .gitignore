@@ -10,7 +10,7 @@ backup
 backup/*
 cus.el
 *.elc
-lsp-bridge
-var_lsp_bridge
+lsp-bridge/
+var_lsp_bridge/
 tags
-var.lsp.bridge
+var.lsp.bridge/*
