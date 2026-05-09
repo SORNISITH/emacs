@@ -19,7 +19,6 @@
   (interactive)
   (find-file "~/.emacs.d/package-init.el"))
 
-(lsp-bridge-breadcrumb-mode)
 (tab-bar-mode -1)
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
