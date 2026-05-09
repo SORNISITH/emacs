@@ -14,3 +14,6 @@ lsp-bridge/
 var_lsp_bridge/
 tags
 var.lsp.bridge/*
+auto_save/
+auto-save-list/
+
