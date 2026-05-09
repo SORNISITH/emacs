@@ -12,7 +12,7 @@ cus.el
 *.elc
 lsp-bridge/
 var_lsp_bridge/
-var2
+var2/
 tags
 var.lsp.bridge/*
 auto_save/
