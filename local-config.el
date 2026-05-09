@@ -1,5 +1,6 @@
 ;;; user-custom-configs.init.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 ;; Display the current line and column numbers in the mode line
+;; Display the current line and column numbers in the mode line
 (setq line-number-mode t)
 (setq column-number-mode t)
 (setq mode-line-position-column-line-format '("%l:%C"))
@@ -18,20 +19,15 @@
   (interactive)
   (find-file "~/.emacs.d/package-init.el"))
 
-
+(lsp-bridge-breadcrumb-mode)
+(tab-bar-mode -1)
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
-(setq doom-modeline-time nil)
-(setq doom-modeline-icon nil)
-(setq doom-modeline-enable-file-name nil)
-(setq doom-modeline-buffer-file-name-style nil)
-
-
+(setq dired-dwim-target t)
 ;; GLOBAL KEYS
-
 (global-unset-key (kbd "C-z"))
-(global-unset-key (kbd "C-/"))
+
 (global-unset-key (kbd "M-/"))
 (global-unset-key (kbd "C-x C-p"))
 (global-set-key (kbd "C-m") 'compile)
@@ -41,32 +37,35 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (global-set-key (kbd "C-q") 'set-mark-command)
 (global-set-key (kbd "C-<return>") 'eshell)
-(global-set-key (kbd "M-p") 'next-buffer)
-(global-set-key (kbd "M-n") 'previous-buffer)
+(global-set-key (kbd "M-p") 'centaur-tabs-forward)
+(global-set-key (kbd "M-n") 'centaur-tabs-backward)
 (global-set-key (kbd "C-,") 'flycheck-next-error)
 (global-set-key (kbd "C-l") 'consult-line)
 (global-set-key (kbd "C-j") 'consult-buffer)
-(global-set-key (kbd "C-/") 'consult-imenu)
 (global-set-key (kbd "M-/") 'consult-ripgrep)
 (global-set-key (kbd "C-i") 'other-window)
 
 
 (custom-set-faces
  ;; Default font
- '(default ((t (:family "Iosevka" :height 250))))
+ '(default ((t (:family "Iosevka" :height 210))))
 
  ;; Fixed width font (important for org/vterm alignment)
- '(fixed-pitch ((t (:family "Iosevka" :height 250))))
+ '(fixed-pitch ((t (:family "Iosevka" :height 210))))
 
  ;; Line number highlight
  '(line-number-current-line ((t (:foreground "yellow" :weight bold))))
+ '(font-lock-function-call-face ((t (:slant normal ))))
+
 
  ;; Mode line
- '(mode-line ((t (:family "Iosevka" :height 270 :weight bold))))
+ '(mode-line ((t (:family "Iosevka" :height 200 :slant italic))))
 
  ;; Syntax highlighting (clean version)
  '(font-lock-function-name-face ((t (:weight bold))))
  '(font-lock-variable-name-face ((t (:weight normal))))
+ '(font-lock-builtin-face ((t ( :slant italic :foreground "#ff4d4d"))))
+ '(font-lock-function-name-face ((t ( :weight normal ))))
  )
 
 (set-face-attribute 'isearch nil
@@ -78,5 +77,4 @@
 (set-face-attribute 'lazy-highlight nil
                     :foreground "#000000"   ;; keep text readable
                     :background "#f4e285")  ;; soft warm yellow
-
 
