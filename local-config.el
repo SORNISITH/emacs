@@ -1,4 +1,3 @@
-;;; user-custom-configs.init.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 ;; Display the current line and column numbers in the mode line
 ;; Display the current line and column numbers in the mode line
 (setq line-number-mode t)
@@ -8,7 +7,7 @@
 (setq tab-width 4)
 (setq select-enable-clipboard t)
 (setq select-enable-primary t)
-(windmove-default-keybindings)
+;; (windmove-default-keybindings)
 (global-display-line-numbers-mode)
 (setq dired-movement-style 'bounded-files)
 (delete-selection-mode 1)
@@ -23,10 +22,9 @@
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
-(setq dired-dwim-target t)
+
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
-
 (global-unset-key (kbd "M-/"))
 (global-unset-key (kbd "C-x C-p"))
 (global-set-key (kbd "C-m") 'compile)

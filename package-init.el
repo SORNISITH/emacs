@@ -614,13 +614,6 @@
   (helpful-max-buffers 7))
 
 
-(use-package avy
-  :commands (avy-goto-char
-             avy-goto-char-2
-             avy-next)
-  :init
-  (global-set-key (kbd "C-'") 'avy-goto-char-2))
-
 
 
 (use-package bufferfile
@@ -890,12 +883,6 @@
 ;; are typically stored in a separate file, commonly named 'custom.el'. To
 ;; ensure these settings are loaded during Emacs initialization, it is necessary
 ;; to explicitly load this file if it exists.
-
-(use-package magit
-  :ensure t
-  :bind (("C-x g" . magit-status)
-         ("C-x M-g" . magit-dispatch)))
-
 (use-package treesit-auto
   :custom
   (treesit-auto-install 'prompt)
@@ -931,7 +918,6 @@
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1))
-
 (setq doom-modeline-buffer-name nil)
 (setq doom-modeline-battery nil)
 (setq doom-modeline-lsp-icon nil)
@@ -948,7 +934,7 @@
   (setq centaur-tabs-set-icons t)
   (setq centaur-tabs-height 24))
 
-(tab-bar-mode -1)
+
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
