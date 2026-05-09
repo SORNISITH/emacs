@@ -77,31 +77,3 @@
                     :foreground "#000000"   ;; keep text readable
                     :background "#f4e285")  ;; soft warm yellow
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

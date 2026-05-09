@@ -99,9 +99,9 @@
 ;;   
 ;;   :config
 ;;   (global-corfu-mode))
-;; ;; Cape, or Completion At Point Extensions, extends the capabilities of
-;; ;; in-buffer completion. It integrates with Corfu or the default completion UI,
-;; ;; by providing additional backends through completion-at-point-functions.
+;; ;; ;; Cape, or Completion At Point Extensions, extends the capabilities of
+;; ;; ;; in-buffer completion. It integrates with Corfu or the default completion UI,
+;; ;; ;; by providing additional backends through completion-at-point-functions.
 ;; (use-package cape
 ;;   :commands (cape-dabbrev cape-file cape-elisp-block)
 ;;   :bind ("C-c l" . cape-prefix-map)
