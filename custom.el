@@ -8,11 +8,11 @@
    '(aggressive-indent apheleia buffer-terminator bufferfile centaur-tabs citre
                        compat cond-let crux doom-modeline doom-themes dumb-jump
                        easysession embark-consult flycheck helpful
-                       highlight-defined inhibit-mouse llama magit magit-section
-                       marginalia markdown-toc move-text multiple-cursors
-                       orderless org-appear persist-text-scale treesit-auto
-                       treesit-fold undo-fu undo-fu-session vertico vterm
-                       with-editor yasnippet-snippets)))
+                       highlight-defined inhibit-mouse llama magit magit-gh
+                       magit-section marginalia markdown-toc move-text
+                       multiple-cursors orderless org-appear persist-text-scale
+                       treesit-auto treesit-fold undo-fu undo-fu-session vertico
+                       vterm with-editor yasnippet-snippets)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -646,7 +646,6 @@
              vterm-send-return
              vterm-send-key
              vterm-module-compile)
-
   :preface
   (when noninteractive
     ;; vterm unnecessarily triggers compilation of vterm-module.so upon loading.
@@ -943,6 +942,7 @@
 (setq acm-backend-search-file-words-max-number 5)
 (setq lsp-bridge-enable-search-words nil)
 (setq acm-enable-tabnine nil)
+(setq magit-view-git-manual-method 'man)
 
 
 (etags-regen-mode)
