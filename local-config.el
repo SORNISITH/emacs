@@ -25,9 +25,10 @@
 
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
+
 (global-unset-key (kbd "M-/"))
 (global-unset-key (kbd "C-x C-p"))
-(global-set-key (kbd "C-m") 'compile)
+(global-set-key (kbd "C-c p") 'compile)
 (global-set-key (kbd "C-z") 'undo-fu-only-undo)
 (global-set-key (kbd "C-S-z") 'undo-fu-only-redo)
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
