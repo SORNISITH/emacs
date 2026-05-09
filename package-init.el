@@ -909,20 +909,20 @@
 (setq doom-modeline-time nil)
 
 
-(use-package dirvish
-  :init
-  (add-to-list 'load-path
-               (expand-file-name "extensions" (file-name-directory (locate-library "dirvish"))))
-
-  :custom
-  (dirvish-attributes
-   '(vc-state
-     file-modes
-     file-size))
-  
-  :config
-
-  (dirvish-override-dired-mode))
+;; (use-package dirvish
+;;   :init
+;;   (add-to-list 'load-path
+;;                (expand-file-name "extensions" (file-name-directory (locate-library "dirvish"))))
+;; 
+;;   :custom
+;;   (dirvish-attributes
+;;    '(vc-state
+;;      file-modes
+;;      file-size))
+;;   
+;;   :config
+;; 
+;;   (dirvish-override-dired-mode))
 
 
 

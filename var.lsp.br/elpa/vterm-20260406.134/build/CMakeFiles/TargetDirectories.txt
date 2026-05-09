@@ -1,0 +1,4 @@
+/home/nzvoid/.emacs.d/var.lsp.br/elpa/vterm-20260406.134/build/CMakeFiles/vterm-module.dir
+/home/nzvoid/.emacs.d/var.lsp.br/elpa/vterm-20260406.134/build/CMakeFiles/run.dir
+/home/nzvoid/.emacs.d/var.lsp.br/elpa/vterm-20260406.134/build/CMakeFiles/edit_cache.dir
+/home/nzvoid/.emacs.d/var.lsp.br/elpa/vterm-20260406.134/build/CMakeFiles/rebuild_cache.dir

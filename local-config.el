@@ -1,9 +1,8 @@
-
 ;; Display the current line and column numbers in the mode line
 (setq line-number-mode t)
 (setq column-number-mode t)
-(setq mode-line-position-column-line-format '("%l:%C"))
 (setq-default mode-line-buffer-identification nil)
+(setq mode-line-position-column-line-format '("%l:%C"))
 (setq tab-width 4)
 (setq select-enable-clipboard t)
 (setq select-enable-primary t)
@@ -17,8 +16,7 @@
 (defun emacs-conf ()
   (interactive)
   (find-file "~/.emacs.d/package-init.el"))
-
-(lsp-bridge-breadcrumb-mode)
+;;;(lsp-bridge-breadcrumb-mode)
 (tab-bar-mode -1)
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
@@ -26,9 +24,9 @@
 (setq dired-dwim-target t)
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
-
 (global-unset-key (kbd "M-/"))
 (global-unset-key (kbd "C-x C-p"))
+(global-set-key (kbd "C-c p") 'compile)
 (global-set-key (kbd "C-m") 'compile)
 (global-set-key (kbd "C-z") 'undo-fu-only-undo)
 (global-set-key (kbd "C-S-z") 'undo-fu-only-redo)
@@ -43,7 +41,6 @@
 (global-set-key (kbd "C-j") 'consult-buffer)
 (global-set-key (kbd "M-/") 'consult-ripgrep)
 (global-set-key (kbd "C-i") 'other-window)
-
 
 (custom-set-faces
  ;; Default font
