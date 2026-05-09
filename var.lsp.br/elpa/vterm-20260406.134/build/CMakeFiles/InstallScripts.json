@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/nzvoid/.emacs.d/var.lsp.br/elpa/vterm-20260406.134/build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

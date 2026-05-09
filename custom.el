@@ -12,6 +12,8 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Iosevka" :height 210))))
  '(fixed-pitch ((t (:family "Iosevka" :height 210))))
+ '(flycheck-info ((t (:underline nil))))
+ '(flycheck-warning ((t (:underline nil))))
  '(font-lock-builtin-face ((t (:slant italic :foreground "#ff4d4d"))))
  '(font-lock-function-call-face ((t (:slant normal))))
  '(font-lock-function-name-face ((t (:weight bold))))

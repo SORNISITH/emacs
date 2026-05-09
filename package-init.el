@@ -1,4 +1,4 @@
-;;; package-init.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
+;;; package-init.el --- PKGS -*- no-byte-compile: t; lexical-binding: t; -*-
 ;; Auto-revert in Emacs is a feature that automatically updates the
 ;; contents of a buffer to reflect changes made to the underlying file
 ;; on disk.
@@ -820,12 +820,6 @@
 ;; When tooltip-mode is enabled, certain UI elements (e.g., help text,
 
 
-(use-package magit
-  :ensure t
-  :bind (("C-x g" . magit-status)
-         ("C-x C-g" . magit-status)
-         ("C-x M-g" . magit-dispatch)))
-
 (use-package treesit-auto
   :custom
   (treesit-auto-install 'prompt)
@@ -935,8 +929,6 @@
   (setq centaur-tabs-set-icons t)
   (setq centaur-tabs-height 24))
 
-
-
 (use-package flycheck
   :ensure t
   :config
@@ -946,7 +938,6 @@
 (require 'lsp-bridge)
 (global-lsp-bridge-mode)
 (setq lsp-bridge-python-command "~/.pyenv/versions/3.13.13/bin/python3")
-(lsp-bridge-breadcrumb-mode)
 (setq acm-candidate-match-function 'orderless-initialism)
 (setq acm-enable-doc nil)
 (setq acm-backend-search-file-words-max-number 5)
