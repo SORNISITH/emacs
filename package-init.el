@@ -120,6 +120,10 @@
          (shell-mode . corfu-mode)
          (eshell-mode . corfu-mode))
   :custom
+  
+  (corfu-auto t)              ;; auto popup
+  (corfu-auto-delay 0.2)      ;; delay before popup
+  (corfu-auto-prefix 2)       ;; start after 2 chars
   (read-extended-command-predicate
    #'command-completion-default-include-p)
   (text-mode-ispell-word-completion nil)
@@ -349,7 +353,7 @@
 
 
 (use-package doom-themes)
-(load-theme 'spacegray t)
+
 
 ;; (let ((inhibit-redisplay t))
 ;;   ;; Disable all active themes
@@ -688,14 +692,11 @@
     ;; This prevents that during byte-compilation (`use-package' eagerly loads
     ;; packages when compiling).
     (advice-add #'vterm-module-compile :override #'ignore))
-
   (defun my-vterm--setup ()
     ;; Hide the mode-line
     (setq mode-line-format nil)
-
     ;; Inhibit early horizontal scrolling
     (setq-local hscroll-margin 0)
-
     ;; Suppress prompts for terminating active processes when closing vterm
     (setq-local confirm-kill-processes nil))
 
