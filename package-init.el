@@ -891,7 +891,7 @@
   :ensure t
   :init (doom-modeline-mode 1))
 
-
+(set-cursor-color "gold")
 (setq doom-modeline-buffer-name nil)
 (setq doom-modeline-battery nil)
 (setq doom-modeline--flymake nil)
