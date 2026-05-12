@@ -120,7 +120,8 @@
          (shell-mode . corfu-mode)
          (eshell-mode . corfu-mode))
   :custom
-  
+
+  (setq corfu-auto t)
   (corfu-auto t)              ;; auto popup
   (corfu-auto-delay 0.2)      ;; delay before popup
   (corfu-auto-prefix 2)       ;; start after 2 chars
@@ -353,7 +354,7 @@
 
 
 (use-package doom-themes)
-
+(load-theme 'doom-tokyo-night)
 
 ;; (let ((inhibit-redisplay t))
 ;;   ;; Disable all active themes
@@ -430,10 +431,10 @@
 
 ;; Apheleia is an Emacs package designed to run code formatters (e.g., Shfmt,
 ;; Black and Prettier) asynchronously without disrupting the cursor position.
-;; (use-package apheleia
-;;   :commands (apheleia-mode
-;;              apheleia-global-mode)
-;;   :hook ((prog-mode . apheleia-mode)))
+(use-package apheleia
+  :commands (apheleia-mode
+             apheleia-global-mode)
+  :hook ((prog-mode . apheleia-mode)))
 
 ;; Intelligent code folding by using the structural understanding of the
 ;; built-in tree-sitter parser. Unlike traditional folding methods that rely on
@@ -508,7 +509,7 @@
   ;; Number of seconds a rg/grep/find command can take before being warned to
   ;; use ag and config.
   (setq dumb-jump-max-find-time 3)
-
+  
   ;; Use `completing-read' so that selection of jump targets integrates with the
   ;; active completion framework (e.g., Vertico, Ivy, Helm, Icomplete),
   ;; providing a consistent minibuffer-based interface whenever multiple
