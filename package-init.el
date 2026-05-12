@@ -349,11 +349,13 @@
 
 
 (use-package doom-themes)
-(let ((inhibit-redisplay t))
-  ;; Disable all active themes
-  (mapc #'disable-theme custom-enabled-themes)
-  ;; Load the built-in theme
-  (load-theme 'doom-tokyo-night t))
+(load-theme 'spacegray t)
+
+;; (let ((inhibit-redisplay t))
+;;   ;; Disable all active themes
+;;   (mapc #'disable-theme custom-enabled-themes)
+;;   ;; Load the built-in theme
+;;   (load-theme 'gruber-darker t))
 
 
 
@@ -424,10 +426,10 @@
 
 ;; Apheleia is an Emacs package designed to run code formatters (e.g., Shfmt,
 ;; Black and Prettier) asynchronously without disrupting the cursor position.
-(use-package apheleia
-  :commands (apheleia-mode
-             apheleia-global-mode)
-  :hook ((prog-mode . apheleia-mode)))
+;; (use-package apheleia
+;;   :commands (apheleia-mode
+;;              apheleia-global-mode)
+;;   :hook ((prog-mode . apheleia-mode)))
 
 ;; Intelligent code folding by using the structural understanding of the
 ;; built-in tree-sitter parser. Unlike traditional folding methods that rely on
@@ -813,15 +815,15 @@
 (add-hook 'after-init-hook #'window-divider-mode)
 
 ;; Constrain vertical cursor movement to lines within the buffer
-(setq dired-movement-style 'bounded-files)
 
 ;; Dired buffers: Automatically hide file details (permissions, size,
 ;; modification date, etc.) and all the files in the `dired-omit-files' regular
 
 ;; Hide files from dired
+(setq dired-movement-style 'bounded-files)
 (setq dired-omit-files (concat "\\`[.]\\'"
                                "\\|\\(?:\\.js\\)?\\.meta\\'"
-                               "\\|\\.\\(?:elc|a\\|o\\|pyc\\|pyo\\|swp\\|class\\)\\'"
+                                        ;                               "\\|\\.\\(?:elc|a\\|o\\|pyc\\|pyo\\|swp\\|class\\)\\'"
                                "\\|^\\.DS_Store\\'"
                                "\\|^\\.\\(?:svn\\|git\\)\\'"
                                "\\|^\\.ccls-cache\\'"
@@ -918,27 +920,48 @@
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1))
-(setq doom-modeline-buffer-name nil)
+                                        ;(setq doom-modeline-buffer-name nil)
 (setq doom-modeline-battery nil)
 (setq doom-modeline-lsp-icon nil)
+(setq doom-modeline-icon nil)
 (setq doom-modeline-time nil)
 (setq display-time-default-load-average nil)
 (setq doom-modeline-time nil)
 
 
-(use-package centaur-tabs
-  :demand
+;; (use-package centaur-tabs
+;;   :demand
+;;   :config
+;;   (centaur-tabs-mode t)
+;;   (setq centaur-tabs-style "bar")
+;;   (setq centaur-tabs-set-icons t)
+;;   (setq centaur-tabs-height 24))
+
+(use-package shackle
+  :ensure t
   :config
-  (centaur-tabs-mode t)
-  (setq centaur-tabs-style "bar")
-  (setq centaur-tabs-set-icons t)
-  (setq centaur-tabs-height 24))
+  (setq shackle-rules
+        '((compilation-mode :select t)
+          (help-mode :select t)
+          (Info-mode :select t)
+          (man-mode :select t)
+          ("*Messages*" :select t)
+          ("*Warnings*" :select t)))
+  (shackle-mode 1))
+;;; eldoc mode
+
+;; (defun rc/turn-on-eldoc-mode ()
+;;   (interactive)
+;;   (eldoc-mode 1))
+;; (add-hook 'emacs-lisp-mode-hook 'rc/turn-on-eldoc-mode)
 
 
+
+(setq tramp-verbose 1)
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
 (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
-
+(setq tramp-auto-save-directory "/tmp")
 (load custom-file 'noerror 'no-message)
 (minimal-emacs-load-user-init "local-config.el")
