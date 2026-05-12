@@ -310,11 +310,8 @@
 
 
 (use-package doom-themes)
-(let ((inhibit-redisplay t))
-  ;; Disable all active themes
-  (mapc #'disable-theme custom-enabled-themes)
-  ;; Load the built-in theme
-  (load-theme 'doom-tokyo-night t))
+
+(load-theme 'doom-tokyo-night t)
 
 
 
@@ -892,7 +889,7 @@
   :init (doom-modeline-mode 1))
 
 (set-cursor-color "gold")
-(setq doom-modeline-buffer-name nil)
+                                        ;;;(setq doom-modeline-buffer-name nil)
 (setq doom-modeline-battery nil)
 (setq doom-modeline--flymake nil)
 (setq doom-modeline--flycheck nil)
@@ -920,13 +917,13 @@
 
 
 
-(use-package centaur-tabs
-  :demand
-  :config
-  (centaur-tabs-mode t)
-  (setq centaur-tabs-style "bar")
-  (setq centaur-tabs-set-icons t)
-  (setq centaur-tabs-height 24))
+;; (use-package centaur-tabs
+;;   :demand
+;;   :config
+;;   (centaur-tabs-mode t)
+;;   (setq centaur-tabs-style "bar")
+;;   (setq centaur-tabs-set-icons t)
+;;   (setq centaur-tabs-height 24))
 
 (use-package flycheck
   :ensure t

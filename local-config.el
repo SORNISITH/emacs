@@ -2,7 +2,7 @@
 (setq line-number-mode t)
 (setq column-number-mode t)
 (setq mode-line-position-column-line-format '("%l:%C"))
-(setq-default mode-line-buffer-identification nil)
+;;(setq-default mode-line-buffer-identification nil)
 (setq tab-width 4)
 (setq select-enable-clipboard t)
 (setq select-enable-primary t)
@@ -43,6 +43,7 @@
 (global-set-key (kbd "C-=") 'quickrun)
 (setq compilation-scroll-output t)
 
+
 (custom-set-faces
  ;; Default font
  '(default ((t (:family "Iosevka" :height 210))))
@@ -56,8 +57,9 @@
 
  ;; Mode line
  '(mode-line ((t (:family "Iosevka" :height 230 :slant italic))))
-
+ 
  '(font-lock-function-name-face ((t (:weight bold))))
+ '(font-lock-keyword-face ((t (:foreground "#ff9e64"))))
  '(font-lock-variable-name-face ((t (:weight normal))))
  '(font-lock-builtin-face ((t ( :slant italic :foreground "#ff4d4d"))))
  '(font-lock-function-name-face ((t ( :weight normal ))))
