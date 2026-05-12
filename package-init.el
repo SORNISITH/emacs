@@ -898,7 +898,6 @@
 (setq display-time-default-load-average nil)
 (setq doom-modeline-time nil)
 
-
 ;; (use-package dirvish
 ;;   :init
 ;;   (add-to-list 'load-path
@@ -936,11 +935,12 @@
 (setq lsp-bridge-python-command "~/.pyenv/versions/3.13.13/bin/python3")
 (setq acm-candidate-match-function 'orderless-initialism)
 (setq acm-enable-doc nil)
+(setq acm-enable-preview t)
 (setq acm-backend-search-file-words-max-number 5)
 (setq lsp-bridge-enable-search-words nil)
 (setq acm-enable-tabnine nil)
 (setq magit-view-git-manual-method 'man)
-
+(add-hook 'compilation-mode-hook #'acm-mode)
 
 (etags-regen-mode)
 (load custom-file 'noerror 'no-message)
