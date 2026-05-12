@@ -941,7 +941,7 @@
 (setq acm-enable-tabnine nil)
 (setq magit-view-git-manual-method 'man)
 (add-hook 'compilation-mode-hook #'acm-mode)
-
-(etags-regen-mode)
+(setq tab-always-indent 'complete)
+(setq pcomplete-parse-arguments nil)
 (load custom-file 'noerror 'no-message)
 (minimal-emacs-load-user-init "local-config.el")
