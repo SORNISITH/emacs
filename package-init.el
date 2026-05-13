@@ -1,7 +1,6 @@
 ;; Native compilation enhances Emacs performance by converting Elisp code into
 ;; native machine code, resulting in faster execution and improved
 ;; responsiveness.
-
 ;; Ensure adding the following compile-angel code at the very beginning
 ;; of your `~/.emacs.d/post-init.el` file, before all other packages.
 (use-package compile-angel
@@ -110,6 +109,17 @@
 ;; Trigger an auto-save 30 seconds of idle time.
 (setq auto-save-timeout 30)
 
+(use-package cape
+  :straight t
+  :defer t
+  :commands (cape-dabbrev cape-file cape-elisp-block)
+  :bind ("C-c p" . cape-prefix-map)
+  :init
+  ;; Add to the global default value of `completion-at-point-functions' which is
+  ;; used by `completion-at-point'.
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block))
 ;; Corfu enhances in-buffer completion by displaying a compact popup with
 ;; current candidates, positioned either below or above the point. Candidates
 ;; can be selected by navigating up or down.
@@ -121,15 +131,28 @@
          (eshell-mode . corfu-mode))
   :custom
 
-  (setq corfu-auto t)
-  (corfu-auto t)              ;; auto popup
-  (corfu-auto-delay 0.2)      ;; delay before popup
-  (corfu-auto-prefix 2)       ;; start after 2 chars
-  (read-extended-command-predicate
-   #'command-completion-default-include-p)
   (text-mode-ispell-word-completion nil)
   ;; TAB triggers completion
   (tab-always-indent 'complete)
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; Disable Ispell completion function. As an alternative try `cape-dict'.
+  (text-mode-ispell-word-completion nil)
+  (tab-always-indent 'complete)
+  ;; Only use `corfu' when calling `completion-at-point' or
+  ;; `indent-for-tab-command'
+  (corfu-auto t)
+  (corfu-auto-prefix 2)
+  (corfu-auto-delay 0.25)
+  (corfu-preselect 'first)
+  (corfu-quit-at-boundary nil)
+  (corfu-separator ?\s)            ; Use space
+  (corfu-quit-no-match 'separator) ; Don't quit if there is `corfu-separator' inserted
+  (corfu-preview-current 'insert)        ; Preview first candidate. Insert on input if only one
+  (corfu-preselect-first t)        ; Preselect first candidate?
+  (lsp-completion-provider :none)       ; Use corfu instead for lsp completion
+  (corfu-on-exact-match nil)
+  (completion-cycle-threshold nil)      ; Always show completion candidates
+  (corfu-insert-at-point t)
   ;; Optional
   (corfu-cycle t) ; allow cycling
   ;; :bind
@@ -141,85 +164,159 @@
   ;;       ("RET" . corfu-insert))
 
   :config
+  ;; Modify completion behavior for better Eglot integration
+  (defun my/corfu-complete-full ()
+    "Insert complete candidate, including any additional text edits."
+    (interactive)
+    (let ((completion-extra-properties nil))
+      (corfu-insert)))
+
+  ;; Setup lsp to use corfu for lsp completion
+  (defun dorneanu/corfu-setup-lsp ()
+    "Use orderless completion style with lsp-capf instead of the default lsp-passthrough."
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless)))
+
+  ;; Free the RET key for less intrusive behavior.
+  ;; Option 1: Unbind RET completely
+  ;; (keymap-unset corfu-map "RET")
+  ;; Option 2: Use RET only in shell modes
+  (keymap-set corfu-map "RET" `( menu-item "" nil :filter
+                                 ,(lambda (&optional _)
+                                    (and (derived-mode-p 'eshell-mode 'comint-mode)
+                                         #'corfu-send))))
+  ;; Bind TAB to the new completion function
+  (define-key corfu-map [tab] #'my/corfu-complete-full)
+  (define-key corfu-map (kbd "TAB") #'my/corfu-complete-full)
+
   (global-corfu-mode))
+
+
 ;; Cape, or Completion At Point Extensions, extends the capabilities of
 ;; in-buffer completion. It integrates with Corfu or the default completion UI,
 ;; by providing additional backends through completion-at-point-functions.
-(use-package cape
-  :commands (cape-dabbrev cape-file cape-elisp-block)
-  :bind ("C-c l" . cape-prefix-map)
-  :init
-  ;; Add to the global default value of `completion-at-point-functions' which is
-  ;; used by `completion-at-point'.
-  (add-hook 'completion-at-point-functions #'cape-dabbrev)
-  (add-hook 'completion-at-point-functions #'cape-file)
-  (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
-;; Vertico provides a vertical completion interface, making it easier to
-;; navigate and select from completion candidates (e.g., when `M-x` is pressed).
+
 (use-package vertico
+  :straight t
+  :defer t
+  :commands vertico-mode
+  :hook ((after-init . vertico-mode)
+         (vertico-mode . vertico-multiform-mode))
+  :hook (minibuffer-setup . vertico-repeat-save)
+  :bind (("M-R" . vertico-repeat)
+         :map vertico-map
+         ("C-g" . abort-minibuffers)
+         ("<escape>" . abort-minibuffers)
+         ("RET" . vertico-directory-enter)
+         ("DEL" . vertico-directory-delete-char)
+         ("M-DEL" . vertico-directory-delete-word))
   :custom
-  (vertico-count 10)  ;; limit to a fixed size
-  :bind (:map vertico-map
-              ;; Use page-up/down to scroll vertico buffer, like ivy does by default.
-              ("<prior>" . 'vertico-scroll-down)
-              ("<next>"  . 'vertico-scroll-up))
-  :init
-  ;; Activate vertico
-  (vertico-mode))
+  (vertico-cycle t)
+  (vertico-resize nil)
+  (vertico-count 12))
+(use-package vertico-multiform
+  :straight (:type built-in)
+  :demand t
+  :config
+  ;; (setq vertico-multiform-commands
+  ;;       '((consult-line
+  ;;          posframe
+  ;;         (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
+  ;;         (vertico-posframe-fallback-mode . vertico-buffer-mode))
+  ;;         (consult-org-heading buffer)
+  ;;         (consult-imenu buffer)
+  ;;         (consult-ripgrep buffer)
+  ;;         (consult-project-buffer buffer)
+  ;;         (consult-project-extra-find buffer)))
+  ;; (setq vertico-multiform-commands
+  ;;       '((consult-line
+  ;;          posframe
+  ;;          (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
+  ;;          (vertico-posframe-border-width . 10)
+  ;;          ;; NOTE: This is useful when emacs is used in both in X and
+  ;;          ;; terminal, for posframe do not work well in terminal, so
+  ;;          ;; vertico-buffer-mode will be used as fallback at the
+  ;;          ;; moment.
+  ;;          (vertico-posframe-fallback-mode . vertico-buffer-mode)
+  ;;          (consult-project-buffer buffer))
+  ;;         (t posframe)))
+  ;; (setq vertico-multiform-commands
+  ;;       '((consult-line
+  ;;          ;; posframe
+  ;;          ;; (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
+  ;;          ;; (vertico-posframe-border-width . 10)
+  ;;          ;; NOTE: This is useful when emacs is used in both in X and
+  ;;          ;; terminal, for posframe do not work well in terminal, so
+  ;;          ;; vertico-buffer-mode will be used as fallback at the
+  ;;          ;; moment.
+  ;;          ;; (vertico-posframe-fallback-mode . vertico-buffer-mode))
+  ;;         (t posframe)))
+  ;; (add-to-list 'vertico-multiform-categories
+  ;;              '(jinx grid (vertico-grid-annotate . 35)))
 
-;; Convenient path selection
-(use-package vertico-directory
-  :after vertico
-  :ensure nil  ;; no need to install, it comes with vertico
-  :bind (:map vertico-map
-              ("DEL" . vertico-directory-delete-char)))
-
+   (setq vertico-multiform-commands
+         '((consult-line reverse buffer)
+           (consult-project-buffer buffer)
+           (consult-ripgrep buffer)
+           (xref-find-references buffer)
+           (consult-imenu reverse buffer)))
+  (vertico-multiform-mode 1))
 ;; Vertico leverages Orderless' flexible matching capabilities, allowing users
 ;; to input multiple patterns separated by spaces, which Orderless then
 ;; matches in any order against the candidates.
 (use-package orderless
+  ;; Vertico leverages Orderless' flexible matching capabilities, allowing users
+  ;; to input multiple patterns separated by spaces, which Orderless then
+  ;; matches in any order against the candidates.
+  :straight t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion)))))
+
 
 ;; Marginalia allows Embark to offer you preconfigured actions in more contexts.
 ;; In addition to that, Marginalia also enhances Vertico by adding rich
 ;; annotations to the completion candidates displayed in Vertico's interface.
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
-  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
-  ;; available in the *Completions* buffer, add it to the
-  ;; `completion-list-mode-map'.
-  :bind (:map minibuffer-local-map
-              ("M-A" . marginalia-cycle))
-  ;; The :init section is always executed.
-  :init
-  ;; Marginalia must be activated in the :init section of use-package such that
-  ;; the mode gets enabled right away. Note that this forces loading the
-  ;; package.
-  (marginalia-mode))
+  ;; Marginalia allows Embark to offer you preconfigured actions in more contexts.
+  ;; In addition to that, Marginalia also enhances Vertico by adding rich
+  ;; annotations to the completion candidates displayed in Vertico's interface.
+  :straight t
+  :defer t
+  :bind (("M-A" . marginalia-cycle)
+         :map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+  :commands (marginalia-mode marginalia-cycle)
+  :hook (after-init . marginalia-mode))
 
 ;; Embark integrates with Consult and Vertico to provide context-sensitive
 ;; actions and quick access to commands based on the current selection, further
 ;; improving user efficiency and workflow within Emacs. Together, they create a
 ;; cohesive and powerful environment for managing completions and interactions.
+;; Some usefull functions
+(defun dorneanu/vsplit-file-open (f)
+  (let ((evil-vsplit-window-right t))
+    (split-window-vertically)
+    (find-file f)))
+
+(defun dorneanu/split-file-open (f)
+  (let ((evil-split-window-below t))
+    (split-window-horizontally)
+    (find-file f)))
+
 (use-package embark
-  ;; Embark is an Emacs package that acts like a context menu, allowing
-  ;; users to perform context-sensitive actions on selected items
-  ;; directly from the completion interface.
-  :commands (embark-act
-             embark-dwim
-             embark-export
-             embark-collect
-             embark-bindings
-             embark-prefix-help-command)
+  :straight t
+  :after (vertico)
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
    ("M-RET" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
+   ("C-h B" . embark-bindings)  ;; alternative for describe-bindings
+   :map embark-file-map
+   ("V" . dorneanu/vsplit-file-open)
+   ("X" . dorneanu/split-file-open))
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
 
@@ -230,25 +327,78 @@
                  nil
                  (window-parameters (mode-line-format . none)))))
 
+;; Using embark and ace
+;; (require 'ace-window)
+
+(defun dorneanu/embark-ace-action (fn)
+  "Create an embark action that uses ace-window to select target window."
+  (lambda (target)
+    (with-demoted-errors "%S"
+      (let ((window (if (> (length (aw-window-list)) 1)
+                        (aw-select "Select window: ")
+                      (selected-window))))
+        (when window
+          (select-window window)
+          (funcall fn target))))))
+
+;; Define ace-window variants of common actions
+(defun dorneanu/embark-find-file-ace (file)
+  "Open file in ace-selected window."
+  (let ((window (aw-select "Select window: ")))
+    (when window
+      (select-window window)
+      (find-file file))))
+
+(defun dorneanu/embark-switch-to-buffer-ace (buffer)
+  "Switch to buffer in ace-selected window."
+  (let ((window (aw-select "Select window: ")))
+    (when window
+      (select-window window)
+      (switch-to-buffer buffer))))
+
+;; Add to embark keymaps
+(with-eval-after-load 'embark
+  (define-key embark-file-map "O" #'dorneanu/embark-find-file-ace)
+  (define-key embark-buffer-map "O" #'dorneanu/embark-switch-to-buffer-ace))
+
 (use-package embark-consult
+  :straight t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-;; Consult offers a suite of commands for efficient searching, previewing, and
-;; interacting with buffers, file contents, and more, improving various tasks.
+;; From https://github.com/abougouffa/minemacs/blob/main/core/me-lib-extra.el
+;;;###autoload
+(defun +region-or-thing-at-point (&optional leave-region-marked)
+  "Return the region or the thing at point.
+
+  If LEAVE-REGION-MARKED is no-nil, don't call `desactivate-mark'
+  when a region is selected."
+  (when-let* ((thing (ignore-errors
+                       (or (prog1 (thing-at-point 'region t)
+                             (unless leave-region-marked (deactivate-mark)))
+                           (cl-some (+apply-partially-right #'thing-at-point t)
+                                    '(symbol email number string word))))))
+    ;; If the matching thing has multi-lines, join them
+    (string-join (string-lines thing))))
+
 (use-package consult
+  :straight t
+  :hook (embark-collect-mode . consult-preview-at-point-mode)
+  ;; Enable automatic preview at point in the *Completions* buffer. This is
+  ;; relevant when you use the default completion UI.
+  :hook (completion-list-mode . consult-preview-at-point-mode)
   :bind (;; C-c bindings in `mode-specific-map'
          ("C-c M-x" . consult-mode-command)
          ("C-c h" . consult-history)
          ("C-c k" . consult-kmacro)
-         ("C-c f" . consult-imenu)
-         ("C-c m" . consult-man)
+         ;; ("C-c m" . consult-man)
          ("C-c i" . consult-info)
          ([remap Info-search] . consult-info)
+         ([remap recentf-open-files] . consult-recent-file)
+         ([remap recentf] . consult-recent-file)
          ;; C-x bindings in `ctl-x-map'
          ("C-x M-:" . consult-complex-command)
          ("C-x b" . consult-buffer)
-         ("C-x C-b" . consult-buffer)
          ("C-x 4 b" . consult-buffer-other-window)
          ("C-x 5 b" . consult-buffer-other-frame)
          ("C-x t b" . consult-buffer-other-tab)
@@ -261,11 +411,18 @@
          ;; Other custom bindings
          ("M-y" . consult-yank-pop)
          ;; M-g bindings in `goto-map'
+         ("M-g C" . consult-theme)
          ("M-g e" . consult-compile-error)
          ("M-g f" . consult-flymake)
          ("M-g g" . consult-goto-line)
          ("M-g M-g" . consult-goto-line)
          ("M-g o" . consult-outline)
+         ("M-g O" . consult-org-heading)
+         ("M-g j a" . consult-org-agenda)
+         ;; Pulsar commands
+         ("M-g l t" . pulsar-recenter-top)
+         ("M-g l m" . pulsar-recenter-middle)
+         ("M-g l c" . pulsar-recenter-center)
          ("M-g m" . consult-mark)
          ("M-g k" . consult-global-mark)
          ("M-g i" . consult-imenu)
@@ -286,6 +443,7 @@
          ("M-e" . consult-isearch-history)
          ("M-s e" . consult-isearch-history)
          ("M-s l" . consult-line)
+         ("M-l" . consult-line)
          ("M-s L" . consult-line-multi)
          ;; Minibuffer history
          :map minibuffer-local-map
@@ -307,28 +465,21 @@
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
 
-  ;; Aggressive asynchronous that yield instantaneous results. (suitable for
-  ;; high-performance systems.) Note: Minad, the author of Consult, does not
-  ;; recommend aggressive values.
-  ;; Read: https://github.com/minad/consult/discussions/951
-  ;;
-  ;; However, the author of minimal-emacs.d uses these parameters to achieve
-  ;; immediate feedback from Consult.
-  ;; (setq consult-async-input-debounce 0.02
-  ;;       consult-async-input-throttle 0.05
-  ;;       consult-async-refresh-delay 0.02)
-
   :config
+  ;; Don't preview GPG encrypted files to avoid asking about the decryption password
+  (push "\\.gpg$" consult-preview-excluded-files)
+  (setq-default completion-in-region-function #'consult-completion-in-region)
+
   (consult-customize
    consult-theme :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
+   consult-ripgrep consult-git-grep consult-grep consult-find consult-grep consult-fd
    consult-bookmark consult-recent-file consult-xref
-   consult-source-bookmark consult-source-file-register
-   consult-source-recent-file consult-source-project-recent-file
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
    ;; :preview-key "M-."
-   :preview-key '(:debounce 0.4 any))
+   :preview-key '(:debounce 0.4 any)
+   :initial (+region-or-thing-at-point))
   (setq consult-narrow-key "<"))
-
 
 ;; The undo-fu package is a lightweight wrapper around Emacs' built-in undo
 ;; system, providing more convenient undo/redo functionality.
@@ -354,7 +505,7 @@
 
 
 (use-package doom-themes)
-(load-theme 'doom-tokyo-night)
+(load-theme 'doom-tokyo-night t)
 
 ;; (let ((inhibit-redisplay t))
 ;;   ;; Disable all active themes
@@ -431,10 +582,10 @@
 
 ;; Apheleia is an Emacs package designed to run code formatters (e.g., Shfmt,
 ;; Black and Prettier) asynchronously without disrupting the cursor position.
-(use-package apheleia
-  :commands (apheleia-mode
-             apheleia-global-mode)
-  :hook ((prog-mode . apheleia-mode)))
+;; (use-package apheleia
+;;   :commands (apheleia-mode
+;;              apheleia-global-mode)
+;;   :hook ((prog-mode . apheleia-mode)))
 
 ;; Intelligent code folding by using the structural understanding of the
 ;; built-in tree-sitter parser. Unlike traditional folding methods that rely on
@@ -454,7 +605,6 @@
              global-treesit-fold-mode
              treesit-fold-open-recursively
              treesit-fold-line-comment-mode)
-
   :custom
   (treesit-fold-line-count-show t)
   (treesit-fold-line-count-format " ▼")
@@ -533,24 +683,57 @@
 ;; abbreviation, YASnippet automatically expands it into a full template, which
 ;; can include placeholders, fields, and dynamic content.
 (use-package yasnippet
-  :commands (yas-minor-mode
-             yas-global-mode)
-  :hook
-  (after-init . yas-global-mode)
-
+  :straight t
+  :demand t
+  ;; :diminish yas-minor-mode
+  :commands yas-minor-mode-on
+  :bind (("C-c y d" . yas-load-directory)
+         ("C-c y i" . yas-insert-snippet)
+         ("C-c y f" . yas-visit-snippet-file)
+         ("C-c y n" . yas-new-snippet)
+         ("C-c y t" . yas-tryout-snippet)
+         ("C-c y l" . yas-describe-tables)
+         ("C-c y g" . yas-global-mode)
+         ("C-c y m" . yas-minor-mode)
+         ("C-c y r" . yas-reload-all)
+         ("C-c y x" . yas-expand)
+         :map yas-keymap
+         ("C-i" . yas-next-field-or-maybe-expand))
+  :mode ("/\\.emacs\\.d/snippets/" . snippet-mode)
+  :hook ((prog-mode org-mode) . yas-minor-mode-on)
   :custom
-  (yas-also-auto-indent-first-line t)  ; Indent first line of snippet
-  (yas-also-indent-empty-lines t)
-  (yas-snippet-revival nil)  ; Setting this to t causes issues with undo
-  (yas-wrap-around-region nil) ; Do not wrap region when expanding snippets
-  ;; (yas-triggers-in-field nil)  ; Disable nested snippet expansion
-  ;; (yas-indent-line 'fixed) ; Do not auto-indent snippet content
-  ;; (yas-prompt-functions '(yas-no-prompt))  ; No prompt for snippet choices
+  (yas-prompt-functions '(yas-completing-prompt yas-no-prompt))
+  (yas-triggers-in-field t)
+  (yas-wrap-around-region t)
+  :custom-face
+  (yas-field-highlight-face ((t (:background "#2a2a3a")))))
 
-  :init
-  ;; Suppress verbose messages
-  (setq yas-verbosity 0))
+(use-package yasnippet-snippets
+  :straight t
+  :after yasnippet
+  :demand t)
 
+(use-package doom-snippets
+  :straight (:host github :repo "hlissner/doom-snippets" :files ("*.el" "*"))
+  :after yasnippet
+  :demand t)
+
+;; Smoother scrolling experience
+(setq scroll-conservatively 101
+      scroll-preserve-screen-position t
+      auto-window-vscroll nil)
+
+;; Smooth pixel scrolling (Emacs 29+)
+(when (fboundp 'pixel-scroll-precision-mode)
+  (pixel-scroll-precision-mode 1))
+
+(use-package yasnippet-capf
+  :straight t
+  :after (cape yasnippet)
+  :hook ((prog-mode text-mode conf-mode) . +cape-yasnippet--setup-h)
+  :config
+  (defun +cape-yasnippet--setup-h ()
+    (add-to-list 'completion-at-point-functions #'yasnippet-capf)))
 ;; (use-package diff-hl
 ;;   :commands (diff-hl-mode
 ;;              global-diff-hl-mode)
@@ -803,12 +986,12 @@
                               "*esh command on file*"))
 (add-hook 'after-init-hook #'winner-mode)
 
-(use-package uniquify
-  :ensure nil
-  :custom
-  (uniquify-buffer-name-style 'reverse)
-  (uniquify-separator "•")
-  (uniquify-after-kill-buffer-p t))
+; (use-package uniquify
+;   :ensure nil
+;   :custom
+;   (uniquify-buffer-name-style 'reverse)
+;   (uniquify-separator "•")
+;   (uniquify-after-kill-buffer-p t))
 
 ;; Window dividers separate windows visually. Window dividers are bars that can
 ;; be dragged with the mouse, thus allowing you to easily resize adjacent
@@ -833,7 +1016,8 @@
                                "\\|^\\.project\\(?:ile\\)?\\'"
                                "\\|^flycheck_.*"
                                "\\|^flymake_.*"))
-(add-hook 'dired-mode-hook #'dired-omit-mode)
+
+
 
 ;; dired: Group directories first
 (with-eval-after-load 'dired
@@ -845,7 +1029,24 @@
     (when args
       (setq dired-listing-switches args))))
 
-;; Enables visual indication of minibuffer recursion depth after initialization.
+
+(use-package dired-subtree
+  :after dired
+  :bind
+  ( :map dired-mode-map
+    ("<tab>" . dired-subtree-toggle)
+    ("TAB" . dired-subtree-toggle)
+    ("<backtab>" . dired-subtree-remove)
+    ("S-TAB" . dired-subtree-remove))
+  :config
+  (setq dired-subtree-use-backgrounds nil))
+
+
+
+
+
+
+;; enables visual indication of minibuffer recursion depth after initialization.
 (add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
 ;; Configure Emacs to ask for confirmation before exiting
 (setq confirm-kill-emacs 'y-or-n-p)
@@ -857,36 +1058,88 @@
 ;; When tooltip-mode is enabled, certain UI elements (e.g., help text,
 
 
-;; Set up the Language Server Protocol (LSP) servers using Eglot.
 (use-package eglot
   :ensure nil
-  :commands (eglot-ensure
+  :bind (("C-c l e " . eglot)
+         ("C-c C-." . eglot-code-actions))
+  ;; :disabled t
+  :defer t
+  :commands (eglot
+             eglot-rename
+             eglot-ensure
              eglot-rename
              eglot-format-buffer)
-  )
+  :custom
+  (eglot-report-progress t)  ; Prevent minibuffer spam
+  (eglot-autoshutdown t) ; shutdown after closing the last managed buffer
+  (eglot-sync-connect 0) ; async, do not block
+  (eglot-extend-to-xref t) ; can be interesting!
+  (eglot-report-progress nil) ; disable annoying messages in echo area!
+  (eglot-events-buffer-size 0)
+  :config
+  ;; Optimizations
+  (fset #'jsonrpc--log-event #'ignore)
+  (setq jsonrpc-event-hook nil)
+  ;; Not sure if this really helps
+  ;; Enable completion capabilities
+  ;; (setq completion-category-overrides '((eglot (styles orderless))))
+  ;; Configure tab for completion
+  (setq tab-always-indent 'complete)
+  ;; Enable snippet/template support
+  (setq eglot-insert-completion-annotations t)
+
+  ;; Enable eglot for certain modes
+  ;; (add-hook 'go-mode-hook 'eglot-ensure)
+  ;; (add-to-list 'eglot-server-programs
+  ;;              `(python-mode
+  ;;                . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
+  ;;                                         "jedi-language-server"
+  ;;                                         "pylsp"))))
+  (add-to-list 'eglot-server-programs
+               '(python-mode . ("ruff" "server")))
+  (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman"))))
+
+;; Add config for markdown
+(add-hook 'markdown-mode-hook #'eglot-ensure)
 ;; Configure Eglot to enable or disable certain options for the pylsp server
 ;; in Python development. (Note that a third-party tool,
 ;; https://github.com/python-lsp/python-lsp-server, must be installed),
-(add-hook 'python-mode-hook #'eglot-ensure)
-(add-hook 'python-ts-mode-hook #'eglot-ensure)
-(setq-default eglot-workspace-configuration
-              `(:pylsp (:plugins
-                        (;; Fix imports and syntax using `eglot-format-buffer`
-                         :isort (:enabled t)
-                         :autopep8 (:enabled t)
-                         ;; Syntax checkers (works with Flymake)
-                         :pylint (:enabled t)
-                         :pycodestyle (:enabled t)
-                         :flake8 (:enabled t)
-                         :pyflakes (:enabled t)
-                         :pydocstyle (:enabled t)
-                         :mccabe (:enabled t)
-                         :yapf (:enabled :json-false)
-                         :rope_autoimport (:enabled :json-false)))))
+;; (add-hook 'python-mode-hook #'eglot-ensure)
+;; (add-hook 'python-ts-mode-hook #'eglot-ensure)
+;; (setq-default eglot-workspace-configuration
+;;               `(:pylsp (:plugins
+;;                         (;; Fix imports and syntax using `eglot-format-buffer`
+;;                          :isort (:enabled t)
+;;                          :autopep8 (:enabled t)
+;;                          ;; Syntax checkers (works with Flymake)
+;;                          :pylint (:enabled t)
+;;                          :pycodestyle (:enabled t)
+;;                          :flake8 (:enabled t)
+;;                          :pyflakes (:enabled t)
+;;                          :pydocstyle (:enabled t)
+;;                          :mccabe (:enabled t)
+;;                          :yapf (:enabled :json-false)
+;;                          :rope_autoimport (:enabled :json-false)))))
 ;; In Emacs, customization variables modified via the UI (e.g., M-x customize)
 ;; are typically stored in a separate file, commonly named 'custom.el'. To
 ;; ensure these settings are loaded during Emacs initialization, it is necessary
 ;; to explicitly load this file if it exists.
+
+
+(use-package eldoc
+  :straight t
+  :hook (prog-mode . eldoc-mode)
+  :bind (:map prog-mode-map
+              ("C-c e d" . eldoc)
+              ("C-c e t" . eldoc-toggle))
+  :init
+  (global-eldoc-mode -1)
+  :config
+  (setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly
+        eldoc-echo-area-use-multiline-p t
+        eldoc-echo-area-display-truncation-message nil
+        eldoc-idle-delay 0.1))
+
 (use-package treesit-auto
   :custom
   (treesit-auto-install 'prompt)
@@ -931,39 +1184,97 @@
 (setq doom-modeline-time nil)
 
 
-;; (use-package centaur-tabs
-;;   :demand
-;;   :config
-;;   (centaur-tabs-mode t)
-;;   (setq centaur-tabs-style "bar")
-;;   (setq centaur-tabs-set-icons t)
-;;   (setq centaur-tabs-height 24))
+(use-package forge
+  :after magit)
 
-(use-package shackle
-  :ensure t
+(use-package eldoc
+  :hook (prog-mode . eldoc-mode)
+  :bind (:map prog-mode-map
+              ("C-c e d" . eldoc)
+              ("C-c e t" . eldoc-toggle))
+  :init
+  (global-eldoc-mode -1)
   :config
-  (setq shackle-rules
-        '((compilation-mode :select t)
-          (help-mode :select t)
-          (Info-mode :select t)
-          (man-mode :select t)
-          ("*Messages*" :select t)
-          ("*Warnings*" :select t)))
-  (shackle-mode 1))
-;;; eldoc mode
+  (setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly
+        eldoc-echo-area-use-multiline-p t
+        eldoc-echo-area-display-truncation-message nil
+        eldoc-idle-delay 0.1))
 
-;; (defun rc/turn-on-eldoc-mode ()
-;;   (interactive)
-;;   (eldoc-mode 1))
-;; (add-hook 'emacs-lisp-mode-hook 'rc/turn-on-eldoc-mode)
+(use-package nov
+  :ensure t
+  :mode ("\\.epub\\'" . nov-mode)
+  :config
+  (setq nov-text-width 95))
+;; writeable grepx
+
+(use-package web-mode
+  :straight t
+  :defer t
+  :mode (("\\.phtml\\'"      . web-mode)
+         ("\\.tpl\\.php\\'"  . web-mode)
+         ("\\.twig\\'"       . web-mode)
+         ("\\.xml\\'"        . web-mode)
+         ("\\.html\\'"       . web-mode)
+         ("\\.htm\\'"        . web-mode)
+         ("\\.[gj]sp\\'"     . web-mode)
+         ("\\.as[cp]x?\\'"   . web-mode)
+         ("\\.eex\\'"        . web-mode)
+         ("\\.erb\\'"        . web-mode)
+         ("\\.mustache\\'"   . web-mode)
+         ("\\.handlebars\\'" . web-mode)
+         ("\\.hbs\\'"        . web-mode)
+         ("\\.eco\\'"        . web-mode)
+         ("\\.ejs\\'"        . web-mode)
+         ("\\.svelte\\'"     . web-mode)
+         ("\\.ctp\\'"        . web-mode)
+         ("\\.djhtml\\'"     . web-mode)
+         ("\\.vue\\'"        . web-mode))
+  :bind (:map web-mode-map
+              ;; Quick actions with direct M-g prefix
+              ("M-g /" . web-mode-element-close)
+              ("M-g k" . web-mode-element-kill)
+              ("M-g s" . web-mode-element-select)
+
+              ;; Tag operations (M-g t prefix)
+              ("M-g t n" . web-mode-tag-next)
+              ("M-g t p" . web-mode-tag-previous)
+              ("M-g t m" . web-mode-tag-match)
+              ("M-g t s" . web-mode-tag-select)
+              ("M-g t b" . web-mode-tag-beginning)
+              ("M-g t e" . web-mode-tag-end)
+
+              ;; Element operations (M-g e prefix)
+              ("M-g e n" . web-mode-element-next)
+              ("M-g e p" . web-mode-element-previous)
+              ("M-g e u" . web-mode-element-parent)
+              ("M-g e d" . web-mode-element-child)
+              ("M-g e k" . web-mode-element-kill)
+              ("M-g e w" . web-mode-element-wrap)
+              ("M-g e s" . web-mode-element-select)
+              ("M-g e c" . web-mode-element-clone)
+              ("M-g e r" . web-mode-element-rename)
+
+              ;; Attribute operations (M-g a prefix)
+              ("M-g a n" . web-mode-attribute-next)
+              ("M-g a p" . web-mode-attribute-previous)
+              ("M-g a k" . web-mode-attribute-kill)
+              ("M-g a i" . web-mode-attribute-insert)
+              ("M-g a s" . web-mode-attribute-select))
+  :config
+  (setq web-mode-markup-indent-offset 2
+        web-mode-code-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-enable-auto-pairing t
+        web-mode-enable-css-colorization t))
 
 
-
+(keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete) ; TAB acts more like how it does in the shell
 (setq tramp-verbose 1)
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
 (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
 (setq tramp-auto-save-directory "/tmp")
+
 (load custom-file 'noerror 'no-message)
 (minimal-emacs-load-user-init "local-config.el")

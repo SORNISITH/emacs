@@ -54,7 +54,6 @@
  '(line-number-current-line ((t (:foreground "yellow"  ))))
  '(font-lock-keyword-face ((t (:foreground "#ff9e64"  ))))
  '(font-lock-function-call-face ((t (:slant normal ))))
- 
 
  ;; Mode line
  '(mode-line ((t (:family "Iosevka" :height 230 :slant italic))))
