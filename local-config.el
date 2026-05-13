@@ -19,10 +19,8 @@
   (find-file "~/.emacs.d/package-init.el"))
 (setq switch-to-buffer-obey-display-actions t)
 (tab-bar-mode -1)
-
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.2 )
-
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "M-/"))
@@ -43,26 +41,22 @@
 (global-set-key (kbd "C-=") 'quickrun)
 (setq compilation-scroll-output t)
 
-(custom-set-faces
- ;; Default font
- '(default ((t (:family "Iosevka" :height 210))))
-
- ;; Fixed width font (important for org/vterm alignment)
- '(fixed-pitch ((t (:family "Iosevka" :height 210))))
-
- ;; Line number highlight
- '(line-number-current-line ((t (:foreground "yellow"  ))))
- '(font-lock-keyword-face ((t (:foreground "#ff9e64"  ))))
- '(font-lock-function-call-face ((t (:slant normal ))))
-
- ;; Mode line
- '(mode-line ((t (:family "Iosevka" :height 230 :slant italic))))
-
- '(font-lock-function-name-face ((t (:weight bold))))
- '(font-lock-variable-name-face ((t (:weight normal))))
- '(font-lock-builtin-face ((t ( :slant italic :foreground "#ff4d4d"))))
- '(font-lock-function-name-face ((t ( :weight normal ))))
- )
+;; (custom-set-faces
+;;  ;; Default font
+;;  '(default ((t (:family "Iosevka" :height 210))))
+;;  ;; Fixed width font (important for org/vterm alignment)
+;;  '(fixed-pitch ((t (:family "Iosevka" :height 210))))
+;;  ;; Line number highlight
+;;  '(line-number-current-line ((t (:foreground "yellow"  ))))
+;;  '(font-lock-keyword-face ((t (:foreground "#ff9e64"  ))))
+;;  '(font-lock-function-call-face ((t (:slant normal ))))
+;;  ;; Mode line
+;;  '(mode-line ((t (:family "Iosevka" :height 230 :slant italic))))
+;;  '(font-lock-function-name-face ((t (:weight bold))))
+;;  '(font-lock-variable-name-face ((t (:weight normal))))
+;;  '(font-lock-builtin-face ((t ( :slant italic :foreground "#ff4d4d"))))
+;;  '(font-lock-function-name-face ((t ( :weight normal ))))
+;;  )
 
 ;; (set-face-attribute 'isearch nil
 ;;                     :foreground "#ff4d4d"   ;; soft red

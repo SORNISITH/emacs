@@ -504,8 +504,8 @@
 
 
 
-(use-package doom-themes)
-(load-theme 'doom-tokyo-night t)
+
+
 
 ;; (let ((inhibit-redisplay t))
 ;;   ;; Disable all active themes
@@ -1266,6 +1266,53 @@
         web-mode-css-indent-offset 2
         web-mode-enable-auto-pairing t
         web-mode-enable-css-colorization t))
+
+(use-package doom-themes
+  :straight (:build t)
+  :defer t
+  ;; :init (load-theme 'doom-nord-aurora t)
+  )
+
+;; Install kaolin themes
+(use-package kaolin-themes
+  :straight t
+  :defer t)
+
+;; Install moe-theme
+;; (use-package moe-theme
+;;   :straight t)
+
+(use-package ef-themes
+  :straight t)
+
+(use-package modus-themes
+  :straight t)
+
+(use-package solarized-theme
+  :straight t)
+
+(use-package rg-themes
+  :straight (:type git :host github :repo "raegnald/rg-themes"))
+
+(use-package lambda-themes
+  :straight (:type git :host github :repo "lambda-emacs/lambda-themes")
+  :custom
+  (lambda-themes-set-italic-comments t)
+  (lambda-themes-set-italic-keywords t)
+  (lambda-themes-set-variable-pitch t))
+
+;; Install sanityinc tomorrow
+(use-package color-theme-sanityinc-tomorrow
+  :straight t)
+
+(load-theme 'gruber-darker t)
+
+
+
+
+
+
+(set-face-attribute 'default nil :family "Iosevka" :height 230)
 
 
 (keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete) ; TAB acts more like how it does in the shell
