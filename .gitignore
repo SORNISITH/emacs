@@ -9,7 +9,7 @@ history
 backup
 backup/*
 cus.el
-*.elc
+
 lsp-bridge
 var_lsp_bridge
 tags
