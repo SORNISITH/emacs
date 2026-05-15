@@ -1038,7 +1038,70 @@
         eldoc-echo-area-use-multiline-p t
         eldoc-echo-area-display-truncation-message nil
         eldoc-idle-delay 0.1))
+;; Quickly switch windows in Emacs
+;;
+(use-package ibuffer
+  :defer t
+  :commands (ibuffer)
+  :custom
+  (ibuffer-default-display-maybe-show-predicates t)
+  (ibuffer-saved-filter-groups
+      '(("Default"
+         ("Programming" (mode . prog-mode))
+         ("Org" (mode . org-mode))
+         ("Magit" (name . "^magit"))
+         ("Dired" (mode . dired-mode))
+         ("Help" (or (name . "^\\*Help\\*")
+                     (name . "^\\*Apropos\\*")
+                     (name . "^\\*info\\*"))))))
+  :init
+  (add-hook 'ibuffer-mode-hook
+            #'(lambda ()
+                (ibuffer-switch-to-saved-filter-groups "default"))))
+(use-package ibuffer-projectile
+  :straight t
+  :hook (ibuffer . (lambda ()
+                     (ibuffer-projectile-set-filter-groups)
+                     (unless (eq ibuffer-sorting-mode 'alphabetic)
+                       (ibuffer-do-sort-by-alphabetic)))))
+(use-package imenu
+  :defer t
+  :config
+  ;; Mark imenu-generic-expression as safe for dir local usage
+  (put 'imenu-generic-expression 'safe-local-variable 'listp)
 
+  ;; Recenter window after imenu jump so cursor doesn't end up on the last line
+  (add-hook 'imenu-after-jump-hook 'recenter)  ; or 'reposition-window
+  (set-default 'imenu-auto-rescan t))
+
+(use-package imenu-anywhere
+  :straight
+  :bind (("M-I" . ivy-imenu-anywhere)
+         ("C-c i" . ivy-imenu-anywhere)))
+(use-package inenu-list
+  :straight (imenu-list :type git :host github :repo "bmag/imenu-list")
+  :defer t)
+
+(use-package popper
+  :straight t
+  :bind (("C-'"   . popper-toggle)
+         ("M-'"   . popper-cycle)
+         ("C-M-'" . popper-toggle-type))
+  :init
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          help-mode
+          compilation-mode))
+  (popper-mode +1)
+  (popper-echo-mode +1))                ; For echo area hints
+
+(use-package ace-window
+  :straight t
+  :bind (("M-o" . ace-window))
+  :custom
+  (aw-dispatch-always t))
 (use-package nov
   :ensure t
   :mode ("\\.epub\\'" . nov-mode)

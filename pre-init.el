@@ -14,9 +14,7 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-
 (setq straight-use-package-by-default t)
-
 ;; Limit Git clone depth to a single commit when using straight.el. This
 ;; performs shallow clones, reducing download size the cost of full
 ;; repository history.
