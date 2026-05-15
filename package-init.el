@@ -127,6 +127,7 @@
   (vertico-cycle t)
   (vertico-resize nil)
   (vertico-count 12))
+
 (use-package vertico-multiform
   :straight (:type built-in)
   :demand t
@@ -174,9 +175,7 @@
           (xref-find-references buffer)
           (consult-imenu reverse buffer)))
   (vertico-multiform-mode 1))
-;; Vertico leverages Orderless' flexible matching capabilities, allowing users
-;; to input multiple patterns separated by spaces, which Orderless then
-;; matches in any order against the candidates.
+
 (use-package orderless
   ;; Vertico leverages Orderless' flexible matching capabilities, allowing users
   ;; to input multiple patterns separated by spaces, which Orderless then
@@ -187,11 +186,6 @@
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion)))))
 
-
-;; Marginalia allows Embark to offer you preconfigured actions in more contexts.
-;; In addition to that, Marginalia also enhances Vertico by adding rich
-;; annotations to the completion candidates displayed in Vertico's interface.
-;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   ;; Marginalia allows Embark to offer you preconfigured actions in more contexts.
   ;; In addition to that, Marginalia also enhances Vertico by adding rich
@@ -204,78 +198,6 @@
   :commands (marginalia-mode marginalia-cycle)
   :hook (after-init . marginalia-mode))
 
-;; Embark integrates with Consult and Vertico to provide context-sensitive
-;; actions and quick access to commands based on the current selection, further
-;; improving user efficiency and workflow within Emacs. Together, they create a
-;; cohesive and powerful environment for managing completions and interactions.
-;; Some usefull functions
-(defun dorneanu/vsplit-file-open (f)
-  (let ((evil-vsplit-window-right t))
-    (split-window-vertically)
-    (find-file f)))
-
-(defun dorneanu/split-file-open (f)
-  (let ((evil-split-window-below t))
-    (split-window-horizontally)
-    (find-file f)))
-
-(use-package embark
-  :straight t
-  :after (vertico)
-  :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
-   ("M-RET" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)  ;; alternative for describe-bindings
-   :map embark-file-map
-   ("V" . dorneanu/vsplit-file-open)
-   ("X" . dorneanu/split-file-open))
-  :init
-  (setq prefix-help-command #'embark-prefix-help-command)
-
-  :config
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none)))))
-
-;; Using embark and ace
-;; (require 'ace-window)
-(defun dorneanu/embark-ace-action (fn)
-  "Create an embark action that uses ace-window to select target window."
-  (lambda (target)
-    (with-demoted-errors "%S"
-      (let ((window (if (> (length (aw-window-list)) 1)
-                        (aw-select "Select window: ")
-                      (selected-window))))
-        (when window
-          (select-window window)
-          (funcall fn target))))))
-
-;; Define ace-window variants of common actions
-(defun dorneanu/embark-find-file-ace (file)
-  "Open file in ace-selected window."
-  (let ((window (aw-select "Select window: ")))
-    (when window
-      (select-window window)
-      (find-file file))))
-
-(defun dorneanu/embark-switch-to-buffer-ace (buffer)
-  "Switch to buffer in ace-selected window."
-  (let ((window (aw-select "Select window: ")))
-    (when window
-      (select-window window)
-      (switch-to-buffer buffer))))
-
-;; Add to embark keymaps
-(with-eval-after-load 'embark
-  (define-key embark-file-map "O" #'dorneanu/embark-find-file-ace)
-  (define-key embark-buffer-map "O" #'dorneanu/embark-switch-to-buffer-ace))
-
-(use-package embark-consult
-  :straight t
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; From https://github.com/abougouffa/minemacs/blob/main/core/me-lib-extra.el
 ;;;###autoload
@@ -354,7 +276,6 @@
          ("M-e" . consult-isearch-history)
          ("M-s e" . consult-isearch-history)
          ("M-s l" . consult-line)
-         ("M-l" . consult-line)
          ("M-s L" . consult-line-multi)
          ;; Minibuffer history
          :map minibuffer-local-map
@@ -391,7 +312,6 @@
    :preview-key '(:debounce 0.4 any)
    :initial (+region-or-thing-at-point))
   (setq consult-narrow-key "<"))
-
 ;; The undo-fu package is a lightweight wrapper around Emacs' built-in undo
 ;; system, providing more convenient undo/redo functionality.
 (use-package undo-fu
@@ -739,17 +659,17 @@
 
 
 
-; ;; Enables automatic indentation of code while typing
-; (use-package aggressive-indent
-;   :commands aggressive-indent-mode
-;   :hook
-;   (emacs-lisp-mode . aggressive-indent-mode))
-;
-; ;; Highlights function and variable definitions in Emacs Lisp mode
-; (use-package highlight-defined
-;   :commands highlight-defined-mode
-;   :hook
-;   (emacs-lisp-mode . highlight-defined-mode))
+                                        ; ;; Enables automatic indentation of code while typing
+                                        ; (use-package aggressive-indent
+                                        ;   :commands aggressive-indent-mode
+                                        ;   :hook
+                                        ;   (emacs-lisp-mode . aggressive-indent-mode))
+                                        ;
+                                        ; ;; Highlights function and variable definitions in Emacs Lisp mode
+                                        ; (use-package highlight-defined
+                                        ;   :commands highlight-defined-mode
+                                        ;   :hook
+                                        ;   (emacs-lisp-mode . highlight-defined-mode))
 
 ;; This package is useful for users who want to disable the mouse to:
 ;; - Prevent accidental clicks or cursor movements that may unexpectedly change
@@ -1046,14 +966,14 @@
   :custom
   (ibuffer-default-display-maybe-show-predicates t)
   (ibuffer-saved-filter-groups
-      '(("Default"
-         ("Programming" (mode . prog-mode))
-         ("Org" (mode . org-mode))
-         ("Magit" (name . "^magit"))
-         ("Dired" (mode . dired-mode))
-         ("Help" (or (name . "^\\*Help\\*")
-                     (name . "^\\*Apropos\\*")
-                     (name . "^\\*info\\*"))))))
+   '(("Default"
+      ("Programming" (mode . prog-mode))
+      ("Org" (mode . org-mode))
+      ("Magit" (name . "^magit"))
+      ("Dired" (mode . dired-mode))
+      ("Help" (or (name . "^\\*Help\\*")
+                  (name . "^\\*Apropos\\*")
+                  (name . "^\\*info\\*"))))))
   :init
   (add-hook 'ibuffer-mode-hook
             #'(lambda ()
@@ -1064,23 +984,7 @@
                      (ibuffer-projectile-set-filter-groups)
                      (unless (eq ibuffer-sorting-mode 'alphabetic)
                        (ibuffer-do-sort-by-alphabetic)))))
-(use-package imenu
-  :defer t
-  :config
-  ;; Mark imenu-generic-expression as safe for dir local usage
-  (put 'imenu-generic-expression 'safe-local-variable 'listp)
 
-  ;; Recenter window after imenu jump so cursor doesn't end up on the last line
-  (add-hook 'imenu-after-jump-hook 'recenter)  ; or 'reposition-window
-  (set-default 'imenu-auto-rescan t))
-
-(use-package imenu-anywhere
-  :straight
-  :bind (("M-I" . ivy-imenu-anywhere)
-         ("C-c i" . ivy-imenu-anywhere)))
-(use-package inenu-list
-  :straight (imenu-list :type git :host github :repo "bmag/imenu-list")
-  :defer t)
 
 (use-package popper
   :straight t
@@ -1097,11 +1001,7 @@
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
 
-(use-package ace-window
-  :straight t
-  :bind (("M-o" . ace-window))
-  :custom
-  (aw-dispatch-always t))
+
 (use-package nov
   :ensure t
   :mode ("\\.epub\\'" . nov-mode)
