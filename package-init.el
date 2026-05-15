@@ -255,12 +255,12 @@
   ;; (add-to-list 'vertico-multiform-categories
   ;;              '(jinx grid (vertico-grid-annotate . 35)))
 
-   (setq vertico-multiform-commands
-         '((consult-line reverse buffer)
-           (consult-project-buffer buffer)
-           (consult-ripgrep buffer)
-           (xref-find-references buffer)
-           (consult-imenu reverse buffer)))
+  (setq vertico-multiform-commands
+        '((consult-line reverse buffer)
+          (consult-project-buffer buffer)
+          (consult-ripgrep buffer)
+          (xref-find-references buffer)
+          (consult-imenu reverse buffer)))
   (vertico-multiform-mode 1))
 ;; Vertico leverages Orderless' flexible matching capabilities, allowing users
 ;; to input multiple patterns separated by spaces, which Orderless then
@@ -582,10 +582,10 @@
 
 ;; Apheleia is an Emacs package designed to run code formatters (e.g., Shfmt,
 ;; Black and Prettier) asynchronously without disrupting the cursor position.
-;; (use-package apheleia
-;;   :commands (apheleia-mode
-;;              apheleia-global-mode)
-;;   :hook ((prog-mode . apheleia-mode)))
+(use-package apheleia
+  :commands (apheleia-mode
+             apheleia-global-mode)
+  :hook ((prog-mode . apheleia-mode)))
 
 ;; Intelligent code folding by using the structural understanding of the
 ;; built-in tree-sitter parser. Unlike traditional folding methods that rely on
@@ -673,7 +673,6 @@
     (setq dumb-jump-force-searcher 'rg)
     (setq dumb-jump-prefer-searcher 'rg)))
 
-
 ;; The official collection of snippets for yasnippet.
 (use-package yasnippet-snippets
   :after yasnippet)
@@ -683,57 +682,25 @@
 ;; abbreviation, YASnippet automatically expands it into a full template, which
 ;; can include placeholders, fields, and dynamic content.
 (use-package yasnippet
-  :straight t
-  :demand t
-  ;; :diminish yas-minor-mode
-  :commands yas-minor-mode-on
-  :bind (("C-c y d" . yas-load-directory)
-         ("C-c y i" . yas-insert-snippet)
-         ("C-c y f" . yas-visit-snippet-file)
-         ("C-c y n" . yas-new-snippet)
-         ("C-c y t" . yas-tryout-snippet)
-         ("C-c y l" . yas-describe-tables)
-         ("C-c y g" . yas-global-mode)
-         ("C-c y m" . yas-minor-mode)
-         ("C-c y r" . yas-reload-all)
-         ("C-c y x" . yas-expand)
-         :map yas-keymap
-         ("C-i" . yas-next-field-or-maybe-expand))
-  :mode ("/\\.emacs\\.d/snippets/" . snippet-mode)
-  :hook ((prog-mode org-mode) . yas-minor-mode-on)
+  :commands (yas-minor-mode
+             yas-global-mode)
+
+  :hook
+  (after-init . yas-global-mode)
+
   :custom
-  (yas-prompt-functions '(yas-completing-prompt yas-no-prompt))
-  (yas-triggers-in-field t)
-  (yas-wrap-around-region t)
-  :custom-face
-  (yas-field-highlight-face ((t (:background "#2a2a3a")))))
+  (yas-also-auto-indent-first-line t)  ; Indent first line of snippet
+  (yas-also-indent-empty-lines t)
+  (yas-snippet-revival nil)  ; Setting this to t causes issues with undo
+  (yas-wrap-around-region nil) ; Do not wrap region when expanding snippets
+  ;; (yas-triggers-in-field nil)  ; Disable nested snippet expansion
+  ;; (yas-indent-line 'fixed) ; Do not auto-indent snippet content
+  ;; (yas-prompt-functions '(yas-no-prompt))  ; No prompt for snippet choices
 
-(use-package yasnippet-snippets
-  :straight t
-  :after yasnippet
-  :demand t)
+  :init
+  ;; Suppress verbose messages
+  (setq yas-verbosity 0))
 
-(use-package doom-snippets
-  :straight (:host github :repo "hlissner/doom-snippets" :files ("*.el" "*"))
-  :after yasnippet
-  :demand t)
-
-;; Smoother scrolling experience
-(setq scroll-conservatively 101
-      scroll-preserve-screen-position t
-      auto-window-vscroll nil)
-
-;; Smooth pixel scrolling (Emacs 29+)
-(when (fboundp 'pixel-scroll-precision-mode)
-  (pixel-scroll-precision-mode 1))
-
-(use-package yasnippet-capf
-  :straight t
-  :after (cape yasnippet)
-  :hook ((prog-mode text-mode conf-mode) . +cape-yasnippet--setup-h)
-  :config
-  (defun +cape-yasnippet--setup-h ()
-    (add-to-list 'completion-at-point-functions #'yasnippet-capf)))
 ;; (use-package diff-hl
 ;;   :commands (diff-hl-mode
 ;;              global-diff-hl-mode)
@@ -986,12 +953,12 @@
                               "*esh command on file*"))
 (add-hook 'after-init-hook #'winner-mode)
 
-; (use-package uniquify
-;   :ensure nil
-;   :custom
-;   (uniquify-buffer-name-style 'reverse)
-;   (uniquify-separator "•")
-;   (uniquify-after-kill-buffer-p t))
+                                        ; (use-package uniquify
+                                        ;   :ensure nil
+                                        ;   :custom
+                                        ;   (uniquify-buffer-name-style 'reverse)
+                                        ;   (uniquify-separator "•")
+                                        ;   (uniquify-after-kill-buffer-p t))
 
 ;; Window dividers separate windows visually. Window dividers are bars that can
 ;; be dragged with the mouse, thus allowing you to easily resize adjacent
@@ -1087,7 +1054,7 @@
   (setq tab-always-indent 'complete)
   ;; Enable snippet/template support
   (setq eglot-insert-completion-annotations t)
-
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
   ;; Enable eglot for certain modes
   ;; (add-hook 'go-mode-hook 'eglot-ensure)
   ;; (add-to-list 'eglot-server-programs
@@ -1126,19 +1093,6 @@
 ;; to explicitly load this file if it exists.
 
 
-(use-package eldoc
-  :straight t
-  :hook (prog-mode . eldoc-mode)
-  :bind (:map prog-mode-map
-              ("C-c e d" . eldoc)
-              ("C-c e t" . eldoc-toggle))
-  :init
-  (global-eldoc-mode -1)
-  :config
-  (setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly
-        eldoc-echo-area-use-multiline-p t
-        eldoc-echo-area-display-truncation-message nil
-        eldoc-idle-delay 0.1))
 
 (use-package treesit-auto
   :custom
@@ -1270,7 +1224,7 @@
 (use-package doom-themes
   :straight (:build t)
   :defer t
-  ;; :init (load-theme 'doom-nord-aurora t)
+  ;;:init (load-theme 'doom-nord-aurora t)
   )
 
 ;; Install kaolin themes
@@ -1304,23 +1258,15 @@
 ;; Install sanityinc tomorrow
 (use-package color-theme-sanityinc-tomorrow
   :straight t)
+(use-package spacegray-theme)
+(load-theme 'spacegray t)
 
-(load-theme 'gruber-darker t)
-
-
-
-
-
-
-(set-face-attribute 'default nil :family "Iosevka" :height 230)
-
-
-(keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete) ; TAB acts more like how it does in the shell
+;;(keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete) ; TAB acts more like how it does in the shell
 (setq tramp-verbose 1)
 (set-cursor-color "gold")
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
-(setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+
 (setq tramp-auto-save-directory "/tmp")
 
 (load custom-file 'noerror 'no-message)
