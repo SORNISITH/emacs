@@ -104,101 +104,10 @@
 ;; Enable `auto-save-mode' to prevent data loss. Use `recover-file' or
 ;; `recover-session' to restore unsaved changes.
 (setq auto-save-default t)
-
 ;; Trigger an auto-save after 300 keystrokes
 (setq auto-save-interval 300)
-
 ;; Trigger an auto-save 30 seconds of idle time.
 (setq auto-save-timeout 30)
-
-(use-package cape
-  :straight t
-  :defer t
-  :commands (cape-dabbrev cape-file cape-elisp-block)
-  :bind ("C-c p" . cape-prefix-map)
-  :init
-  ;; Add to the global default value of `completion-at-point-functions' which is
-  ;; used by `completion-at-point'.
-  (add-hook 'completion-at-point-functions #'cape-dabbrev)
-  (add-hook 'completion-at-point-functions #'cape-file)
-  (add-hook 'completion-at-point-functions #'cape-elisp-block))
-;; Corfu enhances in-buffer completion by displaying a compact popup with
-;; current candidates, positioned either below or above the point. Candidates
-;; can be selected by navigating up or down.
-(use-package corfu
-  :commands (corfu-mode global-corfu-mode)
-
-  :hook ((prog-mode . corfu-mode)
-         (shell-mode . corfu-mode)
-         (eshell-mode . corfu-mode))
-  :custom
-
-  (text-mode-ispell-word-completion nil)
-  ;; TAB triggers completion
-  (tab-always-indent 'complete)
-  (read-extended-command-predicate #'command-completion-default-include-p)
-  ;; Disable Ispell completion function. As an alternative try `cape-dict'.
-  (text-mode-ispell-word-completion nil)
-  (tab-always-indent 'complete)
-  ;; Only use `corfu' when calling `completion-at-point' or
-  ;; `indent-for-tab-command'
-  (corfu-auto t)
-  (corfu-auto-prefix 2)
-  (corfu-auto-delay 0.25)
-  (corfu-preselect 'first)
-  (corfu-quit-at-boundary nil)
-  (corfu-separator ?\s)            ; Use space
-  (corfu-quit-no-match 'separator) ; Don't quit if there is `corfu-separator' inserted
-  (corfu-preview-current 'insert)        ; Preview first candidate. Insert on input if only one
-  (corfu-preselect-first t)        ; Preselect first candidate?
-  (lsp-completion-provider :none)       ; Use corfu instead for lsp completion
-  (corfu-on-exact-match nil)
-  (completion-cycle-threshold nil)      ; Always show completion candidates
-  (corfu-insert-at-point t)
-  (completion-auto-help nil)
-  ;; Optional
-  (corfu-cycle t) ; allow cycling
-  ;; :bind
-  ;; (:map corfu-map
-  ;;       ("TAB" . corfu-next)
-  ;;       ([tab] . corfu-next)
-  ;;       ("S-TAB" . corfu-previous)
-  ;;       ([backtab] . corfu-previous)
-  ;;       ("RET" . corfu-insert))
-
-  :config
-  ;; Modify completion behavior for better Eglot integration
-  (defun my/corfu-complete-full ()
-    "Insert complete candidate, including any additional text edits."
-    (interactive)
-    (let ((completion-extra-properties nil))
-      (corfu-insert)))
-
-  ;; Setup lsp to use corfu for lsp completion
-  (defun dorneanu/corfu-setup-lsp ()
-    "Use orderless completion style with lsp-capf instead of the default lsp-passthrough."
-    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-          '(orderless)))
-
-  ;; Free the RET key for less intrusive behavior.
-  ;; Option 1: Unbind RET completely
-  ;; (keymap-unset corfu-map "RET")
-  ;; Option 2: Use RET only in shell modes
-  (keymap-set corfu-map "RET" `( menu-item "" nil :filter
-                                 ,(lambda (&optional _)
-                                    (and (derived-mode-p 'eshell-mode 'comint-mode)
-                                         #'corfu-send))))
-  ;; Bind TAB to the new completion function
-  (define-key corfu-map [tab] #'my/corfu-complete-full)
-  (define-key corfu-map (kbd "TAB") #'my/corfu-complete-full)
-
-  (global-corfu-mode))
-
-
-;; Cape, or Completion At Point Extensions, extends the capabilities of
-;; in-buffer completion. It integrates with Corfu or the default completion UI,
-;; by providing additional backends through completion-at-point-functions.
-
 
 (use-package vertico
   :straight t
@@ -332,7 +241,6 @@
 
 ;; Using embark and ace
 ;; (require 'ace-window)
-
 (defun dorneanu/embark-ace-action (fn)
   "Create an embark action that uses ace-window to select target window."
   (lambda (target)
@@ -503,9 +411,6 @@
   :hook (after-init . undo-fu-session-global-mode))
 
 ;; install + load theme
-
-
-
 
 
 
@@ -757,25 +662,67 @@
 
 ;; Helpful is an alternative to the built-in Emacs help that provides much more
 ;; contextual information.
+;; From https://github.com/dakra/dmacs/blob/nil/init.org#L2056
 (use-package helpful
-  :commands (helpful-callable
-             helpful-variable
-             helpful-key
-             helpful-command
-             helpful-at-point
-             helpful-function)
-  :bind
-  ([remap describe-command] . helpful-command)
-  ([remap describe-function] . helpful-callable)
-  ([remap describe-key] . helpful-key)
-  ([remap describe-symbol] . helpful-symbol)
-  ([remap describe-variable] . helpful-variable)
-  :custom
-  (helpful-max-buffers 7))
+  :straight t
+  :bind (("C-h ." . helpful-at-point)
+         ("C-h f" . helpful-callable)
+         ("C-h v" . helpful-variable)
+         ("C-h f" . helpful-function)
+         ("C-h s" . describe-symbol)
+         ("C-h k" . helpful-key)
+         ;; ("C-c h f" . helpful-callable)
+         ;; ("C-c h v" . helpful-variable)
+         ;; ("C-c h c" . helpful-command)
+         ;; ("C-c h m" . helpful-macro)
+         ("<C-tab>" . backward-button)
+         :map helpful-mode-map
+         ("M-?" . helpful-at-point)
+         ("RET" . helpful-jump-to-org)
+         :map emacs-lisp-mode-map
+         ("M-?" . helpful-at-point)
+         :map lisp-interaction-mode-map  ; Scratch buffer
+         ("M-?" . helpful-at-point))
+  :config
+  (defun helpful-visit-reference ()
+    "Go to the reference at point."
+    (interactive)
+    (let* ((sym helpful--sym)
+           (path (get-text-property (point) 'helpful-path))
+           (pos (get-text-property (point) 'helpful-pos))
+           (pos-is-start (get-text-property (point) 'helpful-pos-is-start)))
+      (when (and path pos)
+        ;; If we're looking at a source excerpt, calculate the offset of
+        ;; point, so we don't just go the start of the excerpt.
+        (when pos-is-start
+          (save-excursion
+            (let ((offset 0))
+              (while (and
+                      (get-text-property (point) 'helpful-pos)
+                      (not (eobp)))
+                (backward-char 1)
+                (setq offset (1+ offset)))
+              ;; On the last iteration we moved outside the source
+              ;; excerpt, so we overcounted by one character.
+              (setq offset (1- offset))
 
+              ;; Set POS so we go to exactly the place in the source
+              ;; code where point was in the helpful excerpt.
+              (setq pos (+ pos offset)))))
 
-
-
+        (find-file path)
+        (when (or (< pos (point-min))
+                  (> pos (point-max)))
+          (widen))
+        (goto-char pos)
+        (recenter 0)
+        (save-excursion
+          (let ((defun-end (scan-sexps (point) 1)))
+            (while (re-search-forward
+                    (rx-to-string `(seq symbol-start ,(symbol-name sym) symbol-end))
+                    defun-end t)
+              (helpful--flash-region (match-beginning 0) (match-end 0)))))
+        t))))
 (use-package bufferfile
   :commands (bufferfile-copy
              bufferfile-rename
@@ -792,17 +739,17 @@
 
 
 
-;; Enables automatic indentation of code while typing
-(use-package aggressive-indent
-  :commands aggressive-indent-mode
-  :hook
-  (emacs-lisp-mode . aggressive-indent-mode))
-
-;; Highlights function and variable definitions in Emacs Lisp mode
-(use-package highlight-defined
-  :commands highlight-defined-mode
-  :hook
-  (emacs-lisp-mode . highlight-defined-mode))
+; ;; Enables automatic indentation of code while typing
+; (use-package aggressive-indent
+;   :commands aggressive-indent-mode
+;   :hook
+;   (emacs-lisp-mode . aggressive-indent-mode))
+;
+; ;; Highlights function and variable definitions in Emacs Lisp mode
+; (use-package highlight-defined
+;   :commands highlight-defined-mode
+;   :hook
+;   (emacs-lisp-mode . highlight-defined-mode))
 
 ;; This package is useful for users who want to disable the mouse to:
 ;; - Prevent accidental clicks or cursor movements that may unexpectedly change
@@ -894,16 +841,16 @@
 
 ;; Allow Emacs to upgrade built-in packages, such as Org mode
 (setq package-install-upgrade-built-in t)
-
 ;; When Delete Selection mode is enabled, typed text replaces the selection
 ;; if the selection is active.
 (delete-selection-mode 1)
-
 ;; Display the current line and column numbers in the mode line
 (setq line-number-mode t)
 (setq column-number-mode t)
 (setq mode-line-position-column-line-format '("%l:%C"))
-
+(add-hook 'after-init-hook #'winner-mode)
+(add-hook 'after-init-hook #'show-paren-mode)
+(add-hook 'after-init-hook #'window-divider-mode)
 ;; Display of line numbers in the buffer:
 
 (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
@@ -921,22 +868,6 @@
   (which-key-idle-secondary-delay 0.25)
   (which-key-add-column-padding 1)
   (which-key-max-description-length 40))
-
-(unless (and (eq window-system 'mac)
-             (bound-and-true-p mac-carbon-version-string))
-  ;; Enables `pixel-scroll-precision-mode' on all operating systems and Emacs
-  ;; versions, except for emacs-mac.
-  ;;
-  ;; Enabling `pixel-scroll-precision-mode' is unnecessary with emacs-mac, as
-  ;; this version of Emacs natively supports smooth scrolling.
-  ;; https://bitbucket.org/mituharu/emacs-mac/commits/65c6c96f27afa446df6f9d8eff63f9cc012cc738
-  (setq pixel-scroll-precision-use-momentum nil) ; Precise/smoother scrolling
-  (pixel-scroll-precision-mode 1))
-
-;; Display the time in the modeline
-(add-hook 'after-init-hook #'display-time-mode)
-;; Paren match highlighting
-(add-hook 'after-init-hook #'show-paren-mode)
 ;; Track changes in the window configuration, allowing undoing actions such as
 ;; closing windows.
 (setq winner-boring-buffers '("*Completions*"
@@ -954,7 +885,6 @@
                               "*Buffer List*"
                               "*Ibuffer*"
                               "*esh command on file*"))
-(add-hook 'after-init-hook #'winner-mode)
 
                                         ; (use-package uniquify
                                         ;   :ensure nil
@@ -963,15 +893,8 @@
                                         ;   (uniquify-separator "•")
                                         ;   (uniquify-after-kill-buffer-p t))
 
-;; Window dividers separate windows visually. Window dividers are bars that can
-;; be dragged with the mouse, thus allowing you to easily resize adjacent
-;; windows.
-;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Dividers.html
-(add-hook 'after-init-hook #'window-divider-mode)
 
-;; Constrain vertical cursor movement to lines within the buffer
 
-;; Dired buffers: Automatically hide file details (permissions, size,
 ;; modification date, etc.) and all the files in the `dired-omit-files' regular
 ;; Hide files from dired
 (setq dired-movement-style 'bounded-files)
@@ -1010,85 +933,14 @@
   :config
   (setq dired-subtree-use-backgrounds nil))
 
-
 ;; enables visual indication of minibuffer recursion depth after initialization.
 (add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
 ;; Configure Emacs to ask for confirmation before exiting
 (setq confirm-kill-emacs 'y-or-n-p)
 ;; Enabled backups save your changes to a file intermittently
-(setq make-backup-files t)
-(setq vc-make-backup-files t)
 (setq kept-old-versions 10)
 (setq kept-new-versions 10)
 ;; When tooltip-mode is enabled, certain UI elements (e.g., help text,
-
-
-(use-package eglot
-  :ensure nil
-  :bind (("C-c l e " . eglot)
-         ("C-c C-." . eglot-code-actions))
-  ;; :disabled t
-  :defer t
-  :commands (eglot
-             eglot-rename
-             eglot-ensure
-             eglot-rename
-             eglot-format-buffer)
-  :custom
-  (eglot-report-progress t)  ; Prevent minibuffer spam
-  (eglot-autoshutdown t) ; shutdown after closing the last managed buffer
-  (eglot-sync-connect 0) ; async, do not block
-  (eglot-extend-to-xref t) ; can be interesting!
-  (eglot-report-progress nil) ; disable annoying messages in echo area!
-  (eglot-events-buffer-size 0)
-  :config
-  ;; Optimizations
-  (fset #'jsonrpc--log-event #'ignore)
-  (setq jsonrpc-event-hook nil)
-  ;; Not sure if this really helps
-  ;; Enable completion capabilities
-  ;; (setq completion-category-overrides '((eglot (styles orderless))))
-  ;; Configure tab for completion
-  (setq tab-always-indent 'complete)
-  ;; Enable snippet/template support
-  (setq eglot-insert-completion-annotations t)
-  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
-  ;; Enable eglot for certain modes
-  ;; (add-hook 'go-mode-hook 'eglot-ensure)
-  ;; (add-to-list 'eglot-server-programs
-  ;;              `(python-mode
-  ;;                . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
-  ;;                                         "jedi-language-server"
-  ;;                                         "pylsp"))))
-  (add-to-list 'eglot-server-programs
-               '(python-mode . ("ruff" "server")))
-  (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman"))))
-
-;; Add config for markdown
-(add-hook 'markdown-mode-hook #'eglot-ensure)
-;; Configure Eglot to enable or disable certain options for the pylsp server
-;; in Python development. (Note that a third-party tool,
-;; https://github.com/python-lsp/python-lsp-server, must be installed),
-;; (add-hook 'python-mode-hook #'eglot-ensure)
-;; (add-hook 'python-ts-mode-hook #'eglot-ensure)
-;; (setq-default eglot-workspace-configuration
-;;               `(:pylsp (:plugins
-;;                         (;; Fix imports and syntax using `eglot-format-buffer`
-;;                          :isort (:enabled t)
-;;                          :autopep8 (:enabled t)
-;;                          ;; Syntax checkers (works with Flymake)
-;;                          :pylint (:enabled t)
-;;                          :pycodestyle (:enabled t)
-;;                          :flake8 (:enabled t)
-;;                          :pyflakes (:enabled t)
-;;                          :pydocstyle (:enabled t)
-;;                          :mccabe (:enabled t)
-;;                          :yapf (:enabled :json-false)
-;;                          :rope_autoimport (:enabled :json-false)))))
-;; In Emacs, customization variables modified via the UI (e.g., M-x customize)
-;; are typically stored in a separate file, commonly named 'custom.el'. To
-;; ensure these settings are loaded during Emacs initialization, it is necessary
-;; to explicitly load this file if it exists.
 
 (use-package treesit-auto
   :custom
@@ -1100,12 +952,51 @@
 (use-package crux   ;;;  duplicate line
   :ensure t
   :bind (("M-i" . crux-duplicate-current-line-or-region)))
+(use-package crux
+  :straight t
+  :bind (("C-x C-d" . crux-duplicate-current-line-or-region)
+         ("M-i" . crux-duplicate-current-line-or-region)
+         ("C-c u" . crux-view-url)
+         ("C-c f r" . crux-rename-buffer-and-file)
+         ("C-c f d" . crux-delete-file-and-buffer)
+         ("C-x C-b" . create-scratch-buffer)
+         ;; ("s-k"   . crux-kill-whole-line)
+         ;;("s-o"   . crux-smart-open-line-above)
+         ("C-a"   . crux-move-beginning-of-line)
+         ("C-k"   . crux-kill-whole-line)
+         ([(shift return)] . crux-smart-open-line)
+         ([(control shift return)] . crux-smart-open-line-above))
+  :config
+  ;; No need to create a new scratch buffer every time
+  ;; Just use one.
+  (defun create-scratch-buffer ()
+    "Create a scratch buffer."
+    (interactive)
+    (switch-to-buffer (get-buffer-create "*scratch*"))
+    (lisp-interaction-mode))
 
+  (crux-with-region-or-buffer indent-region)
+  (crux-with-region-or-buffer untabify)
+  (crux-with-region-or-point-to-eol kill-ring-save)
+  (defalias 'rename-file-and-buffer #'crux-rename-file-and-buffer))
 (use-package multiple-cursors  ;; fk off multi cursor what i need
   :bind
   (("M-o" . 'mc/mark-next-like-this)
    ("" . 'mc/mark-previous-like-this)))
 
+;; Highlight TODO keywords
+(use-package hl-todo
+  :straight (:host github :repo "tarsius/hl-todo")
+  :hook (prog-mode . hl-todo-mode)
+  :config
+  (cl-callf append hl-todo-keyword-faces
+    '(("BUG"   . "#ee5555")
+      ("FIX"   . "#0fa050")
+      ("PROJ"  . "#447f44")
+      ("IDEA"  . "#0fa050")
+      ("INFO"  . "#0e9030")
+      ("TWEAK" . "#fe9030")
+      ("PERF"  . "#e09030"))))
 
 (use-package move-text    ;; drag text move around like vim alt + j/k
   :ensure t
@@ -1125,14 +1016,12 @@
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1))
-                                        ;(setq doom-modeline-buffer-name nil)
 (setq doom-modeline-battery nil)
 (setq doom-modeline-lsp-icon nil)
 (setq doom-modeline-icon nil)
 (setq doom-modeline-time nil)
 (setq display-time-default-load-average nil)
 (setq doom-modeline-time nil)
-
 
 (use-package forge
   :after magit)
@@ -1216,49 +1105,60 @@
         web-mode-css-indent-offset 2
         web-mode-enable-auto-pairing t
         web-mode-enable-css-colorization t))
-
+(use-package emmet-mode
+  :straight t
+  :defer t
+  :hook ((css-mode  . emmet-mode)
+         (html-mode . emmet-mode)
+         (web-mode  . emmet-mode)
+         (sass-mode . emmet-mode)
+         (scss-mode . emmet-mode)
+         (web-mode  . emmet-mode))
+  :bind (:map emmet-mode-keymap
+              ("M-RET" . 'emmet-expand-yas)))
 (use-package doom-themes
   :straight (:build t)
   :defer t
-  ;;:init (load-theme 'doom-nord-aurora t)
   )
-
-;; Install kaolin themes
 (use-package kaolin-themes
   :straight t
   :defer t)
-
-;; Install moe-theme
-;; (use-package moe-theme
-;;   :straight t)
-
 (use-package ef-themes
   :straight t)
-
 (use-package modus-themes
   :straight t)
-
 (use-package solarized-theme
   :straight t)
-
 (use-package rg-themes
   :straight (:type git :host github :repo "raegnald/rg-themes"))
-
 (use-package lambda-themes
   :straight (:type git :host github :repo "lambda-emacs/lambda-themes")
   :custom
   (lambda-themes-set-italic-comments t)
   (lambda-themes-set-italic-keywords t)
   (lambda-themes-set-variable-pitch t))
-
-;; Install sanityinc tomorrow
 (use-package color-theme-sanityinc-tomorrow
   :straight t)
 (use-package spacegray-theme)
 (load-theme 'modus-operandi-deuteranopia t)
-;;(keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete) ; TAB acts more like how it does in the shell
-(setq tramp-verbose 1)
 
+;; --------------------------------------------------------------------------------------------------
+;; LSP 
+(add-to-list 'load-path "~/.emacs.d/lsp-bridge/")
+(require 'lsp-bridge)
+(global-lsp-bridge-mode)
+(setq lsp-bridge-python-command "~/.pyenv/versions/3.13.13/bin/python3")
+(setq acm-candidate-match-function 'orderless-initialism)
+(setq acm-enable-doc nil)
+(setq acm-enable-preview t)
+(setq acm-backend-search-file-words-max-number 5)
+(setq lsp-bridge-enable-search-words nil)
+(setq acm-enable-tabnine nil)
+(setq magit-view-git-manual-method 'man)
+(add-hook 'compilation-mode-hook #'acm-mode)
+;; END LSP -------------------------------------------------------------------------------------------
+;; 
+(setq tramp-verbose 1)
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
 (setq tramp-auto-save-directory "/tmp")
