@@ -545,21 +545,9 @@
 ;;; Load post init
 (when (and minimal-emacs-load-post-init
            (fboundp 'minimal-emacs-load-user-init))
-  (minimal-emacs-load-user-init "compile-angle.el"))
+  (minimal-emacs-load-user-init "post-init.el"))
 
-;;; Load all post-init modules
-(when (and minimal-emacs-load-post-init
-           (fboundp 'minimal-emacs-load-user-init))
-  (dolist (file
-           (sort
-            (directory-files
-             (expand-file-name "post-init" user-emacs-directory)
-             nil
-             "\\.el$")
-            #'string<))
 
-    (minimal-emacs-load-user-init
-     (concat "post-init/" file))))
 
 (setq minimal-emacs--success t)
 
