@@ -21,7 +21,9 @@
   ;; the `use-package' macro, you'll need to explicitly add:
   ;; (eval-when-compile (require 'use-package))
   ;; at the top of your init file.
+  (compile-angel-exclude-directory "~/.emacs.d/lsp-bridge/")
   (push "/init.el" compile-angel-excluded-files)
+  (push "/custom.el" compile-angel-excluded-files)
   (push "/early-init.el" compile-angel-excluded-files)
   (push "/pre-init.el" compile-angel-excluded-files)
   (push "/package-init.el" compile-angel-excluded-files)
@@ -153,6 +155,7 @@
   (corfu-on-exact-match nil)
   (completion-cycle-threshold nil)      ; Always show completion candidates
   (corfu-insert-at-point t)
+  (completion-auto-help nil)
   ;; Optional
   (corfu-cycle t) ; allow cycling
   ;; :bind
@@ -970,7 +973,6 @@
 
 ;; Dired buffers: Automatically hide file details (permissions, size,
 ;; modification date, etc.) and all the files in the `dired-omit-files' regular
-
 ;; Hide files from dired
 (setq dired-movement-style 'bounded-files)
 (setq dired-omit-files (concat "\\`[.]\\'"
@@ -1007,10 +1009,6 @@
     ("S-TAB" . dired-subtree-remove))
   :config
   (setq dired-subtree-use-backgrounds nil))
-
-
-
-
 
 
 ;; enables visual indication of minibuffer recursion depth after initialization.
@@ -1091,8 +1089,6 @@
 ;; are typically stored in a separate file, commonly named 'custom.el'. To
 ;; ensure these settings are loaded during Emacs initialization, it is necessary
 ;; to explicitly load this file if it exists.
-
-
 
 (use-package treesit-auto
   :custom
@@ -1259,15 +1255,12 @@
 (use-package color-theme-sanityinc-tomorrow
   :straight t)
 (use-package spacegray-theme)
-(load-theme 'spacegray t)
-
+(load-theme 'modus-operandi-deuteranopia t)
 ;;(keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete) ; TAB acts more like how it does in the shell
 (setq tramp-verbose 1)
-(set-cursor-color "gold")
+
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
-
 (setq tramp-auto-save-directory "/tmp")
-
 (load custom-file 'noerror 'no-message)
 (minimal-emacs-load-user-init "local-config.el")
