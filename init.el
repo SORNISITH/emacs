@@ -7,7 +7,6 @@
   (error "The early-init.el file failed to load"))
 
 ;;; Before package
-
 ;; The initial buffer is created during startup even in non-interactive
 ;; sessions, and its major mode is fully initialized. Modes like `text-mode',
 ;; `org-mode', or even the default `lisp-interaction-mode' load extra packages
@@ -495,7 +494,6 @@
 (setq ispell-silently-savep t)
 
 ;;; ibuffer
-
 (setq ibuffer-formats
       '((mark modified read-only locked
               " " (name 55 55 :left :elide)
@@ -504,22 +502,17 @@
         (mark " " (name 16 -1) " " filename)))
 
 ;;; xref
-
 ;; Enable completion in the minibuffer instead of the definitions buffer
 (setq xref-show-definitions-function 'xref-show-definitions-completing-read
       xref-show-xrefs-function 'xref-show-definitions-completing-read)
 
 ;;; abbrev
-
 ;; Ensure the abbrev_defs file is stored in the correct location when
 ;; `user-emacs-directory' is modified, as it defaults to ~/.emacs.d/abbrev_defs
 ;; regardless of the change.
 (setq abbrev-file-name (expand-file-name "abbrev_defs" user-emacs-directory))
-
 (setq save-abbrevs 'silently)
-
 ;;; dabbrev
-
 (setq dabbrev-upcase-means-case-search t)
 
 (setq dabbrev-ignored-buffer-modes
@@ -533,24 +526,18 @@
         ;; including versions with numeric extensions like <123>
         "\\(?:\\(?:[EG]?\\|GR\\)TAGS\\|e?tags\\|GPATH\\)\\(<[0-9]+>\\)?"))
 
-
-
 (dolist (cmd '(list-timers narrow-to-region narrow-to-page
                            upcase-region downcase-region
                            list-threads erase-buffer scroll-left
                            dired-find-alternate-file set-goal-column))
   (put cmd 'disabled nil))
 
-
 ;;; Load post init
 (when (and minimal-emacs-load-post-init
            (fboundp 'minimal-emacs-load-user-init))
   (minimal-emacs-load-user-init "post-init.el"))
 
-
-
 (setq minimal-emacs--success t)
-
 ;; Local variables:
 ;; byte-compile-warnings: (not obsolete free-vars)
 ;; End:

@@ -5,7 +5,6 @@
   ;; The following disables compilation of packages during installation;
   ;; compile-angel will handle it.
   (setq package-native-compile nil)
-
   ;; Set `compile-angel-verbose' to nil to disable compile-angel messages.
   ;; (When set to nil, compile-angel won't show which file is being compiled.)
   (setq compile-angel-verbose t)
@@ -34,7 +33,6 @@
   ;; `require'. Additionally, it compiles all packages that were loaded before
   ;; the mode `compile-angel-on-load-mode' was activated.
   (compile-angel-on-load-mode 1))
-
 
 ;; Auto-revert in Emacs is a feature that automatically updates the
 ;; contents of a buffer to reflect changes made to the underlying file
@@ -113,6 +111,9 @@
   (global-set-key (kbd "C-z") 'undo-fu-only-undo)
   (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
 
+
+
+;; UNDO -----------------------------------------------------------------
 ;; The undo-fu-session package complements undo-fu by enabling the saving
 ;; and restoration of undo history across Emacs sessions, even after restarting.
 (use-package undo-fu-session
@@ -124,6 +125,8 @@
 ;;   the cursor position.
 ;; - Reinforce a keyboard-centric workflow by discouraging reliance on the mouse
 ;;   for navigation.
+
+;; DISABLE MOUSE ----------------------------------------------------------------------------------------------------------------
 (use-package inhibit-mouse
   :config
   (if (daemonp)
@@ -132,9 +135,6 @@
 
 
 
-;; Set the default font to DejaVu Sans Mono with specific size and weight
-(set-face-attribute 'default nil
-                    :height 210 :weight 'normal :family "Iosevka")
 
 ;; Enable `auto-save-mode' to prevent data loss. Use `recover-file' or
 ;; `recover-session' to restore unsaved changes.
@@ -251,7 +251,7 @@
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Dividers.html
 (add-hook 'after-init-hook #'window-divider-mode)
 
-;; DIRED--------------------------------------------------------------------------------------
+;; DIRED-------------------------------------------------------------------------------------------------------------------------
 ;; Constrain vertical cursor movement to lines within the buffer
 (setq dired-movement-style 'bounded-files)
 ;; Hide files from dired
@@ -291,11 +291,8 @@
 ;; Enables visual indication of minibuffer recursion depth after initialization.
 (add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
 
-;; Configure Emacs to ask for confirmation before exiting
-(setq confirm-kill-emacs 'y-or-n-p)
-;; Enabled backups save your changes to a file intermittently
-(setq kept-old-versions 10)
-(setq kept-new-versions 10)
+
+
 ;; Support for Git files (.gitconfig, .gitignore, .gitattributes...)
 (use-package git-modes
   :commands (gitattributes-mode
@@ -543,7 +540,7 @@
   :mode ("Jenkinsfile\\'" . jenkinsfile-mode))
 
 
-;; BUFFER --------------------------------------------------------------------------------------------------------------
+;; BUFFER ----------------------------------------------------------------------------------------------------------------------
 (use-package buffer-guardian
   :custom
   ;; When non-nil, include remote files in the auto-save process
@@ -567,38 +564,53 @@
   :hook
   (after-init . buffer-guardian-mode))
 
-;; snippet ---------------------------------------------------------------------------
+;; snippet ---------------------------------------------------------------------------------------------------------------------
 ;; The official collection of snippets for yasnippet.
-(use-package yasnippet-snippets
-  :after yasnippet)
-
-;; YASnippet is a template system designed that enhances text editing by
-;; enabling users to define and use snippets. When a user types a short
-;; abbreviation, YASnippet automatically expands it into a full template, which
-;; can include placeholders, fields, and dynamic content.
 (use-package yasnippet
-  :commands (yas-minor-mode
-             yas-global-mode)
-
-  :hook
-  (after-init . yas-global-mode)
-
+  :straight t
+  :demand t
+  ;; :diminish yas-minor-mode
+  :commands yas-minor-mode-on
+  :bind (("C-c y d" . yas-load-directory)
+         ("C-c y i" . yas-insert-snippet)
+         ("C-c y f" . yas-visit-snippet-file)
+         ("C-c y n" . yas-new-snippet)
+         ("C-c y t" . yas-tryout-snippet)
+         ("C-c y l" . yas-describe-tables)
+         ("C-c y g" . yas-global-mode)
+         ("C-c y m" . yas-minor-mode)
+         ("C-c y r" . yas-reload-all)
+         ("C-c y x" . yas-expand)
+         :map yas-keymap
+         ("C-i" . yas-next-field-or-maybe-expand))
+  :mode ("/\\.emacs\\.d/snippets/" . snippet-mode)
+  :hook ((prog-mode org-mode) . yas-minor-mode-on)
   :custom
-  (yas-also-auto-indent-first-line t)  ; Indent first line of snippet
-  (yas-also-indent-empty-lines t)
-  (yas-snippet-revival nil)  ; Setting this to t causes issues with undo
-  (yas-wrap-around-region nil) ; Do not wrap region when expanding snippets
-  ;; (yas-triggers-in-field nil)  ; Disable nested snippet expansion
-  ;; (yas-indent-line 'fixed) ; Do not auto-indent snippet content
-  ;; (yas-prompt-functions '(yas-no-prompt))  ; No prompt for snippet choices
+  (yas-prompt-functions '(yas-completing-prompt yas-no-prompt))
+  (yas-triggers-in-field t)
+  (yas-wrap-around-region t)
+  :custom-face
+  (yas-field-highlight-face ((t (:background "#2a2a3a")))))
 
-  :init
-  ;; Suppress verbose messages
-  (setq yas-verbosity 0))
+(use-package yasnippet-snippets
+  :straight t
+  :after yasnippet
+  :demand t)
 
+;; (use-package doom-snippets
+;;   :straight (:host github :repo "hlissner/doom-snippets" :files ("*.el" "*"))
+;;   :after yasnippet
+;;   :demand t)
 
+(use-package yasnippet-capf
+  :straight t
+  :after (cape yasnippet)
+  :hook ((prog-mode text-mode conf-mode) . +cape-yasnippet--setup-h)
+  :config
+  (defun +cape-yasnippet--setup-h ()
+    (add-to-list 'completion-at-point-functions #'yasnippet-capf)))
 
-;; VERTICO ----------------------------------------------------------------------
+;; VERTICO ---------------------------------------------------------------------------------------------------------------------
 (use-package vertico
   :straight t
   :defer t
@@ -743,9 +755,9 @@
 
 (use-package embrace
   :straight t
-  :bind (("M-s w" . embrace-commander)  ; wrap/surround
-         ("M-s a" . embrace-add)        ; add surrounding
-         ("M-s x" . embrace-delete))    ; extract/remove surrounding
+  :bind (("C-c j" . embrace-commander)  ; wrap/surround
+         ("C-c a" . embrace-add)        ; add surrounding
+         ("C-c d" . embrace-delete))    ; extract/remove surrounding
   :config
   ;; Add custom pairs for programming
   ;; (embrace-add-pair ?` "`" "`")     ; backticks
@@ -803,7 +815,7 @@
   :after (vertico)
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("M-RET" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)  ;; alternative for describe-bindings
    :map embark-file-map
    ("V" . dorneanu/vsplit-file-open)
@@ -1039,8 +1051,214 @@
     (add-to-list 'markdown-code-lang-modes x))
   ;; use pandoc with source code syntax highlighting to preview markdown (C-c C-c p)
   (setq markdown-command "pandoc -s --highlight-style pygments -f markdown_github -t html5"))
+;; ORG-MODE ------------------------------------------------------------------------------------------------------------------
+(use-package org
+  :straight (:type built-in)
+  :hook ((org-mode . toggle-truncate-lines))
+  :bind (
+         ;; Global keybindings
+         ("M-g A" . org-agenda)
+
+         :map org-mode-map
+         ;; Basic structure
+         ("C-c o i h" . org-insert-heading)
+         ("C-c o i s" . org-insert-subheading)
+         ("C-c o i t" . org-insert-todo-heading)
+         ("C-c o i c" . dorneanu/org-insert-link-from-clipboard)
+
+         ;; Timestamps
+         ("C-c C-y" . org-toggle-timestamp-type)
+         ("C-c ." . org-time-stamp-inactive)     ; Default to inactive timestamps
+
+         ;; Structuring
+         ("M-s-n" . org-drag-element-forward)
+         ("M-s-p" . org-drag-element-backward)
+
+         ;; Clocking
+         ("C-c o c i" . org-clock-in)
+         ("C-c o c o" . org-clock-out)
+         ("C-c o c r" . org-clock-report)
+         ("C-c o c m" . dorneanu/org-clock-enter-manually)
+
+         ;; Demote / Promote
+         ("C-c o d +" . org-promote-subtree)
+         ("C->" . org-demote-subtree)
+         ("C-c o d -" . org-demote-subtree)
+         ("C-<" . org-promote-subtree)
+
+         ;; Navigation
+         ;; ("C-c o n n" . org-next-visible-heading)
+         ;; ("C-c o n p" . org-previous-visible-heading)
+         ("M-n" . org-next-visible-heading)
+         ("M-p" . org-previous-visible-heading)
+         ("M-N" . org-forward-heading-same-level)
+         ("M-P" . org-backward-heading-same-level)
+         ("M-O" . org-up-element)
+         ("M-ö" . org-forward-paragraph)
+         ("M-ä" . org-backward-paragraph)
+
+         ;; Todo state
+         ("C-c o t t" . org-todo)
+         ("C-c o t d" . org-deadline)
+         ("C-c o t s" . org-schedule)
+
+         ;; Tags and properties
+         ("C-c o :" . org-set-tags-command)
+         ("C-c o p" . org-set-property)
+
+         ;; Formatting
+         ;; ("C-c o b" . org-bold)
+         ;; ("C-c o i" . org-italic)
+         ;; ("C-c o u" . org-underline)
+         ("C-c o f f" . org-emphasize)
+
+         ;; Hide / show
+         ("C-c o f ." . dorneanu/org-focus-current-subtree)
+         ("C-c o f s" . org-fold-hide-sublevels)
+         ("C-c o f t" . org-fold-hide-subtree)
+
+         ;; Soting
+         ("C-c o s" . org-sort)
+         ;; Export
+         ("C-c o e e" . org-export-dispatch)
+
+         ;; Misc
+         ("C-c o a" . org-archive-subtree)
+         ;; Note: refile bindings (C-c o r *) are set up in with-eval-after-load below
+         ("C-c o k" . org-store-link)
+         ("C-c o l" . org-insert-link)
+         ("C-c o e m" . my/toggle-org-emphasis-markers)
+         ("C-c o e r" . my/refresh-org-emphasis)
+         ("C-c '" . org-edit-special)
+         ("C-c o o p" . org-present)
+
+         ([(shift return)] . crux-smart-open-line)
+         ([(control shift return)] . crux-smart-open-line-above)
+
+         ;; Minibuffer calendar navigation (macOS-friendly)
+         :map org-read-date-minibuffer-local-map
+         ("M-<left>"    . (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-day 1))))
+         ("M-<right>"   . (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-day 1))))
+         ("M-<up>"      . (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-week 1))))
+         ("M-<down>"    . (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-week 1))))
+         ("M-S-<left>"  . (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-month 1))))
+         ("M-S-<right>" . (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-month 1))))
+         ("M-S-<up>"    . (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-year 1))))
+         ("M-S-<down>"  . (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-year 1))))
+
+         :map org-src-mode-map
+         ("C-x n" . org-edit-src-exit))
+  :custom
+  (org-auto-align-tags t)
+  (org-edit-src-content-indentation 2)     ; indent the content of src blocks by 2 spaces
+  (org-edit-src-turn-on-auto-save t)       ; auto-save org-edit-src
+  (org-fontify-quote-and-verse-blocks t)
+  (org-pretty-entities t)
+  (org-pretty-entities-include-sub-superscripts nil)
+  (org-special-ctrl-a/e t)
+  (org-startup-indented t)
+  (org-element-use-cache nil)
+  :config
+  (setq org-hide-leading-stars             t
+        org-hide-macro-markers             t
+        org-hide-properties                t
+        org-cycle-hide-drawer-startup      t
+        org-hide-drawer-startup            t
+        ;; Some characters to choose from: …, ⤵, ▼, ↴, ⬎, ⤷, and ⋱
+        org-ellipsis                       "…"
+        org-image-actual-width             600
+        org-redisplay-inline-images        t
+        org-display-inline-images          t
+        org-auto-align-tags                t
+        org-startup-with-inline-images     "inlineimages"
+        org-pretty-entities                t
+        org-hide-emphasis-markers          t
+        org-fontify-whole-heading-line     t
+        org-fontify-done-headline          t
+        org-fontify-quote-and-verse-blocks t
+        org-startup-indented               t
+        org-startup-align-all-tables       t
+        org-use-property-inheritance       t
+        org-list-allow-alphabetical        t
+        ;; M-RET should not split the lines
+        org-M-RET-may-split-line           '((default . nil))
+        org-insert-heading-respect-content nil
+        org-adapt-indentation              t
+        org-log-done                       nil
+        org-log-state-notes-into-drawer    nil     ;; No state change notes
+        org-log-into-drawer                nil     ;; Does this make sense?
+        org-directory                      "~/repos/priv/org/"
+        org-default-notes-file             (expand-file-name "notes.org" org-directory))
 
 
+  ;; Set TODO keywords
+  (setq org-todo-keywords
+        '((sequence
+           "TODO(t)"
+           "STARTED(s)"
+           "NEXT(n)"
+           "WIP(p)"
+           "WAITING(w)"
+           "|"
+           "DONE(d)"
+           "CANCELED(c)")
+          (sequence
+           "PROJ(P)"
+           "MEETING(m)"
+           "REVIEW(r)"
+           "IDEA(i)")))
+  ;; "|"
+  ;; "STOP(c)"
+  ;; "EVENT(m)"
+
+  ;; Set colors for TODO keywords
+  (setq org-todo-keyword-faces
+        '(("TODO" . (:foreground "#ff6b6b" :weight bold))
+          ("STARTED" . (:foreground "#ff9500" :weight bold))
+          ("NEXT" . (:foreground "#007acc" :weight bold))
+          ("WIP" . (:foreground "#4ecdc4" :weight bold))
+          ("WAITING" . (:foreground "#ffe66d" :weight bold))
+          ("DONE" . (:foreground "#51cf66" :weight bold))
+          ("CANCELED" . (:foreground "#6c757d" :weight bold :strike-through t))
+          ("PROJ" . (:foreground "#9c27b0" :weight bold))
+          ("MEETING" . (:foreground "#e91e63" :weight bold))
+          ("REVIEW" . (:foreground "#ff5722" :weight bold))
+          ("IDEA" . (:foreground "#ffc107" :weight bold))))
+
+  ;; Clock configuration for mode-line display
+  (setq org-clock-clocked-in-display 'mode-line)  ; Show in mode-line
+
+  ;; Custom function to get enhanced clock string
+  (defun my/org-clock-get-clock-string ()
+    "Get clock string showing session:total/effort format."
+    (when (org-clock-is-active)
+      (let* ((session-minutes (floor (/ (float-time (time-subtract (current-time) org-clock-start-time)) 60)))
+             (session-time (org-duration-from-minutes session-minutes))
+             (total-time (save-excursion
+                          (with-current-buffer (marker-buffer org-clock-marker)
+                            (goto-char org-clock-marker)
+                            (org-duration-from-minutes (org-clock-sum-current-item)))))
+             (effort (save-excursion
+                      (with-current-buffer (marker-buffer org-clock-marker)
+                        (goto-char org-clock-marker)
+                        (org-entry-get (point) "Effort")))))
+        (concat "[" session-time "/" total-time
+                (when effort (concat "/" effort)) "]"))))
+
+  ;; Advice to override the default clock string function
+  (defun my/advice-org-clock-get-clock-string (orig-fun)
+    "Advice to enhance org-clock-get-clock-string with session:total format."
+    (or (my/org-clock-get-clock-string)
+        (funcall orig-fun)))
+
+  (advice-add 'org-clock-get-clock-string :around #'my/advice-org-clock-get-clock-string)
+
+  ;; No blank lines before new entries
+  (setq org-blank-before-new-entry
+        '((heading . nil)
+          (plain-list-item . nil))))
+
+;; ELDOC ----------------------------------------------------------------------------------------------------------------------
 (use-package eldoc
   :straight t
   :hook (prog-mode . eldoc-mode)
@@ -1054,7 +1272,7 @@
         eldoc-echo-area-use-multiline-p t
         eldoc-echo-area-display-truncation-message nil
         eldoc-idle-delay 0.1))
-
+;; FORMART --------------------------------------------------------------------------------------------------------------------
 (use-package apheleia
   :straight t
   :bind (("C-c f f" . apheleia-format-buffer))
@@ -1077,7 +1295,7 @@
   (apheleia-global-mode))
 
 
-;; FLYCHECK ------------------------------------------------------------
+;; FLYCHECK -------------------------------------------------------------------------------------------------------------------
 (use-package flycheck
   :straight t
   :hook (prog-mode . flycheck-mode))
@@ -1086,7 +1304,7 @@
   :straight t
   :bind (("M-g f" . consult-flycheck)))
 
-;; CRUX ----------------------------------------------------------------
+;; CRUX -----------------------------------------------------------------------------------------------------------------------
 (use-package crux
   :straight t
   :bind (("C-x C-d" . crux-duplicate-current-line-or-region)
@@ -1126,6 +1344,39 @@
   (move-text-default-bindings)
   (global-set-key (kbd "C-<up>") #'move-text-up)
   (global-set-key (kbd "C-<down>") #'move-text-down))
+;; WGREP
+
+(use-package wgrep
+  :straight t
+  :after embark-consult
+  :demand t
+  :bind (:map grep-mode-map
+         ("e" . wgrep-change-to-wgrep-mode)
+         ("C-x C-q" . wgrep-change-to-wgrep-mode))
+  :custom
+  (wgrep-auto-save-buffer t)
+  (wgrep-change-readonly-file t))
+
+;; AVY -------------------------------------------------------------------------------------------------------------------------
+
+(use-package avy
+  :demand t
+  :bind (("C-x j c" . avy-goto-char)
+         ("C-\"" . avy-goto-char)
+         ("C-x j w" . avy-goto-word-1)
+         ("C-'" . avy-goto-word-1)
+         ("C-x j l" . avy-goto-line)
+         ("C-x j z" . avy-zap-to-char-dwim))
+  :config
+  (setq avy-all-windows t
+        avy-all-windows-alt t
+        avy-background t
+        avy-style 'pre))
+        
+(use-package avy-zap
+    :straight t
+   :bind (("M-z" . avy-zap-to-char-dwim)
+           ("M-Z" . avy-zap-up-to-char-dwim)))
 
 ;; MODLINE ---------------------------------------------------------------------------------------------------------------------
 (use-package doom-modeline
@@ -1135,16 +1386,14 @@
 (setq doom-modeline-battery nil)
 (setq doom-modeline-lsp-icon nil)
 (setq doom-modeline-icon nil)
-(setq doom-modeline-time nil)
+;;;(setq doom-modeline-time nil)
 (setq display-time-default-load-average nil)
 (setq doom-modeline-time nil)
 
 ;; THEMES ---------------------------------------------------------------------------------------------------------------------
 (use-package doom-themes
   :straight (:build t)
-  :defer t
-
-  )
+  :defer t)
 (use-package kaolin-themes
   :straight t
   :defer t)
@@ -1171,20 +1420,386 @@
 (use-package color-theme-sanityinc-tomorrow
   :straight t)
 (use-package spacegray-theme)
-
+;; Config THEME ------------------------------------------------------------------------------------------------------------------
 (let ((inhibit-redisplay t))
   ;; Disable all active themes
   (mapc #'disable-theme custom-enabled-themes)
   ;; Load the built-in theme
-  (load-theme 'modus-operandi t))
+ ; (load-theme 'modus-operandi t))
+  (load-theme 'gruber-darker t))
+;; FONT ---------------------------------------------------------------------------------------------------------------------------
+;; Set the default font to DejaVu Sans Mono with specific size and weight
+(set-face-attribute 'default nil
+                    :height 210 :weight 'normal :family "Iosevka")
 
+;; FOLD KARAMI -----------------------------------------------------------------------------------------------------------------
+(use-package kirigami
+  :commands (kirigami-open-fold
+             kirigami-open-fold-rec
+             kirigami-close-fold
+             kirigami-toggle-fold
+             kirigami-open-folds
+             kirigami-close-folds-except-current
+             kirigami-close-folds)
+
+  :bind
+  (("C-c z o" . kirigami-open-fold)          ; Open fold at point
+   ("C-c z O" . kirigami-open-fold-rec)      ; Open fold recursively
+   ("C-c z r" . kirigami-open-folds)         ; Open all folds
+   ("C-c z c" . kirigami-close-fold)         ; Close fold at point
+   ("C-c z m" . kirigami-close-folds)        ; Close all folds
+   ("C-c z a" . kirigami-toggle-fold)))      ; Toggle fold at point
+;; Uncomment the following if you are an `evil-mode' user:
+;; (with-eval-after-load 'evil
+;;   (define-key evil-normal-state-map "zo" 'kirigami-open-fold)
+;;   (define-key evil-normal-state-map "zO" 'kirigami-open-fold-rec)
+;;   (define-key evil-normal-state-map "zc" 'kirigami-close-fold)
+;;   (define-key evil-normal-state-map "za" 'kirigami-toggle-fold)
+;;   (define-key evil-normal-state-map "zr" 'kirigami-open-folds)
+;;   (define-key evil-normal-state-map "zm" 'kirigami-close-folds))
+
+;; FOLD ---------------------------------------------------------------------------------------------------------------------------
+;; Intelligent code folding by using the structural understanding of the
+;; built-in tree-sitter parser. Unlike traditional folding methods that rely on
+;; regular expressions or indentation, treesit-fold uses the actual syntax tree
+;; of the code to accurately identify foldable regions such as functions,
+;; classes, comments, and documentation strings. This allows for faster and more
+;; language, ensuring that fold boundaries are always syntactically correct even
+;; in complex or nested code structures.
+(use-package treesit-fold
+  :commands (treesit-fold-close
+             treesit-fold-close-all
+             treesit-fold-open
+             treesit-fold-toggle
+             treesit-fold-open-all
+             treesit-fold-mode
+             global-treesit-fold-mode
+             treesit-fold-open-recursively
+             treesit-fold-line-comment-mode)
+  :custom
+  (treesit-fold-line-count-show t)
+  (treesit-fold-line-count-format " ▼")
+  :config
+  (set-face-attribute 'treesit-fold-replacement-face nil
+                      :foreground "#808080"
+                      :box nil
+                      :weight 'bold))
+;; Systems and General Purpose
+(add-hook 'c-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'c++-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'java-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'rust-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'go-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'ruby-ts-mode-hook #'treesit-fold-mode)
+;; Web and Frontend
+(add-hook 'js-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'typescript-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'tsx-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'css-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'html-ts-mode-hook #'treesit-fold-mode)
+;; Scripting and Infrastructure
+(add-hook 'bash-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'cmake-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'dockerfile-ts-mode-hook #'treesit-fold-mode)
+;; Data and Configuration
+(add-hook 'json-ts-mode-hook #'treesit-fold-mode)
+(add-hook 'toml-ts-mode-hook #'treesit-fold-mode)
+;; Third-party
+;; (add-hook 'kotlin-ts-mode-hook #'treesit-fold-mode)
+;; (add-hook 'swift-ts-mode-hook #'treesit-fold-mode)
+;; (add-hook 'elixir-ts-mode-hook #'treesit-fold-mode)
+;; (add-hook 'zig-ts-mode-hook #'treesit-fold-mode)
+
+;; ;;----------------------------------------------------LSP--------------------------------------------------------------------------
+;; ;;; CORFU & CAPEF------------------------------------------------------------------------------------------------------------------------
+;; (use-package cape
+;;   :straight t
+;;   :defer t
+;;   :commands (cape-dabbrev cape-file cape-elisp-block)
+;;   :bind ("C-c p" . cape-prefix-map)
+;;   :init
+;;   ;; Add to the global default value of `completion-at-point-functions' which is
+;;   ;; used by `completion-at-point'.
+;;    ;; Append cape functions safely
+;;   (add-to-list 'completion-at-point-functions #'cape-file)
+;;   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+;;   (add-hook 'completion-at-point-functions #'cape-elisp-block))
+;; 
+;; (use-package corfu
+;;   :straight t
+;;   :defer t
+;;   :commands (corfu-mode global-corfu-mode)
+;;   :hook ((prog-mode . corfu-mode)
+;;          (shell-mode . corfu-mode)
+;;          (eshell-mode . corfu-mode)
+;;          (lsp-completion-mode . dorneanu/corfu-setup-lsp))
+;;   :custom
+;;   ;; Hide commands in M-x which do not apply to the current mode.
+;;   (read-extended-command-predicate #'command-completion-default-include-p)
+;;   ;; Disable Ispell completion function. As an alternative try `cape-dict'.
+;;   (text-mode-ispell-word-completion nil)
+;;   (tab-always-indent 'complete)
+;;   ;; Only use `corfu' when calling `completion-at-point' or
+;;   ;; `indent-for-tab-command'
+;;   (corfu-auto t)
+;;   (corfu-auto-prefix 2)
+;;   (corfu-auto-delay 0.25)
+;;   (corfu-preselect 'first)
+;;   (corfu-quit-at-boundary nil)
+;;   (corfu-separator ?\s)            ; Use space
+;;   (corfu-quit-no-match 'separator) ; Don't quit if there is `corfu-separator' inserted
+;;   (corfu-preview-current 'insert)        ; Preview first candidate. Insert on input if only one
+;;   (corfu-preselect-first t)        ; Preselect first candidate?
+;;   (lsp-completion-provider :none)       ; Use corfu instead for lsp completion
+;;   (corfu-on-exact-match nil)
+;;   (completion-cycle-threshold nil)      ; Always show completion candidates
+;;   (corfu-insert-at-point t)
+;;   :config
+;; 
+;;   ;; Modify completion behavior for better Eglot integration
+;;   (defun my/corfu-complete-full ()
+;;     "Insert complete candidate, including any additional text edits."
+;;     (interactive)
+;;     (let ((completion-extra-properties nil))
+;;       (corfu-insert)))
+;; 
+;;   ;; Setup lsp to use corfu for lsp completion
+;;   (defun dorneanu/corfu-setup-lsp ()
+;;     "Use orderless completion style with lsp-capf instead of the default lsp-passthrough."
+;;     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+;;           '(orderless)))
+;; 
+;;   ;; Free the RET key for less intrusive behavior.
+;;   ;; Option 1: Unbind RET completely
+;;   ;; (keymap-unset corfu-map "RET")
+;;   ;; Option 2: Use RET only in shell modes
+;;   (keymap-set corfu-map "RET" `( menu-item "" nil :filter
+;;                                  ,(lambda (&optional _)
+;;                                     (and (derived-mode-p 'eshell-mode 'comint-mode)
+;;                                          #'corfu-send))))
+;;   ;; Bind TAB to the new completion function
+;;   (define-key corfu-map [tab] #'my/corfu-complete-full)
+;;   (define-key corfu-map (kbd "TAB") #'my/corfu-complete-full)
+;;   (global-corfu-mode))
+;; ;; Candidate information popup
+;; (use-package corfu-popupinfo
+;;   :straight (:type built-in)
+;;   :hook (corfu-mode . corfu-popupinfo-mode)
+;;   :bind ( ; Bind these to toggle/scroll documentation
+;;          :map corfu-map
+;;          ("M-p" . corfu-popupinfo-scroll-down)
+;;          ("M-n" . corfu-popupinfo-scroll-up)
+;;          ("M-d" . corfu-popupinfo-toggle))
+;;   :custom
+;;   (corfu-popupinfo-delay nil)
+;;   (corfu-popupinfo-max-height 15))
+;; ;; Corfu popup on terminal
+;; (use-package corfu-terminal
+;;   :straight t
+;;   :hook (corfu-mode . corfu-terminal-mode))
+;; 
+
+;; 
+;; ;;; EGLOT********************
+;; (use-package eglot
+;;   :ensure nil
+;;   :bind (("C-c l e " . eglot)
+;;          ("C-c C-." . eglot-code-actions))
+;;   ;; :disabled t
+;;   :defer t
+;;   :commands (eglot
+;;              eglot-rename
+;;              eglot-ensure
+;;              eglot-rename
+;;              eglot-format-buffer)
+;;   :custom
+;;   (eglot-report-progress t)  ; Prevent minibuffer spam
+;;   (eglot-autoshutdown t) ; shutdown after closing the last managed buffer
+;;   (eglot-sync-connect 0) ; async, do not block
+;;   (eglot-extend-to-xref t) ; can be interesting!
+;;   (eglot-report-progress nil) ; disable annoying messages in echo area!
+;;   (eglot-events-buffer-size 0)
+;;   :config
+;;   ;; Optimizations
+;;   (fset #'jsonrpc--log-event #'ignore)
+;;   (setq jsonrpc-event-hook nil)
+;;   ;; Not sure if this really helps
+;;   ;; Enable completion capabilities
+;;   ;; (setq completion-category-overrides '((eglot (styles orderless))))
+;;   ;; Configure tab for completion
+;;   (setq tab-always-indent 'complete)
+;;   ;; Enable snippet/template support
+;;   (setq eglot-insert-completion-annotations t)
+;;   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+;;   ;; Enable eglot for certain modes
+;;   ;; (add-hook 'go-mode-hook 'eglot-ensure)
+;;   ;; (add-to-list 'eglot-server-programs
+;;   ;;              `(python-mode
+;;   ;;                . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
+;;   ;;                                         "jedi-language-server"
+;;   ;;                                         "pylsp"))))
+;;   (add-to-list 'eglot-server-programs
+;;                '(python-mode . ("ruff" "server")))
+;;   (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman"))))
+;; 
+;; (add-hook 'markdown-mode-hook #'eglot-ensure)
+;; 
+;; ;;; LSP_MODE*****************
+;; (use-package lsp-mode
+;;   :ensure nil
+;;   :defer t
+;;   :bind (("C-c l s" . lsp))
+;;   :hook (
+;;          (go-ts-mode . lsp-deferred)
+;;          (go-mode . lsp-deferred)
+;;          ;; (web-mode . lsp-deferred)
+;;          ;; (python-mode . lsp-deferred)
+;;          ;; (lsp-mode . lsp-deferred)
+;;          ;; (python-ts-mode . lsp-deferred)
+;;          )
+;;   :commands (lsp lsp-deferred)
+;;   :custom
+;;   ;; (lsp-print-io nil)
+;;   ;; (lsp-trace nil)
+;;   ;; (lsp-print-performance nil)
+;;   ;; (lsp-prefer-flymake t)
+;;   ;; (lsp-disabled-clients (emmet-ls))
+;;   (lsp-use-plist t)
+;;   (lsp-keymap-prefix "C-c l")
+;;   (lsp-completion-provider :none)                    ; we use Corfu
+;;   (lsp-diagnostics-provider :flycheck)
+;;   ;; (lsp-session-file (locate-user-emacs-file ".lsp-session"))
+;;   (lsp-log-io nil)                                  ; IMPORTANT! Use only for debugging! Drastically affects performance
+;;   (lsp-keep-workspace-alive nil)                    ; Close LSP server if all project buffers are closed
+;;   (lsp-idle-delay 0.5)                             ; Debounce timer for `after-change-function'
+;; 
+;;   ;; core
+;;   (lsp-enable-xref t)                              ; Use xref to find references
+;;   (lsp-auto-configure t)                           ; Used to decide between current active servers
+;;   ;; (lsp-eldoc-enable-hover t)                       ; Display signature information in the echo area
+;;   (lsp-enable-dap-auto-configure nil)              ; Debug support
+;;   (lsp-enable-file-watchers t)
+;;   (lsp-file-watch-threshold 2000)
+;;   (lsp-file-watch-ignored-directories '("[/\\\\]\\.git$" "[/\\\\]vendor$" "[/\\\\]node_modules$" "[/\\\\]\\.cache$"))
+;;   (lsp-enable-folding t)
+;;   (lsp-enable-imenu t)
+;;   (lsp-enable-indentation nil)                     ; I use prettier
+;;   (lsp-enable-links nil)                           ; No need since we have `browse-url'
+;;   (lsp-enable-on-type-formatting nil)              ; Prettier handles this
+;;   (lsp-enable-suggest-server-download t)           ; Useful prompt to download LSP providers
+;;   (lsp-enable-symbol-highlighting t)               ; Shows usages of symbol at point in the current buffer
+;;   (lsp-enable-text-document-color nil)             ; This is Treesitter's job
+;;   (lsp-ui-sideline-show-hover nil)                 ; Sideline used only for diagnostics
+;;   (lsp-ui-sideline-diagnostic-max-lines 20)        ; 20 lines since typescript errors can be quite big
+;; 
+;;   ;; completion
+;;   (lsp-completion-enable t)
+;;   (lsp-completion-show-detail t)
+;;   (lsp-completion-enable-additional-text-edit t)    ; Ex: auto-insert an import for a completion candidate
+;;   (lsp-enable-snippet t)                           ; Important to provide full JSX completion
+;;   (lsp-completion-show-kind t)
+;;   (lsp-completion-show-label-description t)        ; Show extra detail like package path
+;; 
+;;   ;; headerline
+;;   (lsp-headerline-breadcrumb-enable t)               ; Optional, I like the breadcrumbs
+;;   (lsp-headerline-breadcrumb-enable-diagnostics nil)   ; Don't make them red, too noisy
+;;   (lsp-headerline-breadcrumb-enable-symbol-numbers nil)
+;;   (lsp-headerline-breadcrumb-icons-enable nil)
+;; 
+;;   ;; modeline
+;;   (lsp-modeline-code-actions-enable t)             ; Modeline should be relatively clean
+;;   (lsp-modeline-diagnostics-enable t)              ; Quick error count in modeline
+;;   (lsp-modeline-workspace-status-enable t)         ; Modeline displays "LSP" when lsp-mode is enabled
+;;   (lsp-signature-auto-activate '(:on-trigger-char :on-server-request))
+;;   (lsp-signature-render-documentation t)
+;;   (lsp-signature-doc-lines 1)                      ; Don't raise the echo area. It's distracting
+;;   (lsp-ui-doc-use-childframe t)                    ; Show docs for symbol at point
+;;   ;; (lsp-eldoc-render-all nil)                       ; This would be very useful if it would respect `lsp-signature-doc-lines', currently it's distracting
+;; 
+;;   ;; lens
+;;   (lsp-lens-enable nil)                            ; Optional, I don't need it
+;; 
+;;   ;; semantic
+;;   (lsp-semantic-tokens-enable nil)                 ; Related to highlighting, and we defer to treesitter
+;; 
+;;   ;; inlay hints
+;;   (lsp-inlay-hint-enable nil)                        ; Show parameter names and type hints inline
+;; 
+;;   :config
+;;   ;; Merge LSP completions with yasnippet so snippets appear alongside LSP candidates
+;;   (defun my/lsp-capf-with-snippets ()
+;;     "Replace lsp-completion-at-point with a super-capf that includes yasnippet."
+;;     (setq-local completion-at-point-functions
+;;                 (cl-substitute-if
+;;                  (cape-capf-super #'lsp-completion-at-point #'yasnippet-capf)
+;;                  (lambda (fn) (eq fn #'lsp-completion-at-point))
+;;                  completion-at-point-functions)))
+;;   (add-hook 'lsp-completion-mode-hook #'my/lsp-capf-with-snippets)
+;;   )
+;; 
+;; ;; Workaround for lsp-ts-query bug: `#'nil' used as predicate crashes on load
+;; (with-eval-after-load 'lsp-ts-query
+;;   (setq lsp-ts-query-parser-install-directories
+;;         (vector (expand-file-name (locate-user-emacs-file "tree-sitter")))))
+;; (use-package lsp-pyright
+;;   :straight t
+;;   :defer t
+;;   :custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
+;;   :init
+;;   (add-hook 'python-ts-mode-hook
+;;             (lambda () (require 'lsp-pyright) (lsp-deferred))))
+;; (use-package lsp-tailwindcss
+;;   :straight (:type git :host github :repo "merrickluo/lsp-tailwindcss")
+;;   :defer t
+;;   :init (setq lsp-tailwindcss-add-on-mode t)
+;;   :config
+;;   (setq lsp-tailwindcss-add-on-mode t)
+;;   ;; (setq lsp-tailwindcss-server-path "/opt/homebrew/bin/tailwindcss-language-server")
+;;   (dolist (tw-major-mode
+;;            '(web-mode
+;;              web-ts-mode
+;;              css-mode
+;;              css-ts-mode
+;;              typescript-mode
+;;              typescript-ts-mode
+;;              tsx-ts-mode
+;;              html-mode
+;;              js2-mode
+;;              js-ts-mode))
+;;     (add-to-list 'lsp-tailwindcss-major-modes tw-major-mode))
+;;   )
+;; (use-package lsp-eslint
+;;   :straight (:type built-in)
+;;   :after lsp-mode)
+;; (use-package consult-lsp
+;;   :straight t
+;;   :after consult lsp-mode
+;;   :bind (:map lsp-mode-map
+;;               ([remap xref-find-apropos] . consult-lsp-symbols)))
+
+;;; LSP-Bridge***************--------------------------------------------------------------------------------------------------------
+
+(add-to-list 'load-path "~/.emacs.d/lsp-bridge/")
+(require 'lsp-bridge)
+(global-lsp-bridge-mode)
+(setq lsp-bridge-python-command "~/.pyenv/versions/3.13.13/bin/python3")
+(setq acm-candidate-match-function 'orderless-initialism)
+(setq acm-enable-doc nil)
+(setq acm-enable-preview t)
+(setq acm-backend-search-file-words-max-number 5)
+(setq lsp-bridge-enable-search-words nil)
+(setq acm-enable-tabnine nil)
+(setq acm-enable-icon nil)
 ;; END --------------------------------------------------------------------------------------------------------------------------
-
 (setq tramp-verbose 1)
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
 (setq tramp-auto-save-directory "/tmp")
 (setq enable-dir-local-variables nil)
-
+;; Configure Emacs to ask for confirmation before exiting
+(setq confirm-kill-emacs 'y-or-n-p)
+;; Enabled backups save your changes to a file intermittently
+(setq kept-old-versions 10)
+(setq kept-new-versions 10)
 (load custom-file 'noerror 'no-message)
 (minimal-emacs-load-user-init "local-config.el")

@@ -29,6 +29,7 @@
 (global-set-key (kbd "C-c p") 'compile)
 (global-set-key (kbd "C-z") 'undo-fu-only-undo)
 (global-set-key (kbd "C-S-z") 'undo-fu-only-redo)
+(global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (global-set-key (kbd "C-q") 'set-mark-command)
