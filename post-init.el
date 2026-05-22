@@ -1520,137 +1520,137 @@
 
 ;; ;;----------------------------------------------------LSP--------------------------------------------------------------------------
 ;; ;;; CORFU & CAPEF------------------------------------------------------------------------------------------------------------------------
-;; (use-package cape
-;;   :straight t
-;;   :defer t
-;;   :commands (cape-dabbrev cape-file cape-elisp-block)
-;;   :bind ("C-c p" . cape-prefix-map)
-;;   :init
-;;   ;; Add to the global default value of `completion-at-point-functions' which is
-;;   ;; used by `completion-at-point'.
-;;    ;; Append cape functions safely
-;;   (add-to-list 'completion-at-point-functions #'cape-file)
-;;   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-;;   (add-hook 'completion-at-point-functions #'cape-elisp-block))
-;; 
-;; (use-package corfu
-;;   :straight t
-;;   :defer t
-;;   :commands (corfu-mode global-corfu-mode)
-;;   :hook ((prog-mode . corfu-mode)
-;;          (shell-mode . corfu-mode)
-;;          (eshell-mode . corfu-mode)
-;;          (lsp-completion-mode . dorneanu/corfu-setup-lsp))
-;;   :custom
-;;   ;; Hide commands in M-x which do not apply to the current mode.
-;;   (read-extended-command-predicate #'command-completion-default-include-p)
-;;   ;; Disable Ispell completion function. As an alternative try `cape-dict'.
-;;   (text-mode-ispell-word-completion nil)
-;;   (tab-always-indent 'complete)
-;;   ;; Only use `corfu' when calling `completion-at-point' or
-;;   ;; `indent-for-tab-command'
-;;   (corfu-auto t)
-;;   (corfu-auto-prefix 2)
-;;   (corfu-auto-delay 0.25)
-;;   (corfu-preselect 'first)
-;;   (corfu-quit-at-boundary nil)
-;;   (corfu-separator ?\s)            ; Use space
-;;   (corfu-quit-no-match 'separator) ; Don't quit if there is `corfu-separator' inserted
-;;   (corfu-preview-current 'insert)        ; Preview first candidate. Insert on input if only one
-;;   (corfu-preselect-first t)        ; Preselect first candidate?
-;;   (lsp-completion-provider :none)       ; Use corfu instead for lsp completion
-;;   (corfu-on-exact-match nil)
-;;   (completion-cycle-threshold nil)      ; Always show completion candidates
-;;   (corfu-insert-at-point t)
-;;   :config
-;; 
-;;   ;; Modify completion behavior for better Eglot integration
-;;   (defun my/corfu-complete-full ()
-;;     "Insert complete candidate, including any additional text edits."
-;;     (interactive)
-;;     (let ((completion-extra-properties nil))
-;;       (corfu-insert)))
-;; 
-;;   ;; Setup lsp to use corfu for lsp completion
-;;   (defun dorneanu/corfu-setup-lsp ()
-;;     "Use orderless completion style with lsp-capf instead of the default lsp-passthrough."
-;;     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-;;           '(orderless)))
-;; 
-;;   ;; Free the RET key for less intrusive behavior.
-;;   ;; Option 1: Unbind RET completely
-;;   ;; (keymap-unset corfu-map "RET")
-;;   ;; Option 2: Use RET only in shell modes
-;;   (keymap-set corfu-map "RET" `( menu-item "" nil :filter
-;;                                  ,(lambda (&optional _)
-;;                                     (and (derived-mode-p 'eshell-mode 'comint-mode)
-;;                                          #'corfu-send))))
-;;   ;; Bind TAB to the new completion function
-;;   (define-key corfu-map [tab] #'my/corfu-complete-full)
-;;   (define-key corfu-map (kbd "TAB") #'my/corfu-complete-full)
-;;   (global-corfu-mode))
-;; ;; Candidate information popup
-;; (use-package corfu-popupinfo
-;;   :straight (:type built-in)
-;;   :hook (corfu-mode . corfu-popupinfo-mode)
-;;   :bind ( ; Bind these to toggle/scroll documentation
-;;          :map corfu-map
-;;          ("M-p" . corfu-popupinfo-scroll-down)
-;;          ("M-n" . corfu-popupinfo-scroll-up)
-;;          ("M-d" . corfu-popupinfo-toggle))
-;;   :custom
-;;   (corfu-popupinfo-delay nil)
-;;   (corfu-popupinfo-max-height 15))
-;; ;; Corfu popup on terminal
-;; (use-package corfu-terminal
-;;   :straight t
-;;   :hook (corfu-mode . corfu-terminal-mode))
-;; 
+(use-package cape
+  :straight t
+  :defer t
+  :commands (cape-dabbrev cape-file cape-elisp-block)
+  :bind ("C-c p" . cape-prefix-map)
+  :init
+  ;; Add to the global default value of `completion-at-point-functions' which is
+  ;; used by `completion-at-point'.
+   ;; Append cape functions safely
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
-;; 
-;; ;;; EGLOT********************
-;; (use-package eglot
-;;   :ensure nil
-;;   :bind (("C-c l e " . eglot)
-;;          ("C-c C-." . eglot-code-actions))
-;;   ;; :disabled t
-;;   :defer t
-;;   :commands (eglot
-;;              eglot-rename
-;;              eglot-ensure
-;;              eglot-rename
-;;              eglot-format-buffer)
-;;   :custom
-;;   (eglot-report-progress t)  ; Prevent minibuffer spam
-;;   (eglot-autoshutdown t) ; shutdown after closing the last managed buffer
-;;   (eglot-sync-connect 0) ; async, do not block
-;;   (eglot-extend-to-xref t) ; can be interesting!
-;;   (eglot-report-progress nil) ; disable annoying messages in echo area!
-;;   (eglot-events-buffer-size 0)
-;;   :config
-;;   ;; Optimizations
-;;   (fset #'jsonrpc--log-event #'ignore)
-;;   (setq jsonrpc-event-hook nil)
-;;   ;; Not sure if this really helps
-;;   ;; Enable completion capabilities
-;;   ;; (setq completion-category-overrides '((eglot (styles orderless))))
-;;   ;; Configure tab for completion
-;;   (setq tab-always-indent 'complete)
-;;   ;; Enable snippet/template support
-;;   (setq eglot-insert-completion-annotations t)
-;;   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
-;;   ;; Enable eglot for certain modes
-;;   ;; (add-hook 'go-mode-hook 'eglot-ensure)
-;;   ;; (add-to-list 'eglot-server-programs
-;;   ;;              `(python-mode
-;;   ;;                . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
-;;   ;;                                         "jedi-language-server"
-;;   ;;                                         "pylsp"))))
-;;   (add-to-list 'eglot-server-programs
-;;                '(python-mode . ("ruff" "server")))
-;;   (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman"))))
-;; 
-;; (add-hook 'markdown-mode-hook #'eglot-ensure)
+(use-package corfu
+  :straight t
+  :defer t
+  :commands (corfu-mode global-corfu-mode)
+  :hook ((prog-mode . corfu-mode)
+         (shell-mode . corfu-mode)
+         (eshell-mode . corfu-mode)
+         (lsp-completion-mode . dorneanu/corfu-setup-lsp))
+  :custom
+  ;; Hide commands in M-x which do not apply to the current mode.
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; Disable Ispell completion function. As an alternative try `cape-dict'.
+  (text-mode-ispell-word-completion nil)
+  (tab-always-indent 'complete)
+  ;; Only use `corfu' when calling `completion-at-point' or
+  ;; `indent-for-tab-command'
+  (corfu-auto t)
+  (corfu-auto-prefix 2)
+  (corfu-auto-delay 0.25)
+  (corfu-preselect 'first)
+  (corfu-quit-at-boundary nil)
+  (corfu-separator ?\s)            ; Use space
+  (corfu-quit-no-match 'separator) ; Don't quit if there is `corfu-separator' inserted
+  (corfu-preview-current 'insert)        ; Preview first candidate. Insert on input if only one
+  (corfu-preselect-first t)        ; Preselect first candidate?
+  (lsp-completion-provider :none)       ; Use corfu instead for lsp completion
+  (corfu-on-exact-match nil)
+  (completion-cycle-threshold nil)      ; Always show completion candidates
+  (corfu-insert-at-point t)
+  :config
+
+  ;; Modify completion behavior for better Eglot integration
+  (defun my/corfu-complete-full ()
+    "Insert complete candidate, including any additional text edits."
+    (interactive)
+    (let ((completion-extra-properties nil))
+      (corfu-insert)))
+
+  ;; Setup lsp to use corfu for lsp completion
+  (defun dorneanu/corfu-setup-lsp ()
+    "Use orderless completion style with lsp-capf instead of the default lsp-passthrough."
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless)))
+
+  ;; Free the RET key for less intrusive behavior.
+  ;; Option 1: Unbind RET completely
+  ;; (keymap-unset corfu-map "RET")
+  ;; Option 2: Use RET only in shell modes
+  (keymap-set corfu-map "RET" `( menu-item "" nil :filter
+                                 ,(lambda (&optional _)
+                                    (and (derived-mode-p 'eshell-mode 'comint-mode)
+                                         #'corfu-send))))
+  ;; Bind TAB to the new completion function
+  (define-key corfu-map [tab] #'my/corfu-complete-full)
+  (define-key corfu-map (kbd "TAB") #'my/corfu-complete-full)
+  (global-corfu-mode))
+;; Candidate information popup
+(use-package corfu-popupinfo
+  :straight (:type built-in)
+  :hook (corfu-mode . corfu-popupinfo-mode)
+  :bind ( ; Bind these to toggle/scroll documentation
+         :map corfu-map
+         ("M-p" . corfu-popupinfo-scroll-down)
+         ("M-n" . corfu-popupinfo-scroll-up)
+         ("M-d" . corfu-popupinfo-toggle))
+  :custom
+  (corfu-popupinfo-delay nil)
+  (corfu-popupinfo-max-height 15))
+;; Corfu popup on terminal
+(use-package corfu-terminal
+  :straight t
+  :hook (corfu-mode . corfu-terminal-mode))
+
+
+
+;;; EGLOT********************
+(use-package eglot
+  :ensure nil
+  :bind (("C-c l e " . eglot)
+         ("C-c C-." . eglot-code-actions))
+  ;; :disabled t
+  :defer t
+  :commands (eglot
+             eglot-rename
+             eglot-ensure
+             eglot-rename
+             eglot-format-buffer)
+  :custom
+  (eglot-report-progress t)  ; Prevent minibuffer spam
+  (eglot-autoshutdown t) ; shutdown after closing the last managed buffer
+  (eglot-sync-connect 0) ; async, do not block
+  (eglot-extend-to-xref t) ; can be interesting!
+  (eglot-report-progress nil) ; disable annoying messages in echo area!
+  (eglot-events-buffer-size 0)
+  :config
+  ;; Optimizations
+  (fset #'jsonrpc--log-event #'ignore)
+  (setq jsonrpc-event-hook nil)
+  ;; Not sure if this really helps
+  ;; Enable completion capabilities
+  ;; (setq completion-category-overrides '((eglot (styles orderless))))
+  ;; Configure tab for completion
+  (setq tab-always-indent 'complete)
+  ;; Enable snippet/template support
+  (setq eglot-insert-completion-annotations t)
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+  ;; Enable eglot for certain modes
+  ;; (add-hook 'go-mode-hook 'eglot-ensure)
+  ;; (add-to-list 'eglot-server-programs
+  ;;              `(python-mode
+  ;;                . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
+  ;;                                         "jedi-language-server"
+  ;;                                         "pylsp"))))
+  (add-to-list 'eglot-server-programs
+               '(python-mode . ("ruff" "server")))
+  (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman"))))
+
+(add-hook 'markdown-mode-hook #'eglot-ensure)
 ;; 
 ;; ;;; LSP_MODE*****************
 ;; (use-package lsp-mode
@@ -1786,17 +1786,17 @@
 ;;               ([remap xref-find-apropos] . consult-lsp-symbols)))
 
 ;;; LSP-Bridge***************--------------------------------------------------------------------------------------------------------
-(add-to-list 'load-path "~/.emacs.d/lsp-bridge/")
-(require 'lsp-bridge)
-(global-lsp-bridge-mode)
-(setq lsp-bridge-python-command "~/.pyenv/versions/3.13.13/bin/python3")
-(setq acm-candidate-match-function 'orderless-initialism)
-(setq acm-enable-doc nil)
-(setq acm-enable-preview t)
-(setq acm-backend-search-file-words-max-number 5)
-(setq lsp-bridge-enable-search-words nil)
-(setq acm-enable-tabnine nil)
-(setq acm-enable-icon nil)
+;; (add-to-list 'load-path "~/.emacs.d/lsp-bridge/")
+;; (require 'lsp-bridge)
+;; (global-lsp-bridge-mode)
+;; (setq lsp-bridge-python-command "~/.pyenv/versions/3.13.13/bin/python3")
+;; (setq acm-candidate-match-function 'orderless-initialism)
+;; (setq acm-enable-doc nil)
+;; (setq acm-enable-preview t)
+;; (setq acm-backend-search-file-words-max-number 5)
+;; (setq lsp-bridge-enable-search-words nil)
+;; (setq acm-enable-tabnine nil)
+;; (setq acm-enable-icon nil)
 ;; END --------------------------------------------------------------------------------------------------------------------------
 
 
@@ -1822,6 +1822,46 @@
   (setq quick-sdcv-fold-on-search t))
 
 
+;; The easysession Emacs package is a session manager for Emacs that can persist
+;; and restore file editing buffers, indirect buffers/clones, Dired buffers,
+;; windows/splits, the built-in tab-bar (including tabs, their buffers, and
+;; windows), and Emacs frames. It offers a convenient and effortless way to
+;; manage Emacs editing sessions and utilizes built-in Emacs functions to
+;; persist and restore frames.
+(use-package easysession
+  :commands (easysession-switch-to
+             easysession-save-as
+             easysession-save-mode
+             easysession-load-including-geometry)
+
+  :custom
+  (easysession-mode-line-misc-info t)  ; Display the session in the modeline
+  (easysession-save-interval (* 10 60))  ; Save every 10 minutes
+
+  :init
+  ;; Key mappings
+  (global-set-key (kbd "C-c ss") #'easysession-save)
+  (global-set-key (kbd "C-c sl") #'easysession-switch-to)
+  (global-set-key (kbd "C-c sL") #'easysession-switch-to-and-restore-geometry)
+  (global-set-key (kbd "C-c sr") #'easysession-rename)
+  (global-set-key (kbd "C-c sR") #'easysession-reset)
+  (global-set-key (kbd "C-c sd") #'easysession-delete)
+
+  (if (fboundp 'easysession-setup)
+      ;; The `easysession-setup' function adds hooks:
+      ;; - To enable automatic session loading during `emacs-startup-hook', or
+      ;;   `server-after-make-frame-hook' when running in daemon mode.
+      ;; - To automatically save the session at regular intervals, and when
+      ;;   Emacs exits.
+      (easysession-setup)
+    ;; Legacy
+    ;; The depth 102 and 103 have been added to to `add-hook' to ensure that the
+    ;; session is loaded after all other packages. (Using 103/102 is
+    ;; particularly useful for those using minimal-emacs.d, where some
+    ;; optimizations restore `file-name-handler-alist` at depth 101 during
+    ;; `emacs-startup-hook`.)
+    (add-hook 'emacs-startup-hook #'easysession-load-including-geometry 102)
+    (add-hook 'emacs-startup-hook #'easysession-save-mode 103)))
 
 
 (setq tramp-verbose 1)
