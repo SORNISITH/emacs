@@ -1158,6 +1158,8 @@
   (org-special-ctrl-a/e t)
   (org-startup-indented t)
   (org-element-use-cache nil)
+
+
   :config
   (setq org-hide-leading-stars             t
         org-hide-macro-markers             t
@@ -1191,6 +1193,12 @@
         org-default-notes-file             (expand-file-name "notes.org" org-directory))
 
 
+  (setq org-preview-latex-default-process 'dvisvgm)
+  (setq org-format-latex-options
+        (plist-put org-format-latex-options :scale 2.0))
+  (setq org-startup-with-latex-preview t)
+  (setq org-latex-preview-auto-regen t)
+  
   ;; Set TODO keywords
   (setq org-todo-keywords
         '((sequence
@@ -1425,8 +1433,8 @@
   ;; Disable all active themes
   (mapc #'disable-theme custom-enabled-themes)
   ;; Load the built-in theme
- ; (load-theme 'modus-operandi t))
-  (load-theme 'gruber-darker t))
+  (load-theme 'modus-operandi t))
+ ;; (load-theme 'gruber-darker t))
 ;; FONT ---------------------------------------------------------------------------------------------------------------------------
 ;; Set the default font to DejaVu Sans Mono with specific size and weight
 (set-face-attribute 'default nil
@@ -1778,7 +1786,6 @@
 ;;               ([remap xref-find-apropos] . consult-lsp-symbols)))
 
 ;;; LSP-Bridge***************--------------------------------------------------------------------------------------------------------
-
 (add-to-list 'load-path "~/.emacs.d/lsp-bridge/")
 (require 'lsp-bridge)
 (global-lsp-bridge-mode)
@@ -1791,6 +1798,32 @@
 (setq acm-enable-tabnine nil)
 (setq acm-enable-icon nil)
 ;; END --------------------------------------------------------------------------------------------------------------------------
+
+
+;; DICTIONARY ---------------------------------------------------------
+(use-package quick-sdcv
+  :init
+  ;; When non-nil, a distinct buffer is created for each word searched.
+  (setq quick-sdcv-unique-buffers t)
+
+  ;; Change the prefix character used before dictionary names, replacing the
+  ;; default `-->`:
+  (setq quick-sdcv-dictionary-prefix-symbol "►")
+
+  ;; Change the quick-sdcv dictionaries ellipsis from … to " ▼"
+  ;; (In quick-sdcv buffers, `outline-minor-mode' is enabled by default, which
+  ;; allows sections corresponding to individual dictionaries to be folded. The
+  ;; ellipsis … indicates a folded section, making it easy to collapse all
+  ;; dictionaries and expand only those of interest.)
+  (setq quick-sdcv-ellipsis " ▼")
+
+  ;; Automatically fold all dictionary entries when performing a search.
+  ;; You can then unfold the dictionaries you want to read.
+  (setq quick-sdcv-fold-on-search t))
+
+
+
+
 (setq tramp-verbose 1)
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
@@ -1803,3 +1836,14 @@
 (setq kept-new-versions 10)
 (load custom-file 'noerror 'no-message)
 (minimal-emacs-load-user-init "local-config.el")
+
+
+
+
+
+
+
+
+
+
+
