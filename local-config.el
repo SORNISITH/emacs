@@ -40,7 +40,7 @@
 (global-set-key (kbd "C-l") 'consult-line)
 (global-set-key (kbd "C-j") 'consult-buffer)
 (global-set-key (kbd "M-/") 'consult-ripgrep)
-(global-set-key (kbd "C-SPC") 'execute-extended-command)
+;;(global-set-key (kbd "C-SPC") 'execute-extended-command)
 (global-set-key (kbd "C-=") 'quickrun)
 
 
