@@ -1370,7 +1370,6 @@
 (use-package avy
   :demand t
   :bind (("C-x j c" . avy-goto-char)
-         ("C-SPC" . avy-goto-word-1)
          ("C-x j w" . avy-goto-word-1)
          ("C-'" . avy-goto-word-1)
          ("C-x j l" . avy-goto-line)
