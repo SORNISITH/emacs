@@ -18,6 +18,7 @@
   ;; at the top of your init file.
   (compile-angel-exclude-directory "~/.emacs.d/lsp-bridge/")
   (compile-angel-exclude-directory "~/.emacs.d/pkgs/")
+  (compile-angel-exclude-directory "~/.emacs.d/site-lisp/emacs-application-framework/")
   (push "/init.el" compile-angel-excluded-files)
   (push "/custom.el" compile-angel-excluded-files)
   (push "/early-init.el" compile-angel-excluded-files)
@@ -1862,6 +1863,21 @@
     (add-hook 'emacs-startup-hook #'easysession-load-including-geometry 102)
     (add-hook 'emacs-startup-hook #'easysession-save-mode 103)))
 
+;; EAF framework --------------------------------------------------------
+(add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-application-framework/")
+(require 'eaf)
+(require 'eaf-browser)
+(require 'eaf-pdf-viewer)
+(defun my/org-display-math ()
+  (interactive)
+  (insert "\\[  \\]")
+  (backward-char 3))
+
+(use-package dumb-jump
+  :hook (xref-backend-functions . dumb-jump-xref-activate)
+  :custom
+  (xref-show-definitions-function 'xref-show-definitions-completing-read) ;; use consult instead of pop-up buffer
+  )
 
 (setq tramp-verbose 1)
 (blink-cursor-mode 1)
@@ -1875,14 +1891,5 @@
 (setq kept-new-versions 10)
 (load custom-file 'noerror 'no-message)
 (minimal-emacs-load-user-init "local-config.el")
-
-
-
-
-
-
-
-
-
 
 
