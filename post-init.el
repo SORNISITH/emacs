@@ -1193,7 +1193,7 @@
         org-directory                      "~/repos/priv/org/"
         org-default-notes-file             (expand-file-name "notes.org" org-directory))
 
-
+  (setq org-return-follows-link t)
   (setq org-preview-latex-default-process 'dvisvgm)
   (setq org-format-latex-options
         (plist-put org-format-latex-options :scale 2.0))
@@ -1878,7 +1878,10 @@
   :custom
   (xref-show-definitions-function 'xref-show-definitions-completing-read) ;; use consult instead of pop-up buffer
   )
-
+(prefer-coding-system 'utf-8)
+(set-language-environment "UTF-8")
+(setq x-input-method-use-echo-area nil)
+(setq default-input-method nil)
 (setq tramp-verbose 1)
 (blink-cursor-mode 1)
 (setq blink-cursor-interval 0.3 )
