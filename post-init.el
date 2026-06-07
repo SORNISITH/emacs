@@ -890,6 +890,7 @@
  'org-babel-load-languages
  '((sql . t)
    (go . t)
+   (C . t)
    (plantuml . t)
    (emacs-lisp . t)
    (mermaid . t)
@@ -1878,6 +1879,12 @@
   :custom
   (xref-show-definitions-function 'xref-show-definitions-completing-read) ;; use consult instead of pop-up buffer
   )
+
+
+(use-package svg-screenshot
+  :ensure t)
+
+(setq org-image-actual-width nil)
 (prefer-coding-system 'utf-8)
 (set-language-environment "UTF-8")
 (setq x-input-method-use-echo-area nil)
@@ -1894,5 +1901,6 @@
 (setq kept-new-versions 10)
 (load custom-file 'noerror 'no-message)
 (minimal-emacs-load-user-init "local-config.el")
+
 
 
