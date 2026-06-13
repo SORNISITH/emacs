@@ -891,6 +891,8 @@
  '((sql . t)
    (go . t)
    (C . t)
+   (python . t)
+   (latex,t)
    (plantuml . t)
    (emacs-lisp . t)
    (mermaid . t)
@@ -1345,7 +1347,7 @@
 ;; MULTIPLE_CURSOR--------------------------------------------------------------------------------------------------------------
 (use-package multiple-cursors  ;; fk off multi cursor what i need
   :bind
-  (("M-o" . 'mc/mark-next-like-this)
+  (("M-i" . 'mc/mark-next-like-this)
    ("" . 'mc/mark-previous-like-this)))
 ;; MOVETEXT --------------------------------------------------------------------------------------------------------------------
 (use-package move-text    ;; drag text move around like vim alt + j/k
@@ -1521,18 +1523,18 @@
 
 ;; ;;----------------------------------------------------LSP--------------------------------------------------------------------------
 ;; ;;; CORFU & CAPEF------------------------------------------------------------------------------------------------------------------------
-;; (use-package cape
-;;   :straight t
-;;   :defer t
-;;   :commands (cape-dabbrev cape-file cape-elisp-block)
-;;   :bind ("C-c p" . cape-prefix-map)
-;;   :init
-;;   ;; Add to the global default value of `completion-at-point-functions' which is
-;;   ;; used by `completion-at-point'.
-;;    ;; Append cape functions safely
-;;   (add-to-list 'completion-at-point-functions #'cape-file)
-;;   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-;;   (add-hook 'completion-at-point-functions #'cape-elisp-block))
+(use-package cape
+  :straight t
+  :defer t
+  :commands (cape-dabbrev cape-file cape-elisp-block)
+  :bind ("C-c p" . cape-prefix-map)
+  :init
+  ;; Add to the global default value of `completion-at-point-functions' which is
+  ;; used by `completion-at-point'.
+   ;; Append cape functions safely
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block))
 ;; 
 ;; (use-package corfu
 ;;   :straight t
@@ -1607,9 +1609,9 @@
 ;;   :straight t
 ;;   :hook (corfu-mode . corfu-terminal-mode))
 ;; 
-;; 
-;; 
-;; ;;; EGLOT********************
+;; ;; 
+;; ;; 
+;; ;; ;;; EGLOT********************
 ;; (use-package eglot
 ;;   :ensure nil
 ;;   :bind (("C-c l e " . eglot)
@@ -1836,7 +1838,7 @@
              easysession-load-including-geometry)
 
   :custom
-  (easysession-mode-line-misc-info t)  ; Display the session in the modeline
+  (easysession-mode-line-misc-info t)  ; Display the session inl the modeline
   (easysession-save-interval (* 10 60))  ; Save every 10 minutes
 
   :init
@@ -1880,13 +1882,21 @@
   (xref-show-definitions-function 'xref-show-definitions-completing-read) ;; use consult instead of pop-up buffer
   )
 
+(setq pdf-view-use-scaling t)
+(setq pdf-view-resize-factor 1.1)
 (setq org-image-actual-width nil)
 (prefer-coding-system 'utf-8)
+(setq pdf-view-continuous t)
+(setq pdf-cache-image-limit 1000)
+(remove-hook 'racket-mode-hook #'racket-xp-mode)
+(setq racket-xp-untype-expressions t)
 (set-language-environment "UTF-8")
 (setq x-input-method-use-echo-area nil)
 (setq default-input-method nil)
 (setq tramp-verbose 1)
 (blink-cursor-mode 1)
+(require 'project)
+(setq project-vc-extra-root-markers '("pom.xml"))
 (setq blink-cursor-interval 0.3 )
 (setq tramp-auto-save-directory "/tmp")
 (setq enable-dir-local-variables nil)

@@ -32,7 +32,7 @@
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-(global-set-key (kbd "C-q") 'set-mark-command)
+(global-set-key (kbd "C-q") 'kill-current-buffer)
 (global-set-key (kbd "C-<return>") 'vterm)
 (global-set-key (kbd "M-p") 'next-buffer)
 (global-set-key (kbd "M-n") 'previous-buffer)
