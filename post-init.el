@@ -1880,12 +1880,6 @@
   (xref-show-definitions-function 'xref-show-definitions-completing-read) ;; use consult instead of pop-up buffer
   )
 
-(with-eval-after-load 'easysession
-  (setq easysession-mode-line-misc-info
-        '(:eval
-          (car (last (split-string
-                      (easysession--mode-line-session-name-format)
-                      ":"))))))
 
 (load (expand-file-name "~/.quicklisp/slime-helper.el"))
 (setq inferior-lisp-program "sbcl")
