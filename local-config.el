@@ -41,6 +41,7 @@
 (global-set-key (kbd "C-j") 'consult-buffer)
 (global-set-key (kbd "M-/") 'consult-ripgrep)
 (global-set-key (kbd "C-SPC") 'avy-goto-char)
+(global-set-key (kbd "M-l") 'consult-line)
 (global-set-key (kbd "C-=") 'quickrun)
 (global-set-key (kbd "C-c m") #'my/org-display-math)
 

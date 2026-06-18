@@ -230,20 +230,20 @@
 ;; Track changes in the window configuration, allowing undoing actions such as
 ;; closing windows.
 (setq winner-boring-buffers '("*Completions*"
-                                "*Minibuf-0*"
-                                "*Minibuf-1*"
-                                "*Minibuf-2*"
-                                "*Minibuf-3*"
-                                "*Minibuf-4*"
-                                "*Compile-Log*"
-                                "*inferior-lisp*"
-                                "*Fuzzy Completions*"
-                                "*Apropos*"
-                                "*Help*"
-                                "*cvs*"
-                                "*Buffer List*"
-                                "*Ibuffer*"
-                                "*esh command on file*"))
+                              "*Minibuf-0*"
+                              "*Minibuf-1*"
+                              "*Minibuf-2*"
+                              "*Minibuf-3*"
+                              "*Minibuf-4*"
+                              "*Compile-Log*"
+                              "*inferior-lisp*"
+                              "*Fuzzy Completions*"
+                              "*Apropos*"
+                              "*Help*"
+                              "*cvs*"
+                              "*Buffer List*"
+                              "*Ibuffer*"
+                              "*esh command on file*"))
 (add-hook 'after-init-hook #'winner-mode)
 
 ;; Window dividers separate windows visually. Window dividers are bars that can
@@ -770,7 +770,7 @@
 
   ;; HTML/XML tags
   ;; (embrace-add-pair ?< "<" ">")
- 
+  
   ;; Mode-specific pairs using hooks
   (add-hook 'org-mode-hook
             (lambda ()
@@ -781,23 +781,23 @@
               (embrace-add-pair ?u "_" "_")   ; underline
               (embrace-add-pair ?s "+" "+")))) ; strikethrough
 
-  ;; Enhanced completion for org-mode
-  (add-hook 'org-mode-hook
-            (lambda ()
-              ;; Add useful completion functions for org-mode
-              (add-hook 'completion-at-point-functions #'cape-dabbrev nil t)
-              (add-hook 'completion-at-point-functions #'cape-file nil t)))
-  ;;
-  ;; (add-hook 'markdown-mode-hook
-  ;;           (lambda ()
-  ;;             (embrace-add-pair ?c "`" "`")))
-  ;; 
-  ;; (add-hook 'gfm-mode-hook
-  ;;           (lambda ()
-  ;;             (embrace-add-pair ?c "`" "`")))
-  ;; 
-  ;; (add-hook 'emacs-lisp-mode-hook
-  ;;           (lambda ()
+;; Enhanced completion for org-mode
+(add-hook 'org-mode-hook
+          (lambda ()
+            ;; Add useful completion functions for org-mode
+            (add-hook 'completion-at-point-functions #'cape-dabbrev nil t)
+            (add-hook 'completion-at-point-functions #'cape-file nil t)))
+;;
+;; (add-hook 'markdown-mode-hook
+;;           (lambda ()
+;;             (embrace-add-pair ?c "`" "`")))
+;; 
+;; (add-hook 'gfm-mode-hook
+;;           (lambda ()
+;;             (embrace-add-pair ?c "`" "`")))
+;; 
+;; (add-hook 'emacs-lisp-mode-hook
+;;           (lambda ()
 ;;             (embrace-add-pair ?q "`" "'"))))
 
 ;; Some usefull functions
@@ -1033,14 +1033,14 @@
          ("\\.markdown\\'" . gfm-mode)
          ("\\.md\\'" . gfm-mode))
   :bind (:map markdown-mode-map
-         ("M-n" . markdown-next-visible-heading)
-         ("M-p" . markdown-previous-visible-heading)
-         ("M-N" . markdown-forward-same-level)
-         ("M-P" . markdown-backward-same-level)
-         ("M-O" . markdown-up-heading)
-         ("M-ö" . markdown-forward-paragraph)
-         ("M-ä" . markdown-backward-paragraph)
-         ("C-c =" . markdown-insert-header-dwim))
+              ("M-n" . markdown-next-visible-heading)
+              ("M-p" . markdown-previous-visible-heading)
+              ("M-N" . markdown-forward-same-level)
+              ("M-P" . markdown-backward-same-level)
+              ("M-O" . markdown-up-heading)
+              ("M-ö" . markdown-forward-paragraph)
+              ("M-ä" . markdown-backward-paragraph)
+              ("C-c =" . markdown-insert-header-dwim))
   :hook (gfm-mode . apheleia-mode)
   :config
   ;; Display remote images
@@ -1247,13 +1247,13 @@
       (let* ((session-minutes (floor (/ (float-time (time-subtract (current-time) org-clock-start-time)) 60)))
              (session-time (org-duration-from-minutes session-minutes))
              (total-time (save-excursion
-                          (with-current-buffer (marker-buffer org-clock-marker)
-                            (goto-char org-clock-marker)
-                            (org-duration-from-minutes (org-clock-sum-current-item)))))
+                           (with-current-buffer (marker-buffer org-clock-marker)
+                             (goto-char org-clock-marker)
+                             (org-duration-from-minutes (org-clock-sum-current-item)))))
              (effort (save-excursion
-                      (with-current-buffer (marker-buffer org-clock-marker)
-                        (goto-char org-clock-marker)
-                        (org-entry-get (point) "Effort")))))
+                       (with-current-buffer (marker-buffer org-clock-marker)
+                         (goto-char org-clock-marker)
+                         (org-entry-get (point) "Effort")))))
         (concat "[" session-time "/" total-time
                 (when effort (concat "/" effort)) "]"))))
 
@@ -1363,8 +1363,8 @@
   :after embark-consult
   :demand t
   :bind (:map grep-mode-map
-         ("e" . wgrep-change-to-wgrep-mode)
-         ("C-x C-q" . wgrep-change-to-wgrep-mode))
+              ("e" . wgrep-change-to-wgrep-mode)
+              ("C-x C-q" . wgrep-change-to-wgrep-mode))
   :custom
   (wgrep-auto-save-buffer t)
   (wgrep-change-readonly-file t))
@@ -1383,11 +1383,11 @@
         avy-all-windows-alt t
         avy-background t
         avy-style 'pre))
-        
+
 (use-package avy-zap
-    :straight t
-   :bind (("M-z" . avy-zap-to-char-dwim)
-           ("M-Z" . avy-zap-up-to-char-dwim)))
+  :straight t
+  :bind (("M-z" . avy-zap-to-char-dwim)
+         ("M-Z" . avy-zap-up-to-char-dwim)))
 
 ;; MODLINE ---------------------------------------------------------------------------------------------------------------------
 (use-package doom-modeline
@@ -1437,7 +1437,7 @@
   (mapc #'disable-theme custom-enabled-themes)
   ;; Load the built-in theme
   (load-theme 'modus-operandi t))
- ;; (load-theme 'gruber-darker t))
+;; (load-theme 'gruber-darker t))
 ;; FONT ---------------------------------------------------------------------------------------------------------------------------
 ;; Set the default font to DejaVu Sans Mono with specific size and weight
 (set-face-attribute 'default nil
@@ -1531,267 +1531,265 @@
   :init
   ;; Add to the global default value of `completion-at-point-functions' which is
   ;; used by `completion-at-point'.
-   ;; Append cape functions safely
+  ;; Append cape functions safely
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-elisp-block))
 ;; 
-;; (use-package corfu
-;;   :straight t
-;;   :defer t
-;;   :commands (corfu-mode global-corfu-mode)
-;;   :hook ((prog-mode . corfu-mode)
-;;          (shell-mode . corfu-mode)
-;;          (eshell-mode . corfu-mode)
-;;          (lsp-completion-mode . dorneanu/corfu-setup-lsp))
-;;   :custom
-;;   ;; Hide commands in M-x which do not apply to the current mode.
-;;   (read-extended-command-predicate #'command-completion-default-include-p)
-;;   ;; Disable Ispell completion function. As an alternative try `cape-dict'.
-;;   (text-mode-ispell-word-completion nil)
-;;   (tab-always-indent 'complete)
-;;   ;; Only use `corfu' when calling `completion-at-point' or
-;;   ;; `indent-for-tab-command'
-;;   (corfu-auto t)
-;;   (corfu-auto-prefix 2)
-;;   (corfu-auto-delay 0.25)
-;;   (corfu-preselect 'first)
-;;   (corfu-quit-at-boundary nil)
-;;   (corfu-separator ?\s)            ; Use space
-;;   (corfu-quit-no-match 'separator) ; Don't quit if there is `corfu-separator' inserted
-;;   (corfu-preview-current 'insert)        ; Preview first candidate. Insert on input if only one
-;;   (corfu-preselect-first t)        ; Preselect first candidate?
-;;   (lsp-completion-provider :none)       ; Use corfu instead for lsp completion
-;;   (corfu-on-exact-match nil)
-;;   (completion-cycle-threshold nil)      ; Always show completion candidates
-;;   (corfu-insert-at-point t)
-;;   :config
+(use-package corfu
+  :straight t
+  :defer t
+  :commands (corfu-mode global-corfu-mode)
+  :hook ((prog-mode . corfu-mode)
+         (shell-mode . corfu-mode)
+         (eshell-mode . corfu-mode)
+         (lsp-completion-mode . dorneanu/corfu-setup-lsp))
+  :custom
+  ;; Hide commands in M-x which do not apply to the current mode.
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; Disable Ispell completion function. As an alternative try `cape-dict'.
+  (text-mode-ispell-word-completion nil)
+  (tab-always-indent 'complete)
+  ;; Only use `corfu' when calling `completion-at-point' or
+  ;; `indent-for-tab-command'
+  (corfu-auto t)
+  (corfu-auto-prefix 2)
+  (corfu-auto-delay 0.25)
+  (corfu-preselect 'first)
+  (corfu-quit-at-boundary nil)
+  (corfu-separator ?\s)            ; Use space
+  (corfu-quit-no-match 'separator) ; Don't quit if there is `corfu-separator' inserted
+  (corfu-preview-current 'insert)        ; Preview first candidate. Insert on input if only one
+  (corfu-preselect-first t)        ; Preselect first candidate?
+  (lsp-completion-provider :none)       ; Use corfu instead for lsp completion
+  (corfu-on-exact-match nil)
+  (completion-cycle-threshold nil)      ; Always show completion candidates
+  (corfu-insert-at-point t)
+  :config
+
+  ;; Modify completion behavior for better Eglot integration
+  (defun my/corfu-complete-full ()
+    "Insert complete candidate, including any additional text edits."
+    (interactive)
+    (let ((completion-extra-properties nil))
+      (corfu-insert)))
+
+  ;; Setup lsp to use corfu for lsp completion
+  (defun dorneanu/corfu-setup-lsp ()
+    "Use orderless completion style with lsp-capf instead of the default lsp-passthrough."
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless)))
+
+  ;; Free the RET key for less intrusive behavior.
+  ;; Option 1: Unbind RET completely
+  ;; (keymap-unset corfu-map "RET")
+  ;; Option 2: Use RET only in shell modes
+  (keymap-set corfu-map "RET" `( menu-item "" nil :filter
+                                 ,(lambda (&optional _)
+                                    (and (derived-mode-p 'eshell-mode 'comint-mode)
+                                         #'corfu-send))))
+  ;; Bind TAB to the new completion function
+  (define-key corfu-map [tab] #'my/corfu-complete-full)
+  (define-key corfu-map (kbd "TAB") #'my/corfu-complete-full)
+  (global-corfu-mode))
+;; Candidate information popup
+(use-package corfu-popupinfo
+  :straight (:type built-in)
+  :hook (corfu-mode . corfu-popupinfo-mode)
+  :bind ( ; Bind these to toggle/scroll documentation
+         :map corfu-map
+         ("M-p" . corfu-popupinfo-scroll-down)
+         ("M-n" . corfu-popupinfo-scroll-up)
+         ("M-d" . corfu-popupinfo-toggle))
+  :custom
+  (corfu-popupinfo-delay nil)
+  (corfu-popupinfo-max-height 15))
+;; Corfu popup on terminal
+(use-package corfu-terminal
+  :straight t
+  :hook (corfu-mode . corfu-terminal-mode))
+
 ;; 
-;;   ;; Modify completion behavior for better Eglot integration
-;;   (defun my/corfu-complete-full ()
-;;     "Insert complete candidate, including any additional text edits."
-;;     (interactive)
-;;     (let ((completion-extra-properties nil))
-;;       (corfu-insert)))
 ;; 
-;;   ;; Setup lsp to use corfu for lsp completion
-;;   (defun dorneanu/corfu-setup-lsp ()
-;;     "Use orderless completion style with lsp-capf instead of the default lsp-passthrough."
-;;     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-;;           '(orderless)))
-;; 
-;;   ;; Free the RET key for less intrusive behavior.
-;;   ;; Option 1: Unbind RET completely
-;;   ;; (keymap-unset corfu-map "RET")
-;;   ;; Option 2: Use RET only in shell modes
-;;   (keymap-set corfu-map "RET" `( menu-item "" nil :filter
-;;                                  ,(lambda (&optional _)
-;;                                     (and (derived-mode-p 'eshell-mode 'comint-mode)
-;;                                          #'corfu-send))))
-;;   ;; Bind TAB to the new completion function
-;;   (define-key corfu-map [tab] #'my/corfu-complete-full)
-;;   (define-key corfu-map (kbd "TAB") #'my/corfu-complete-full)
-;;   (global-corfu-mode))
-;; ;; Candidate information popup
-;; (use-package corfu-popupinfo
-;;   :straight (:type built-in)
-;;   :hook (corfu-mode . corfu-popupinfo-mode)
-;;   :bind ( ; Bind these to toggle/scroll documentation
-;;          :map corfu-map
-;;          ("M-p" . corfu-popupinfo-scroll-down)
-;;          ("M-n" . corfu-popupinfo-scroll-up)
-;;          ("M-d" . corfu-popupinfo-toggle))
-;;   :custom
-;;   (corfu-popupinfo-delay nil)
-;;   (corfu-popupinfo-max-height 15))
-;; ;; Corfu popup on terminal
-;; (use-package corfu-terminal
-;;   :straight t
-;;   :hook (corfu-mode . corfu-terminal-mode))
-;; 
-;; ;; 
-;; ;; 
-;; ;; ;;; EGLOT********************
-;; (use-package eglot
-;;   :ensure nil
-;;   :bind (("C-c l e " . eglot)
-;;          ("C-c C-." . eglot-code-actions))
-;;   ;; :disabled t
-;;   :defer t
-;;   :commands (eglot
-;;              eglot-rename
-;;              eglot-ensure
-;;              eglot-rename
-;;              eglot-format-buffer)
-;;   :custom
-;;   (eglot-report-progress t)  ; Prevent minibuffer spam
-;;   (eglot-autoshutdown t) ; shutdown after closing the last managed buffer
-;;   (eglot-sync-connect 0) ; async, do not block
-;;   (eglot-extend-to-xref t) ; can be interesting!
-;;   (eglot-report-progress nil) ; disable annoying messages in echo area!
-;;   (eglot-events-buffer-size 0)
-;;   :config
-;;   ;; Optimizations
-;;   (fset #'jsonrpc--log-event #'ignore)
-;;   (setq jsonrpc-event-hook nil)
-;;   ;; Not sure if this really helps
-;;   ;; Enable completion capabilities
-;;   ;; (setq completion-category-overrides '((eglot (styles orderless))))
-;;   ;; Configure tab for completion
-;;   (setq tab-always-indent 'complete)
-;;   ;; Enable snippet/template support
-;;   (setq eglot-insert-completion-annotations t)
-;;   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
-;;   ;; Enable eglot for certain modes
-;;   ;; (add-hook 'go-mode-hook 'eglot-ensure)
-;;   ;; (add-to-list 'eglot-server-programs
-;;   ;;              `(python-mode
-;;   ;;                . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
-;;   ;;                                         "jedi-language-server"
-;;   ;;                                         "pylsp"))))
-;;   (add-to-list 'eglot-server-programs
-;;                '(python-mode . ("ruff" "server")))
-;;   (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman"))))
-;; 
-;; (add-hook 'markdown-mode-hook #'eglot-ensure)
-;; 
-;; ;;; LSP_MODE*****************
-;; (use-package lsp-mode
-;;   :ensure nil
-;;   :defer t
-;;   :bind (("C-c l s" . lsp))
-;;   :hook (
-;;          (go-ts-mode . lsp-deferred)
-;;          (go-mode . lsp-deferred)
-;;          ;; (web-mode . lsp-deferred)
-;;          ;; (python-mode . lsp-deferred)
-;;          ;; (lsp-mode . lsp-deferred)
-;;          ;; (python-ts-mode . lsp-deferred)
-;;          )
-;;   :commands (lsp lsp-deferred)
-;;   :custom
-;;   ;; (lsp-print-io nil)
-;;   ;; (lsp-trace nil)
-;;   ;; (lsp-print-performance nil)
-;;   ;; (lsp-prefer-flymake t)
-;;   ;; (lsp-disabled-clients (emmet-ls))
-;;   (lsp-use-plist t)
-;;   (lsp-keymap-prefix "C-c l")
-;;   (lsp-completion-provider :none)                    ; we use Corfu
-;;   (lsp-diagnostics-provider :flycheck)
-;;   ;; (lsp-session-file (locate-user-emacs-file ".lsp-session"))
-;;   (lsp-log-io nil)                                  ; IMPORTANT! Use only for debugging! Drastically affects performance
-;;   (lsp-keep-workspace-alive nil)                    ; Close LSP server if all project buffers are closed
-;;   (lsp-idle-delay 0.5)                             ; Debounce timer for `after-change-function'
-;; 
-;;   ;; core
-;;   (lsp-enable-xref t)                              ; Use xref to find references
-;;   (lsp-auto-configure t)                           ; Used to decide between current active servers
-;;   ;; (lsp-eldoc-enable-hover t)                       ; Display signature information in the echo area
-;;   (lsp-enable-dap-auto-configure nil)              ; Debug support
-;;   (lsp-enable-file-watchers t)
-;;   (lsp-file-watch-threshold 2000)
-;;   (lsp-file-watch-ignored-directories '("[/\\\\]\\.git$" "[/\\\\]vendor$" "[/\\\\]node_modules$" "[/\\\\]\\.cache$"))
-;;   (lsp-enable-folding t)
-;;   (lsp-enable-imenu t)
-;;   (lsp-enable-indentation nil)                     ; I use prettier
-;;   (lsp-enable-links nil)                           ; No need since we have `browse-url'
-;;   (lsp-enable-on-type-formatting nil)              ; Prettier handles this
-;;   (lsp-enable-suggest-server-download t)           ; Useful prompt to download LSP providers
-;;   (lsp-enable-symbol-highlighting t)               ; Shows usages of symbol at point in the current buffer
-;;   (lsp-enable-text-document-color nil)             ; This is Treesitter's job
-;;   (lsp-ui-sideline-show-hover nil)                 ; Sideline used only for diagnostics
-;;   (lsp-ui-sideline-diagnostic-max-lines 20)        ; 20 lines since typescript errors can be quite big
-;; 
-;;   ;; completion
-;;   (lsp-completion-enable t)
-;;   (lsp-completion-show-detail t)
-;;   (lsp-completion-enable-additional-text-edit t)    ; Ex: auto-insert an import for a completion candidate
-;;   (lsp-enable-snippet t)                           ; Important to provide full JSX completion
-;;   (lsp-completion-show-kind t)
-;;   (lsp-completion-show-label-description t)        ; Show extra detail like package path
-;; 
-;;   ;; headerline
-;;   (lsp-headerline-breadcrumb-enable t)               ; Optional, I like the breadcrumbs
-;;   (lsp-headerline-breadcrumb-enable-diagnostics nil)   ; Don't make them red, too noisy
-;;   (lsp-headerline-breadcrumb-enable-symbol-numbers nil)
-;;   (lsp-headerline-breadcrumb-icons-enable nil)
-;; 
-;;   ;; modeline
-;;   (lsp-modeline-code-actions-enable t)             ; Modeline should be relatively clean
-;;   (lsp-modeline-diagnostics-enable t)              ; Quick error count in modeline
-;;   (lsp-modeline-workspace-status-enable t)         ; Modeline displays "LSP" when lsp-mode is enabled
-;;   (lsp-signature-auto-activate '(:on-trigger-char :on-server-request))
-;;   (lsp-signature-render-documentation t)
-;;   (lsp-signature-doc-lines 1)                      ; Don't raise the echo area. It's distracting
-;;   (lsp-ui-doc-use-childframe t)                    ; Show docs for symbol at point
-;;   ;; (lsp-eldoc-render-all nil)                       ; This would be very useful if it would respect `lsp-signature-doc-lines', currently it's distracting
-;; 
-;;   ;; lens
-;;   (lsp-lens-enable nil)                            ; Optional, I don't need it
-;; 
-;;   ;; semantic
-;;   (lsp-semantic-tokens-enable nil)                 ; Related to highlighting, and we defer to treesitter
-;; 
-;;   ;; inlay hints
-;;   (lsp-inlay-hint-enable nil)                        ; Show parameter names and type hints inline
-;; 
-;;   :config
-;;   ;; Merge LSP completions with yasnippet so snippets appear alongside LSP candidates
-;;   (defun my/lsp-capf-with-snippets ()
-;;     "Replace lsp-completion-at-point with a super-capf that includes yasnippet."
-;;     (setq-local completion-at-point-functions
-;;                 (cl-substitute-if
-;;                  (cape-capf-super #'lsp-completion-at-point #'yasnippet-capf)
-;;                  (lambda (fn) (eq fn #'lsp-completion-at-point))
-;;                  completion-at-point-functions)))
-;;   (add-hook 'lsp-completion-mode-hook #'my/lsp-capf-with-snippets)
-;;   )
-;; 
-;; ;; Workaround for lsp-ts-query bug: `#'nil' used as predicate crashes on load
-;; (with-eval-after-load 'lsp-ts-query
-;;   (setq lsp-ts-query-parser-install-directories
-;;         (vector (expand-file-name (locate-user-emacs-file "tree-sitter")))))
-;; (use-package lsp-pyright
-;;   :straight t
-;;   :defer t
-;;   :custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
-;;   :init
-;;   (add-hook 'python-ts-mode-hook
-;;             (lambda () (require 'lsp-pyright) (lsp-deferred))))
-;; (use-package lsp-tailwindcss
-;;   :straight (:type git :host github :repo "merrickluo/lsp-tailwindcss")
-;;   :defer t
-;;   :init (setq lsp-tailwindcss-add-on-mode t)
-;;   :config
-;;   (setq lsp-tailwindcss-add-on-mode t)
-;;   ;; (setq lsp-tailwindcss-server-path "/opt/homebrew/bin/tailwindcss-language-server")
-;;   (dolist (tw-major-mode
-;;            '(web-mode
-;;              web-ts-mode
-;;              css-mode
-;;              css-ts-mode
-;;              typescript-mode
-;;              typescript-ts-mode
-;;              tsx-ts-mode
-;;              html-mode
-;;              js2-mode
-;;              js-ts-mode))
-;;     (add-to-list 'lsp-tailwindcss-major-modes tw-major-mode))
-;;   )
-;; (use-package lsp-eslint
-;;   :straight (:type built-in)
-;;   :after lsp-mode)
-;; (use-package consult-lsp
-;;   :straight t
-;;   :after consult lsp-mode
-;;   :bind (:map lsp-mode-map
-;;               ([remap xref-find-apropos] . consult-lsp-symbols)))
+;; ;;; EGLOT********************
+(use-package eglot
+  :ensure nil
+  :bind (("C-c l e " . eglot)
+         ("C-c C-." . eglot-code-actions))
+  ;; :disabled t
+  :defer t
+  :commands (eglot
+             eglot-rename
+             eglot-ensure
+             eglot-rename
+             eglot-format-buffer)
+  :custom
+  (eglot-report-progress t)  ; Prevent minibuffer spam
+  (eglot-autoshutdown t) ; shutdown after closing the last managed buffer
+  (eglot-sync-connect 0) ; async, do not block
+  (eglot-extend-to-xref t) ; can be interesting!
+  (eglot-report-progress nil) ; disable annoying messages in echo area!
+  (eglot-events-buffer-size 0)
+  :config
+  ;; Optimizations
+  (fset #'jsonrpc--log-event #'ignore)
+  (setq jsonrpc-event-hook nil)
+  ;; Not sure if this really helps
+  ;; Enable completion capabilities
+  ;; (setq completion-category-overrides '((eglot (styles orderless))))
+  ;; Configure tab for completion
+  (setq tab-always-indent 'complete)
+  ;; Enable snippet/template support
+  (setq eglot-insert-completion-annotations t)
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+  ;; Enable eglot for certain modes
+  ;; (add-hook 'go-mode-hook 'eglot-ensure)
+  ;; (add-to-list 'eglot-server-programs
+  ;;              `(python-mode
+  ;;                . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
+  ;;                                         "jedi-language-server"
+  ;;                                         "pylsp"))))
+  (add-to-list 'eglot-server-programs
+               '(python-mode . ("ruff" "server")))
+  (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman"))))
+
+
+;;; LSP_MODE*****************
+(use-package lsp-mode
+  :ensure nil
+  :defer t
+  :bind (("C-c l s" . lsp))
+  :hook (
+         (go-ts-mode . lsp-deferred)
+         (go-mode . lsp-deferred)
+         ;; (web-mode . lsp-deferred)
+         ;; (python-mode . lsp-deferred)
+         ;; (lsp-mode . lsp-deferred)
+         ;; (python-ts-mode . lsp-deferred)
+         )
+  :commands (lsp lsp-deferred)
+  :custom
+  ;; (lsp-print-io nil)
+  ;; (lsp-trace nil)
+  ;; (lsp-print-performance nil)
+  ;; (lsp-prefer-flymake t)
+  ;; (lsp-disabled-clients (emmet-ls))
+  (lsp-use-plist t)
+  (lsp-keymap-prefix "C-c l")
+  (lsp-completion-provider :none)                    ; we use Corfu
+  (lsp-diagnostics-provider :flycheck)
+  ;; (lsp-session-file (locate-user-emacs-file ".lsp-session"))
+  (lsp-log-io nil)                                  ; IMPORTANT! Use only for debugging! Drastically affects performance
+  (lsp-keep-workspace-alive nil)                    ; Close LSP server if all project buffers are closed
+  (lsp-idle-delay 0.5)                             ; Debounce timer for `after-change-function'
+
+  ;; core
+  (lsp-enable-xref t)                              ; Use xref to find references
+  (lsp-auto-configure t)                           ; Used to decide between current active servers
+  ;; (lsp-eldoc-enable-hover t)                       ; Display signature information in the echo area
+  (lsp-enable-dap-auto-configure nil)              ; Debug support
+  (lsp-enable-file-watchers t)
+  (lsp-file-watch-threshold 2000)
+  (lsp-file-watch-ignored-directories '("[/\\\\]\\.git$" "[/\\\\]vendor$" "[/\\\\]node_modules$" "[/\\\\]\\.cache$"))
+  (lsp-enable-folding t)
+  (lsp-enable-imenu t)
+  (lsp-enable-indentation nil)                     ; I use prettier
+  (lsp-enable-links nil)                           ; No need since we have `browse-url'
+  (lsp-enable-on-type-formatting nil)              ; Prettier handles this
+  (lsp-enable-suggest-server-download t)           ; Useful prompt to download LSP providers
+  (lsp-enable-symbol-highlighting t)               ; Shows usages of symbol at point in the current buffer
+  (lsp-enable-text-document-color nil)             ; This is Treesitter's job
+  (lsp-ui-sideline-show-hover nil)                 ; Sideline used only for diagnostics
+  (lsp-ui-sideline-diagnostic-max-lines 20)        ; 20 lines since typescript errors can be quite big
+
+  ;; completion
+  (lsp-completion-enable t)
+  (lsp-completion-show-detail t)
+  (lsp-completion-enable-additional-text-edit t)    ; Ex: auto-insert an import for a completion candidate
+  (lsp-enable-snippet t)                           ; Important to provide full JSX completion
+  (lsp-completion-show-kind t)
+  (lsp-completion-show-label-description t)        ; Show extra detail like package path
+
+  ;; headerline
+  (lsp-headerline-breadcrumb-enable t)               ; Optional, I like the breadcrumbs
+  (lsp-headerline-breadcrumb-enable-diagnostics nil)   ; Don't make them red, too noisy
+  (lsp-headerline-breadcrumb-enable-symbol-numbers nil)
+  (lsp-headerline-breadcrumb-icons-enable nil)
+
+  ;; modeline
+  (lsp-modeline-code-actions-enable t)             ; Modeline should be relatively clean
+  (lsp-modeline-diagnostics-enable t)              ; Quick error count in modeline
+  (lsp-modeline-workspace-status-enable t)         ; Modeline displays "LSP" when lsp-mode is enabled
+  (lsp-signature-auto-activate '(:on-trigger-char :on-server-request))
+  (lsp-signature-render-documentation t)
+  (lsp-signature-doc-lines 1)                      ; Don't raise the echo area. It's distracting
+  (lsp-ui-doc-use-childframe t)                    ; Show docs for symbol at point
+  ;; (lsp-eldoc-render-all nil)                       ; This would be very useful if it would respect `lsp-signature-doc-lines', currently it's distracting
+
+  ;; lens
+  (lsp-lens-enable nil)                            ; Optional, I don't need it
+
+  ;; semantic
+  (lsp-semantic-tokens-enable nil)                 ; Related to highlighting, and we defer to treesitter
+
+  ;; inlay hints
+  (lsp-inlay-hint-enable nil)                        ; Show parameter names and type hints inline
+
+  :config
+  ;; Merge LSP completions with yasnippet so snippets appear alongside LSP candidates
+  (defun my/lsp-capf-with-snippets ()
+    "Replace lsp-completion-at-point with a super-capf that includes yasnippet."
+    (setq-local completion-at-point-functions
+                (cl-substitute-if
+                 (cape-capf-super #'lsp-completion-at-point #'yasnippet-capf)
+                 (lambda (fn) (eq fn #'lsp-completion-at-point))
+                 completion-at-point-functions)))
+  (add-hook 'lsp-completion-mode-hook #'my/lsp-capf-with-snippets)
+  )
+
+;; Workaround for lsp-ts-query bug: `#'nil' used as predicate crashes on load
+(with-eval-after-load 'lsp-ts-query
+  (setq lsp-ts-query-parser-install-directories
+        (vector (expand-file-name (locate-user-emacs-file "tree-sitter")))))
+(use-package lsp-pyright
+  :straight t
+  :defer t
+  :custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
+  :init
+  (add-hook 'python-ts-mode-hook
+            (lambda () (require 'lsp-pyright) (lsp-deferred))))
+(use-package lsp-tailwindcss
+  :straight (:type git :host github :repo "merrickluo/lsp-tailwindcss")
+  :defer t
+  :init (setq lsp-tailwindcss-add-on-mode t)
+  :config
+  (setq lsp-tailwindcss-add-on-mode t)
+  ;; (setq lsp-tailwindcss-server-path "/opt/homebrew/bin/tailwindcss-language-server")
+  (dolist (tw-major-mode
+           '(web-mode
+             web-ts-mode
+             css-mode
+             css-ts-mode
+             typescript-mode
+             typescript-ts-mode
+             tsx-ts-mode
+             html-mode
+             js2-mode
+             js-ts-mode))
+    (add-to-list 'lsp-tailwindcss-major-modes tw-major-mode))
+  )
+(use-package lsp-eslint
+  :straight (:type built-in)
+  :after lsp-mode)
+(use-package consult-lsp
+  :straight t
+  :after consult lsp-mode
+  :bind (:map lsp-mode-map
+              ([remap xref-find-apropos] . consult-lsp-symbols)))
 
 ;;; LSP-Bridge***************--------------------------------------------------------------------------------------------------------
 (add-to-list 'load-path "~/.emacs.d/lsp-bridge/")
 (require 'lsp-bridge)
-(global-lsp-bridge-mode)
 (setq lsp-bridge-python-command "~/.pyenv/versions/3.13.13/bin/python3")
 (setq acm-candidate-match-function 'orderless-initialism)
 (setq acm-enable-doc nil)
@@ -1882,6 +1880,15 @@
   (xref-show-definitions-function 'xref-show-definitions-completing-read) ;; use consult instead of pop-up buffer
   )
 
+(with-eval-after-load 'easysession
+  (setq easysession-mode-line-misc-info
+        '(:eval
+          (car (last (split-string
+                      (easysession--mode-line-session-name-format)
+                      ":"))))))
+
+(load (expand-file-name "~/.quicklisp/slime-helper.el"))
+(setq inferior-lisp-program "sbcl")
 (setq pdf-view-use-scaling t)
 (setq pdf-view-resize-factor 1.1)
 (setq org-image-actual-width nil)
