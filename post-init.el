@@ -1891,6 +1891,7 @@
   (xref-show-definitions-function 'xref-show-definitions-completing-read) ;; use consult instead of pop-up buffer
   )
 
+(setq tramp-use-ssh-controlmaster-options nil)
 
 (load (expand-file-name "~/.quicklisp/slime-helper.el"))
 (setq inferior-lisp-program "sbcl")
