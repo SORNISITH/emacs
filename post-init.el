@@ -1557,7 +1557,6 @@
   (corfu-auto-delay 0.25)
   (corfu-preselect 'first)
   (corfu-quit-at-boundary nil)
-  (setq corfu-quit-no-match t)
   (corfu-separator ?\s)            ; Use space
   (corfu-quit-no-match 'separator) ; Don't quit if there is `corfu-separator' inserted
   (corfu-preview-current 'insert)        ; Preview first candidate. Insert on input if only one
@@ -1567,7 +1566,7 @@
   (completion-cycle-threshold nil)      ; Always show completion candidates
   (corfu-insert-at-point t)
   :config
-
+  (setq corfu-quit-no-match t)
   ;; Modify completion behavior for better Eglot integration
   (defun my/corfu-complete-full ()
     "Insert complete candidate, including any additional text edits."
@@ -1797,6 +1796,7 @@
 (setq acm-enable-preview t)
 (setq acm-backend-search-file-words-max-number 5)
 (setq lsp-bridge-enable-search-words nil)
+(setq acm-backend-yas-candidates-number 4)
 (setq acm-enable-tabnine nil)
 (setq acm-enable-icon nil)
 ;; END --------------------------------------------------------------------------------------------------------------------------
