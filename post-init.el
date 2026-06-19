@@ -1557,6 +1557,7 @@
   (corfu-auto-delay 0.25)
   (corfu-preselect 'first)
   (corfu-quit-at-boundary nil)
+  (setq corfu-quit-no-match t)
   (corfu-separator ?\s)            ; Use space
   (corfu-quit-no-match 'separator) ; Don't quit if there is `corfu-separator' inserted
   (corfu-preview-current 'insert)        ; Preview first candidate. Insert on input if only one
@@ -1836,9 +1837,13 @@
              easysession-load-including-geometry)
 
   :custom
-  (easysession-mode-line-misc-info t)  ; Display the session inl the modeline
+;;  (easysession-mode-line-misc-info t)  ; Display the session inl the modeline
   (easysession-save-interval (* 10 60))  ; Save every 10 minutes
+  (setq tab-bar-format '(tab-bar-format-tabs
+                         tab-bar-format-align-right
+                         tab-bar-format-global))
 
+  (add-to-list 'global-mode-string '(:eval (easysession-mode-line-session-name-format)) 'append)
   :init
   ;; Key mappings
   (global-set-key (kbd "C-c ss") #'easysession-save)
@@ -1863,6 +1868,12 @@
     ;; `emacs-startup-hook`.)
     (add-hook 'emacs-startup-hook #'easysession-load-including-geometry 102)
     (add-hook 'emacs-startup-hook #'easysession-save-mode 103)))
+
+(defun my-easysession-only-main-saved ()
+  "Only save the main session."
+  (when (string= "main" (easysession-get-current-session-name))
+    t))
+(setq easysession-save-mode-predicate 'my-easysession-only-main-saved)
 
 ;; EAF framework --------------------------------------------------------
 (add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-application-framework/")
