@@ -1345,10 +1345,37 @@
   (defalias 'rename-file-and-buffer #'crux-rename-file-and-buffer))
 
 ;; MULTIPLE_CURSOR--------------------------------------------------------------------------------------------------------------
-(use-package multiple-cursors  ;; fk off multi cursor what i need
+;; (use-package multiple-cursors  ;; fk off multi cursor what i need
+;;   :bind
+;;   (("M-i" . 'mc/mark-next-like-this)
+;;    ("" . 'mc/mark-previous-like-this)))
+
+(use-package multiple-cursors
+  :straight t
+  :hook ((multiple-cursors-mode-enabled-hook . (lambda() (corfu-mode -1)))
+         (multiple-cursors-mode-disabled-hook . (lambda () (corfu-mode 1))))
   :bind
-  (("M-i" . 'mc/mark-next-like-this)
-   ("" . 'mc/mark-previous-like-this)))
+  (:map prog-mode-map
+        ("C-c m l" . mc/edit-lines)
+        ("C-c m a" . mc/edit-beginnings-of-lines)
+        ("C-c m e" . mc/edit-ends-of-lines)
+        ("C-c m d" . mc/mark-all-dwim)
+        ("C-c m s" . mc/mark-all-symbols-like-this)
+        ("C-c m w" . mc/mark-all-words-like-this)
+        ("C-c m r" . mc/mark-all-in-region)
+        ("C-c m R" . mc/mark-all-in-region-regexp)
+        ("C-c m S" . mc/mark-all-symbols-like-this-in-defun)
+        ("C-c m W" . mc/mark-all-words-like-this-in-defun)
+        ("C-c m n" . mc/mark-next-like-this)
+        ("C-c m p" . mc/mark-previous-like-this)
+        ("C-c m N" . mc/skip-to-next-like-this)
+        ("C-c m P" . mc/skip-to-previous-like-this)
+        ("C-c m M-n" . mc/unmark-next-like-this)
+        ("C-c m M-p" . mc/unmark-previous-like-this)
+        ("s-<mouse-1>"   . mc/add-cursor-on-click)
+        ("C-S-<mouse-1>" . mc/add-cursor-on-click)))
+
+
 ;; MOVETEXT --------------------------------------------------------------------------------------------------------------------
 (use-package move-text    ;; drag text move around like vim alt + j/k
   :ensure t
