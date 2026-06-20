@@ -1580,7 +1580,7 @@
     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
           '(orderless)))
 
-  ;; Free the RET key for less intrusive behavior.
+ ;; Free the RET key for less intrusive behavior.
   ;; Option 1: Unbind RET completely
   ;; (keymap-unset corfu-map "RET")
   ;; Option 2: Use RET only in shell modes
@@ -1611,50 +1611,54 @@
 
 ;; 
 ;; 
-;; ;;; EGLOT********************
-(use-package eglot
-  :ensure nil
-  :bind (("C-c l e " . eglot)
-         ("C-c C-." . eglot-code-actions))
-  ;; :disabled t
-  :defer t
-  :commands (eglot
-             eglot-rename
-             eglot-ensure
-             eglot-rename
-             eglot-format-buffer)
-  :custom
-  (eglot-report-progress t)  ; Prevent minibuffer spam
-  (eglot-autoshutdown t) ; shutdown after closing the last managed buffer
-  (eglot-sync-connect 0) ; async, do not block
-  (eglot-extend-to-xref t) ; can be interesting!
-  (eglot-report-progress nil) ; disable annoying messages in echo area!
-  (eglot-events-buffer-size 0)
-  :config
-  ;; Optimizations
-  (fset #'jsonrpc--log-event #'ignore)
-  (setq jsonrpc-event-hook nil)
-  ;; Not sure if this really helps
-  ;; Enable completion capabilities
-  ;; (setq completion-category-overrides '((eglot (styles orderless))))
-  ;; Configure tab for completion
-  (setq tab-always-indent 'complete)
-  ;; Enable snippet/template support
-  (setq eglot-insert-completion-annotations t)
-  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
-  ;; Enable eglot for certain modes
-  ;; (add-hook 'go-mode-hook 'eglot-ensure)
-  ;; (add-to-list 'eglot-server-programs
-  ;;              `(python-mode
-  ;;                . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
-  ;;                                         "jedi-language-server"
-  ;;                                         "pylsp"))))
-  (add-to-list 'eglot-server-programs
-               '(python-mode . ("ruff" "server")))
-  (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman"))))
-
-
-;;; LSP_MODE*****************
+;; ;; ;;; EGLOT********************
+;; (use-package eglot
+;;   :ensure nil
+;;   :bind (("C-c l e " . eglot)
+;;          ("C-c C-." . eglot-code-actions))
+;;   ;; :disabled t
+;;   :defer t
+;;   :commands (eglot
+;;              eglot-rename
+;;              eglot-ensure
+;;              eglot-rename
+;;              eglot-format-buffer)
+;;   :custom
+;;   (eglot-report-progress t)  ; Prevent minibuffer spam
+;;   (eglot-autoshutdown t) ; shutdown after closing the last managed buffer
+;;   (eglot-sync-connect 0) ; async, do not block
+;;   (eglot-extend-to-xref t) ; can be interesting!
+;;   (eglot-report-progress nil) ; disable annoying messages in echo area!
+;;   (eglot-events-buffer-size 0)
+;;   :config
+;;   ;; Optimizations
+;;   (fset #'jsonrpc--log-event #'ignore)
+;;   (setq jsonrpc-event-hook nil)
+;;   ;; Not sure if this really helps
+;;   ;; Enable completion capabilities
+;;   ;; (setq completion-category-overrides '((eglot (styles orderless))))
+;;   ;; Configure tab for completion
+;;   (setq tab-always-indent 'complete)
+;;   ;; Enable snippet/template support
+;;   (setq eglot-insert-completion-annotations t)
+;;   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+;;   ;; Enable eglot for certain modes
+;;   ;; (add-hook 'go-mode-hook 'eglot-ensure)
+;;   ;; (add-to-list 'eglot-server-programs
+;;   ;;              `(python-mode
+;;   ;;                . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
+;;   ;;                                         "jedi-language-server"
+;;   ;;                                         "pylsp"))))
+;;   (add-to-list 'eglot-server-programs
+;;                '(python-mode . ("ruff" "server")))
+;;   (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman"))))
+;; 
+;; (setq eglot-ignored-server-capabilities
+;;       '(:inlayHintProvider
+;;         :hoverProvider
+;;         :documentHighlightProvider
+;;         :publishDiagnostics))
+;; ;; ;;; LSP_MODE*****************
 (use-package lsp-mode
   :ensure nil
   :defer t
@@ -1711,7 +1715,7 @@
   (lsp-completion-show-label-description t)        ; Show extra detail like package path
 
   ;; headerline
-  (lsp-headerline-breadcrumb-enable t)               ; Optional, I like the breadcrumbs
+  (lsp-headerline-breadcrumb-enable nil)               ; Optional, I like the breadcrumbs
   (lsp-headerline-breadcrumb-enable-diagnostics nil)   ; Don't make them red, too noisy
   (lsp-headerline-breadcrumb-enable-symbol-numbers nil)
   (lsp-headerline-breadcrumb-icons-enable nil)
@@ -1787,19 +1791,19 @@
   :bind (:map lsp-mode-map
               ([remap xref-find-apropos] . consult-lsp-symbols)))
 
-;;; LSP-Bridge***************--------------------------------------------------------------------------------------------------------
-(add-to-list 'load-path "~/.emacs.d/lsp-bridge/")
-(require 'lsp-bridge)
-(setq lsp-bridge-python-command "~/.pyenv/versions/3.13.13/bin/python3")
-(setq acm-candidate-match-function 'orderless-initialism)
-(setq acm-enable-doc nil)
-(setq acm-enable-preview t)
-(setq acm-backend-search-file-words-max-number 5)
-(setq lsp-bridge-enable-search-words nil)
-(setq acm-backend-yas-candidates-number 4)
-(setq acm-enable-tabnine nil)
-(setq acm-enable-icon nil)
-;; END --------------------------------------------------------------------------------------------------------------------------
+;; ;;; LSP-Bridge***************--------------------------------------------------------------------------------------------------------
+;; (add-to-list 'load-path "~/.emacs.d/lsp-bridge/")
+;; (require 'lsp-bridge)
+;; (setq lsp-bridge-python-command "~/.pyenv/versions/3.13.13/bin/python3")
+;; (setq acm-candidate-match-function 'orderless-initialism)
+;; (setq acm-enable-doc nil)
+;; (setq acm-enable-preview t)
+;; (setq acm-backend-search-file-words-max-number 5)
+;; (setq lsp-bridge-enable-search-words nil)
+;; (setq acm-backend-yas-candidates-number 4)
+;; (setq acm-enable-tabnine nil)
+;; (setq acm-enable-icon nil)
+;; ;; END --------------------------------------------------------------------------------------------------------------------------
 
 
 ;; DICTIONARY ---------------------------------------------------------
@@ -1892,7 +1896,6 @@
   )
 
 (setq tramp-use-ssh-controlmaster-options nil)
-
 (load (expand-file-name "~/.quicklisp/slime-helper.el"))
 (setq inferior-lisp-program "sbcl")
 (setq pdf-view-use-scaling t)
@@ -1920,6 +1923,5 @@
 (setq kept-new-versions 10)
 (load custom-file 'noerror 'no-message)
 (minimal-emacs-load-user-init "local-config.el")
-
 
 
