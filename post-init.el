@@ -1273,23 +1273,23 @@
 
 (use-package htmlize :ensure t)   ; best syntax highlighter for export
 
-(with-eval-after-load 'ox-html
-  (setq org-html-htmlize-output-type 'css)
-  (setq org-html-doctype "html5")
-  (setq org-html-head-include-default-style nil)  ; remove default small styles
-
-  ;; Custom style
-  (setq org-html-head-extra
-        "<style>
-  pre.src { 
-    font-size: 1.0em !important; 
-    line-height: 1.5; 
-    padding: 1.2em; 
-    border: 1px solid #ddd; 
-    border-radius: 8px; 
-    background: #fdfdfd;
-  }
-  </style>"))
+;; (with-eval-after-load 'ox-html
+;;   (setq org-html-htmlize-output-type 'css)
+;;   (setq org-html-doctype "html5")
+;;   (setq org-html-head-include-default-style nil)  ; remove default small styles
+;; 
+;;   ;; Custom style
+;;   (setq org-html-head-extra
+;;         "<style>
+;;   pre.src { 
+;;     font-size: 1.0em !important; 
+;;     line-height: 1.5; 
+;;     padding: 1.2em; 
+;;     border: 1px solid #ddd; 
+;;     border-radius: 8px; 
+;;     background: #fdfdfd;
+;;   }
+;;   </style>"))
 
 ;; ELDOC ----------------------------------------------------------------------------------------------------------------------
 (use-package eldoc
