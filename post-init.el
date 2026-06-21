@@ -740,7 +740,7 @@
 
   :config
   ;; Don't preview GPG encrypted files to avoid asking about the decryption password
-  (push "\\.gpg$" consult-preview-excluded-files)
+  ;;(push "\\.gpg$" consult-preview-excluded-files)
   (setq-default completion-in-region-function #'consult-completion-in-region)
 
   (consult-customize
@@ -1269,6 +1269,27 @@
   (setq org-blank-before-new-entry
         '((heading . nil)
           (plain-list-item . nil))))
+
+
+(use-package htmlize :ensure t)   ; best syntax highlighter for export
+
+(with-eval-after-load 'ox-html
+  (setq org-html-htmlize-output-type 'css)
+  (setq org-html-doctype "html5")
+  (setq org-html-head-include-default-style nil)  ; remove default small styles
+
+  ;; Custom style
+  (setq org-html-head-extra
+        "<style>
+  pre.src { 
+    font-size: 1.0em !important; 
+    line-height: 1.5; 
+    padding: 1.2em; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    background: #fdfdfd;
+  }
+  </style>"))
 
 ;; ELDOC ----------------------------------------------------------------------------------------------------------------------
 (use-package eldoc
@@ -1922,7 +1943,27 @@
   (xref-show-definitions-function 'xref-show-definitions-completing-read) ;; use consult instead of pop-up buffer
   )
 
-(setq tramp-use-ssh-controlmaster-options nil)
+;; DISABLE GPG anoying password
+;; 1. Completely disable auth-sources for TRAMP
+(connection-local-set-profile-variables
+ 'remote-without-auth-sources
+ '((auth-sources . nil)))
+
+(connection-local-set-profiles
+ '(:application tramp)
+ 'remote-without-auth-sources)
+
+;; 2. Extra important: disable during completion (this is often the culprit)
+(setq tramp-completion-use-auth-sources nil)
+;; Disable auth-sources for TRAMP connections
+(setq tramp-completion-use-auth-sources nil)
+
+;; Force auth-sources only for non-remote things
+(setq auth-sources (if (file-remote-p default-directory)
+                       nil
+                     '("~/.authinfo.gpg" "~/.authinfo")))
+
+
 (load (expand-file-name "~/.quicklisp/slime-helper.el"))
 (setq inferior-lisp-program "sbcl")
 (setq pdf-view-use-scaling t)
