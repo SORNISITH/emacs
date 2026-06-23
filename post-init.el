@@ -1203,6 +1203,7 @@
   (setq org-startup-with-latex-preview t)
   (setq org-latex-preview-auto-regen t)
   
+  
   ;; Set TODO keywords
   (setq org-todo-keywords
         '((sequence
@@ -1961,11 +1962,16 @@
 ;; Force auth-sources only for non-remote things
 (setq auth-sources (if (file-remote-p default-directory)
                        nil
-                     '("~/.authinfo.gpg" "~/.authinfo")))
+                     '("~/.authinfo.gpg" "~/.authinfo")))  ;; disable annoying gpg configmation
+(setq org-agenda-files
+      '("~/org/mylearn.org"
+        "~/org/buyee.org"))  ;; setup org agenda
 
+(require 'ansi-color)  ;; fix ansii in compile mode
+(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
 
-(load (expand-file-name "~/.quicklisp/slime-helper.el"))
-(setq inferior-lisp-program "sbcl")
+(load (expand-file-name "~/.quicklisp/slime-helper.el")) ;; add slime for elisp
+(setq inferior-lisp-program "sbcl")  ;; interpreter for sbcl
 (setq pdf-view-use-scaling t)
 (setq pdf-view-resize-factor 1.1)
 (setq org-image-actual-width nil)
@@ -1974,7 +1980,7 @@
 (setq pdf-cache-image-limit 1000)
 (remove-hook 'racket-mode-hook #'racket-xp-mode)
 (setq racket-xp-untype-expressions t)
-(set-language-environment "UTF-8")
+(set-language-environment "UTF-8")  ;; view font correct
 (setq x-input-method-use-echo-area nil)
 (setq default-input-method nil)
 (setq tramp-verbose 1)

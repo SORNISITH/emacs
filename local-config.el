@@ -21,6 +21,11 @@
 (blink-cursor-mode 1)
 (setq compilation-scroll-output t)
 (setq blink-cursor-interval 0.2 )
+
+(defun nzcheat ()
+  (interactive)
+  (dired "~/.emacs.d/cheatsheet/"))
+
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "M-/"))
@@ -43,5 +48,7 @@
 (global-set-key (kbd "C-SPC") 'avy-goto-char)
 (global-set-key (kbd "M-l") 'consult-line)
 (global-set-key (kbd "C-=") 'quickrun)
+
+
 
 (set-face-attribute 'default nil :height 230  :family "Iosevka")
