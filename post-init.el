@@ -902,6 +902,7 @@
 ;; Automatically display inline images after babel execution
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
+
 (use-package treesit
   :straight (:type built-in)
   :mode (("\\.tsx\\'" . tsx-ts-mode)
@@ -939,16 +940,19 @@
                (make "https://github.com/alemuller/tree-sitter-make")
                (elisp "https://github.com/Wilfred/tree-sitter-elisp")
                (cmake "https://github.com/uyha/tree-sitter-cmake")
-               ;; (c "https://github.com/tree-sitter/tree-sitter-c")
+               (c "https://github.com/tree-sitter/tree-sitter-c")
                (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
                (objc "https://github.com/tree-sitter-grammars/tree-sitter-objc")
                (toml "https://github.com/tree-sitter/tree-sitter-toml")
-               (php "https://github.com/tree-sitter/tree-sitter-php" "v0.22.8" "php/src" )
+               ;;(php "https://github.com/tree-sitter/tree-sitter-php" "v0.22.8" "php/src" )
                (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
                (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
                (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))
                (prisma "https://github.com/victorhqc/tree-sitter-prisma")))
       (add-to-list 'treesit-language-source-alist grammar)
+      (add-to-list 'treesit-language-source-alist
+                   '(php "https://github.com/tree-sitter/tree-sitter-php" "master" "php/src"))
+
       ;; Only install `grammar' if we don't already have it
       ;; installed. However, if you want to *update* a grammar then
       ;; this obviously prevents that from happening.
@@ -979,6 +983,7 @@
   ;;  (add-to-list 'major-mode-remap-alist mapping))
   :config
   (os/setup-install-grammars))
+
 
 (use-package combobulate
   :straight t
@@ -1307,26 +1312,26 @@
         eldoc-echo-area-display-truncation-message nil
         eldoc-idle-delay 0.1))
 ;; FORMART --------------------------------------------------------------------------------------------------------------------
-(use-package apheleia
-  :straight t
-  :bind (("C-c f f" . apheleia-format-buffer))
-  :config
-  ;; For Python we want to format with isort and black
-  ;; (setf (alist-get 'isort apheleia-formatters)
-  ;;       '("isort" "--stdout" "-"))
-  ;; (setf (alist-get 'python-mode apheleia-mode-alist)
-  ;;       '(isort black))
-
-  ;; Replace default (black) to use ruff for sorting import and formatting.
-  (setf (alist-get 'python-mode apheleia-mode-alist)
-        '(ruff-isort ruff))
-  (setf (alist-get 'python-ts-mode apheleia-mode-alist)
-        '(ruff-isort ruff))
-
-  ;; For golang
-  (setf (alist-get 'gofmt apheleia-formatters)
-        '("goimports"))
-  (apheleia-global-mode))
+;; (use-package apheleia
+;;   :straight t
+;;   :bind (("C-c f f" . apheleia-format-buffer))
+;;   :config
+;;   ;; For Python we want to format with isort and black
+;;   ;; (setf (alist-get 'isort apheleia-formatters)
+;;   ;;       '("isort" "--stdout" "-"))
+;;   ;; (setf (alist-get 'python-mode apheleia-mode-alist)
+;;   ;;       '(isort black))
+;; 
+;;   ;; Replace default (black) to use ruff for sorting import and formatting.
+;;   (setf (alist-get 'python-mode apheleia-mode-alist)
+;;         '(ruff-isort ruff))
+;;   (setf (alist-get 'python-ts-mode apheleia-mode-alist)
+;;         '(ruff-isort ruff))
+;; 
+;;   ;; For golang
+;;   (setf (alist-get 'gofmt apheleia-formatters)
+;;         '("goimports"))
+;;   (apheleia-global-mode))
 
 
 ;; FLYCHECK -------------------------------------------------------------------------------------------------------------------
@@ -1629,7 +1634,7 @@
     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
           '(orderless)))
 
- ;; Free the RET key for less intrusive behavior.
+  ;; Free the RET key for less intrusive behavior.
   ;; Option 1: Unbind RET completely
   ;; (keymap-unset corfu-map "RET")
   ;; Option 2: Use RET only in shell modes
@@ -1706,8 +1711,26 @@
 ;;       '(:inlayHintProvider
 ;;         :hoverProvider
 ;;         :documentHighlightProvider
-;;         :publishDiagnostics))
+;;         :publishDiagnostics))n
 ;; ;; ;;; LSP_MODE*****************
+
+(use-package web-mode
+  :ensure t
+  :mode (("\\.tsx\\'" . web-mode)
+         ("\\.jsx\\'" . web-mode))
+  :config
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2))
+
+;; Optional: Use tree-sitter for better syntax
+(use-package treesit
+  :config
+  (setq treesit-language-source-alist
+        '((tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+          (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")))
+  (add-to-list 'major-mode-remap-alist '(typescript-ts-mode . tsx-ts-mode)))
+
 (use-package lsp-mode
   :ensure nil
   :defer t
@@ -1715,7 +1738,9 @@
   :hook (
          (go-ts-mode . lsp-deferred)
          (go-mode . lsp-deferred)
-         ;; (web-mode . lsp-deferred)
+         (web-mode . lsp-deferred)
+         (tsx-ts-mode . lsp-deferred)
+         (typescript-ts-mode . lsp-deferred)
          ;; (python-mode . lsp-deferred)
          ;; (lsp-mode . lsp-deferred)
          ;; (python-ts-mode . lsp-deferred)
@@ -1817,7 +1842,7 @@
   :init (setq lsp-tailwindcss-add-on-mode t)
   :config
   (setq lsp-tailwindcss-add-on-mode t)
-  ;; (setq lsp-tailwindcss-server-path "/opt/homebrew/bin/tailwindcss-language-server")
+  (setq lsp-tailwindcss-server-path "/home/nzvoid/.npm-global/bin/tailwindcss-language-server")
   (dolist (tw-major-mode
            '(web-mode
              web-ts-mode
@@ -1839,6 +1864,22 @@
   :after consult lsp-mode
   :bind (:map lsp-mode-map
               ([remap xref-find-apropos] . consult-lsp-symbols)))
+
+
+(setq lsp-file-watch-ignored-directories
+      '("[/\\\\]\\.git$"
+        "[/\\\\]\\.svn$"
+        "[/\\\\]\\.hg$"
+        "[/\\\\]node_modules$"
+        "[/\\\\]build$"
+        "[/\\\\]dist$"
+        "[/\\\\]\\.cache$"
+        "[/\\\\]\\.next$"
+        "[/\\\\]coverage$"))
+
+;; Optional: Increase watch limit if needed
+(setq lsp-file-watch-ignored-files
+      '("[/\\\\]\\.\\(json\\|md\\|txt\\)$"))
 
 ;; ;;; LSP-Bridge***************--------------------------------------------------------------------------------------------------------
 ;; (add-to-list 'load-path "~/.emacs.d/lsp-bridge/")
@@ -1883,50 +1924,50 @@
 ;; windows), and Emacs frames. It offers a convenient and effortless way to
 ;; manage Emacs editing sessions and utilizes built-in Emacs functions to
 ;; persist and restore frames.
-(use-package easysession
-  :commands (easysession-switch-to
-             easysession-save-as
-             easysession-save-mode
-             easysession-load-including-geometry)
-
-  :custom
-;;  (easysession-mode-line-misc-info t)  ; Display the session inl the modeline
-  (easysession-save-interval (* 10 60))  ; Save every 10 minutes
-  (setq tab-bar-format '(tab-bar-format-tabs
-                         tab-bar-format-align-right
-                         tab-bar-format-global))
-
-  (add-to-list 'global-mode-string '(:eval (easysession-mode-line-session-name-format)) 'append)
-  :init
-  ;; Key mappings
-  (global-set-key (kbd "C-c ss") #'easysession-save)
-  (global-set-key (kbd "C-c sl") #'easysession-switch-to)
-  (global-set-key (kbd "C-c sL") #'easysession-switch-to-and-restore-geometry)
-  (global-set-key (kbd "C-c sr") #'easysession-rename)
-  (global-set-key (kbd "C-c sR") #'easysession-reset)
-  (global-set-key (kbd "C-c sd") #'easysession-delete)
-
-  (if (fboundp 'easysession-setup)
-      ;; The `easysession-setup' function adds hooks:
-      ;; - To enable automatic session loading during `emacs-startup-hook', or
-      ;;   `server-after-make-frame-hook' when running in daemon mode.
-      ;; - To automatically save the session at regular intervals, and when
-      ;;   Emacs exits.
-      (easysession-setup)
-    ;; Legacy
-    ;; The depth 102 and 103 have been added to to `add-hook' to ensure that the
-    ;; session is loaded after all other packages. (Using 103/102 is
-    ;; particularly useful for those using minimal-emacs.d, where some
-    ;; optimizations restore `file-name-handler-alist` at depth 101 during
-    ;; `emacs-startup-hook`.)
-    (add-hook 'emacs-startup-hook #'easysession-load-including-geometry 102)
-    (add-hook 'emacs-startup-hook #'easysession-save-mode 103)))
-
-(defun my-easysession-only-main-saved ()
-  "Only save the main session."
-  (when (string= "main" (easysession-get-current-session-name))
-    t))
-(setq easysession-save-mode-predicate 'my-easysession-only-main-saved)
+;; (use-package easysession
+;;   :commands (easysession-switch-to
+;;              easysession-save-as
+;;              easysession-save-mode
+;;              easysession-load-including-geometry)
+;; 
+;;   :custom
+;;   ;;  (easysession-mode-line-misc-info t)  ; Display the session inl the modeline
+;;   (easysession-save-interval (* 10 60))  ; Save every 10 minutes
+;;   (setq tab-bar-format '(tab-bar-format-tabs
+;;                          tab-bar-format-align-right
+;;                          tab-bar-format-global))
+;; 
+;;   (add-to-list 'global-mode-string '(:eval (easysession-mode-line-session-name-format)) 'append)
+;;   :init
+;;   ;; Key mappings
+;;   (global-set-key (kbd "C-c ss") #'easysession-save)
+;;   (global-set-key (kbd "C-c sl") #'easysession-switch-to)
+;;   (global-set-key (kbd "C-c sL") #'easysession-switch-to-and-restore-geometry)
+;;   (global-set-key (kbd "C-c sr") #'easysession-rename)
+;;   (global-set-key (kbd "C-c sR") #'easysession-reset)
+;;   (global-set-key (kbd "C-c sd") #'easysession-delete)
+;; 
+;;   (if (fboundp 'easysession-setup)
+;;       ;; The `easysession-setup' function adds hooks:
+;;       ;; - To enable automatic session loading during `emacs-startup-hook', or
+;;       ;;   `server-after-make-frame-hook' when running in daemon mode.
+;;       ;; - To automatically save the session at regular intervals, and when
+;;       ;;   Emacs exits.
+;;       (easysession-setup)
+;;     ;; Legacy
+;;     ;; The depth 102 and 103 have been added to to `add-hook' to ensure that the
+;;     ;; session is loaded after all other packages. (Using 103/102 is
+;;     ;; particularly useful for those using minimal-emacs.d, where some
+;;     ;; optimizations restore `file-name-handler-alist` at depth 101 during
+;;     ;; `emacs-startup-hook`.)
+;;     (add-hook 'emacs-startup-hook #'easysession-load-including-geometry 102)
+;;     (add-hook 'emacs-startup-hook #'easysession-save-mode 103)))
+;; 
+;; (defun my-easysession-only-main-saved ()
+;;   "Only save the main session."
+;;   (when (string= "main" (easysession-get-current-session-name))
+;;     t))
+;; (setq easysession-save-mode-predicate 'my-easysession-only-main-saved)
 
 ;; EAF framework --------------------------------------------------------
 (add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-application-framework/")
@@ -1943,6 +1984,14 @@
   :custom
   (xref-show-definitions-function 'xref-show-definitions-completing-read) ;; use consult instead of pop-up buffer
   )
+
+;; ;; Enable variables highlighting
+;; (customize-set-variable 'treesit-font-lock-level 4)
+
+(add-hook 'php-ts-mode-hook (lambda ()
+			                  ;; Use spaces for indent
+			                  (setq-local indent-tabs-mode nil)))
+
 
 ;; DISABLE GPG anoying password
 ;; 1. Completely disable auth-sources for TRAMP
@@ -1969,6 +2018,13 @@
 
 (require 'ansi-color)  ;; fix ansii in compile mode
 (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+
+(use-package ox-hugo
+  :ensure t   ;Auto-install the package from Melpa
+  :pin melpa  ;`package-archives' should already have ("melpa" . "https://melpa.org/packages/")
+  :after ox)
+
+
 
 (load (expand-file-name "~/.quicklisp/slime-helper.el")) ;; add slime for elisp
 (setq inferior-lisp-program "sbcl")  ;; interpreter for sbcl

@@ -10,21 +10,25 @@
 ;; (windmove-default-keybindings)
 (global-display-line-numbers-mode)
 (delete-selection-mode 1)
-(defun emacs-reload ()
-  (interactive)
-  (load-file user-init-file))
-(defun emacs-conf ()
-  (interactive)
-  (find-file "~/.emacs.d/package-init.el"))
+
 (setq switch-to-buffer-obey-display-actions t)
 (tab-bar-mode -1)
 (blink-cursor-mode 1)
 (setq compilation-scroll-output t)
 (setq blink-cursor-interval 0.2 )
 
-(defun nzcheat ()
+(defun nz-reload ()
   (interactive)
-  (dired "~/.emacs.d/cheatsheet/"))
+  (load-file user-init-file))
+(defun nz-conf ()
+  (interactive)
+  (dired "~/.emacs.d/"))
+
+(defun nz-cheat ()
+  (interactive)
+  (require 'consult)
+  (dired "~/.emacs.d/cheatsheet/")
+  (run-at-time 0.1 nil #'consult-line))
 
 ;; GLOBAL KEYS
 (global-unset-key (kbd "C-z"))

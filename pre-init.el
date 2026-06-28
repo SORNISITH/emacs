@@ -1,3 +1,4 @@
+
 ;;; pre-init.el --- Pre Init -*- no-byte-compile: t; lexical-binding: t; -*-
 ;; Suppress native compilation warnings
 (setq native-comp-async-report-warnings-errors nil
